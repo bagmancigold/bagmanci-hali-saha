@@ -1,0 +1,5 @@
+import { ArrowLeft, LockKeyhole } from "lucide-react";
+
+export default function SecurityPage() {
+  return <main className="min-h-screen bg-[var(--cream)] px-5 py-12"><div className="mx-auto max-w-3xl"><a href="/" className="mb-12 inline-flex items-center gap-2 text-sm font-bold text-[var(--green)]"><ArrowLeft size={16} /> Ana sayfaya dön</a><div className="rounded-3xl bg-white p-8 shadow-sm sm:p-12"><LockKeyhole className="mb-6 text-[var(--green)]" size={32} /><p className="text-xs font-bold uppercase tracking-[.18em] text-[var(--green)]">Bağmancı Halı Saha</p><h1 className="display mt-3 text-4xl font-extrabold">Güvenlik</h1><p className="mt-6 leading-7 text-[var(--muted)]">Rezervasyon formunda yalnızca işletmenin kaydı yönetmesi için gerekli bilgiler istenir. Ödeme bilgisi bu demo akışında toplanmaz. Yönetim ekranı canlıya alınmadan önce kimlik doğrulama ve sunucu tarafı yetkilendirme eklenmelidir.</p><h2 className="display mt-10 text-2xl font-extrabold">İletişim</h2><p className="mt-3 leading-7 text-[var(--muted)]">Güvenlik bildirimi için 0414 247 51 51 numarasından bize ulaşabilirsiniz.</p></div></div></main>;
++}
