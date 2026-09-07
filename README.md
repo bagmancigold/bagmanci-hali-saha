@@ -1,4 +1,6 @@
-# Saha Park
+# Bağmancı Halı Saha
+
+Güncel üretim sürümü: Bağmancı Halı Saha rezervasyon, paket seçimi ve yönetim paneli.
 
 Tailwind CSS ve TypeScript kullanan Next.js halı saha yönetim ve rezervasyon arayüzü.
 
