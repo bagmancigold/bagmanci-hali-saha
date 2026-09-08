@@ -1,0 +1,10 @@
+"use client";
+
+import { ArrowRight, Menu, Trophy, X } from "lucide-react";
+import { useState } from "react";
+
+export default function SiteHeader() {
+  const [open, setOpen] = useState(false);
+
+  return <header className="absolute left-0 right-0 top-0 z-20 mx-auto flex max-w-[1240px] items-center justify-between px-5 py-6 lg:px-8"><a href="/" className="display flex items-center gap-2 text-lg font-extrabold tracking-tight text-white"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--lime)] text-[var(--green)]"><Trophy size={19} strokeWidth={2.8} /></span><span>bağmancı<span className="text-[var(--lime)]"> halı saha</span></span></a><nav className={`${open ? "flex" : "hidden"} absolute left-4 right-4 top-[72px] flex-col gap-5 rounded-2xl bg-white p-6 text-[var(--ink)] shadow-xl md:static md:flex md:flex-row md:items-center md:gap-7 md:bg-transparent md:p-0 md:text-white md:shadow-none`}><a className="text-sm font-semibold text-inherit/80 hover:text-inherit" href="#rezervasyon" onClick={() => setOpen(false)}>Rezervasyon</a><a className="text-sm font-semibold text-inherit/80 hover:text-inherit" href="#paketler" onClick={() => setOpen(false)}>Paketler</a><a className="text-sm font-semibold text-inherit/80 hover:text-inherit" href="#kayitlar" onClick={() => setOpen(false)}>Maç kayıtları</a><a className="text-sm font-semibold text-inherit/80 hover:text-inherit" href="#iletisim" onClick={() => setOpen(false)}>İletişim</a><a className="text-sm font-extrabold text-[var(--green)] md:text-[var(--lime)]" href="/musteri" onClick={() => setOpen(false)}>Müşteri üyeliği</a></nav><div className="flex items-center gap-3"><a href="/musteri" className="hidden rounded-full bg-[var(--lime)] px-5 py-3 text-sm font-bold text-[var(--green)] hover:bg-white sm:block">Üye ol <ArrowRight className="ml-1 inline" size={15} /></a><button aria-label="Menüyü aç" className="rounded-full border border-white/30 p-2 text-white md:hidden" onClick={() => setOpen(!open)}>{open ? <X size={20} /> : <Menu size={20} />}</button></div></header>;
+}
