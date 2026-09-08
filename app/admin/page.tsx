@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ArrowLeft, CalendarDays, Check, Clock3, DollarSign, LockKeyhole, Menu, Phone, Settings, ShieldCheck, Trophy, Users, X } from "lucide-react";
+import { getSupabaseClient } from "../../lib/supabase";
 
 const initialBookings = [
   { time: "18:00", name: "Mehmet Kaya", phone: "0545 123 45 67", package: "Gece Tarifesi", status: "Onaylandı" },
@@ -18,13 +19,22 @@ export default function AdminPage() {
   const [notice, setNotice] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!loginForm.username || !loginForm.password) {
       setLoginError("Kullanıcı adı ve şifre zorunludur.");
       return;
     }
-    setLoginError("");
-    setLoggedIn(true);
+    try {
+      const { error } = await getSupabaseClient().auth.signInWithPassword({ email: loginForm.username, password: loginForm.password });
+      if (error) {
+        setLoginError("E-posta veya şifre hatalı.");
+        return;
+      }
+      setLoginError("");
+      setLoggedIn(true);
+    } catch {
+      setLoginError("Supabase bağlantısı kurulamadı. Vercel değişkenlerini kontrol edin.");
+    }
   };
 
   const updateBooking = (index: number, status: string) => {
