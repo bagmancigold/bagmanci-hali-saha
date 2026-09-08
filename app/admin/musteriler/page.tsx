@@ -14,7 +14,7 @@ export default function CustomersPage() {
     try {
       const client = getSupabaseClient();
       const { data: assurance } = await client.auth.mfa.getAuthenticatorAssuranceLevel();
-      if (assurance.currentLevel !== "aal2") {
+      if (!assurance || assurance.currentLevel !== "aal2") {
         setMessage("Bu sayfa için admin hesabı ve 2FA gerekir.");
         return;
       }
