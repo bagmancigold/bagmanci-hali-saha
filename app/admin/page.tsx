@@ -34,7 +34,7 @@ export default function AdminPage() {
     }
 
     const syncAssurance = async () => {
-      const { data } = await client.auth.getAuthenticatorAssuranceLevel();
+      const { data } = await client.auth.mfa.getAuthenticatorAssuranceLevel();
       setLoggedIn(data.currentLevel === "aal2");
     };
     syncAssurance();
