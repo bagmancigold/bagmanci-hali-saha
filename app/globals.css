@@ -18,23 +18,25 @@ button, input { font: inherit; }
 button { cursor: pointer; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { appearance: none; }
-.header-icon-button { display: flex; height: 42px; width: 42px; align-items: center; justify-content: center; border: 1px solid rgb(255 255 255 / 25%); border-radius: 999px; background: transparent; color: white; }
-.header-login-button, .site-action-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 999px; padding: 0 18px; background: var(--lime); color: var(--green); font-size: 14px; font-weight: 700; line-height: 1; text-decoration: none; }
+.header-icon-button { display: flex; height: 48px; width: 48px; align-items: center; justify-content: center; border: 1px solid rgb(255 255 255 / 35%); border-radius: 999px; background: transparent; color: white; }
+.header-login-button, .site-action-button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 999px; padding: 0 22px; background: var(--lime); color: var(--green); font-size: 15px; font-weight: 700; line-height: 1; text-decoration: none; }
 .header-login-button:hover, .site-action-button:hover { background: white; }
 .header-shell { min-width: 0; }
-.header-brand { max-width: calc(100% - 180px); overflow: hidden; text-overflow: ellipsis; }
+.header-brand { max-width: calc(100% - 220px); overflow: hidden; text-overflow: ellipsis; font-size: 22px !important; }
 .header-login-short { display: none; }
 .site-header { width: 100vw; position: fixed !important; inset-inline: 0; }
-.header-menu-button { position: absolute; left: 20px; top: 17px; }
-.header-login-position { position: absolute; right: 20px; top: 16px; min-width: 112px; }
+.header-menu-button { position: absolute; left: 20px; top: 14px; }
+.header-login-position { position: absolute; right: 20px; top: 14px; min-width: 132px; }
 @media (min-width: 1024px) {
   .header-menu-button { left: 40px; }
   .header-login-position { right: 40px; }
 }
 @media (max-width: 640px) {
-  .header-brand { max-width: calc(100% - 170px); font-size: 13px; letter-spacing: .04em; }
+  .header-brand { max-width: calc(100% - 170px); font-size: 14px !important; letter-spacing: .04em; }
   .header-brand > span:first-child { display: none; }
-  .header-login-position { right: 20px; min-width: 84px; padding: 0 12px; font-size: 12px; }
+  .header-icon-button { height: 42px; width: 42px; }
+  .header-menu-button { top: 17px; }
+  .header-login-position { right: 20px; top: 16px; min-width: 84px; min-height: 44px; padding: 0 12px; font-size: 12px; }
   .header-login-full { display: none; }
   .header-login-short { display: inline; }
   .header-login-position svg { width: 14px; }
