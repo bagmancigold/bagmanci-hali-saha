@@ -1,10 +1,14 @@
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
+  username text not null default '',
   full_name text not null default '',
   phone text not null default '',
   subscriber boolean not null default false,
   created_at timestamptz not null default now()
 );
+
+alter table public.profiles add column if not exists username text not null default '';
+create unique index if not exists profiles_username_unique on public.profiles (lower(username)) where username <> '';
 
 create table if not exists public.site_settings (
   id text primary key,

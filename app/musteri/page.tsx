@@ -1,64 +1,95 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, Check, LockKeyhole, LogOut, UserRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Chrome, LockKeyhole, LogOut, Phone, UserRound } from "lucide-react";
 import { getSupabaseClient } from "../../lib/supabase";
 
-type Profile = { full_name: string; phone: string; subscriber: boolean };
+type Profile = { username: string; full_name: string; phone: string; subscriber: boolean };
+type Mode = "login" | "signup";
+type Form = { username: string; email: string; password: string; fullName: string; phone: string; subscriber: boolean };
+
+const blankForm: Form = { username: "", email: "", password: "", fullName: "", phone: "", subscriber: false };
 
 export default function CustomerPage() {
-  const [mode, setMode] = useState<"login" | "signup">("login");
-  const [form, setForm] = useState({ email: "", password: "", fullName: "", phone: "", subscriber: false });
+  const [mode, setMode] = useState<Mode>("login");
+  const [form, setForm] = useState<Form>(blankForm);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [phoneCodeSent, setPhoneCodeSent] = useState(false);
+  const setField = <K extends keyof Form>(key: K, value: Form[K]) => setForm((current) => ({ ...current, [key]: value }));
 
-  useEffect(() => {
+  const loadProfile = async () => {
     const client = getSupabaseClient();
-    client.auth.getUser().then(async ({ data }) => {
-      if (!data.user) return;
-      const { data: savedProfile } = await client.from("profiles").select("full_name, phone, subscriber").eq("id", data.user.id).maybeSingle();
-      setProfile(savedProfile);
-    });
-  }, []);
+    const { data: userData } = await client.auth.getUser();
+    if (!userData.user) return;
+    const { data, error } = await client.from("profiles").select("username, full_name, phone, subscriber").eq("id", userData.user.id).maybeSingle();
+    if (error) throw error;
+    if (!data) throw new Error("Bu hesap için üyelik profili bulunamadı.");
+    setProfile(data);
+  };
+
+  useEffect(() => { loadProfile().catch(() => undefined); }, []);
 
   const submit = async () => {
-    setLoading(true);
-    setMessage("");
+    const missingSignup = mode === "signup" && (!form.username.trim() || !form.fullName.trim() || !form.email.trim() || !form.password);
+    const missingLogin = mode === "login" && (!form.email.trim() || !form.password);
+    if (missingSignup) { setMessage("Kullanıcı adı, ad soyad, e-posta ve şifre zorunlu."); return; }
+    if (missingLogin) { setMessage("E-posta ve şifre zorunlu."); return; }
+    setLoading(true); setMessage("");
     try {
       const client = getSupabaseClient();
       if (mode === "signup") {
-        const { data, error } = await client.auth.signUp({ email: form.email, password: form.password });
+        const { data, error } = await client.auth.signUp({ email: form.email.trim(), password: form.password, options: { data: { username: form.username.trim(), full_name: form.fullName.trim(), phone: form.phone.trim() } } });
         if (error) throw error;
-        if (!data.user) throw new Error("Hesap oluşturulamadı.");
-        if (data.session) {
-          await client.from("profiles").upsert({ id: data.user.id, full_name: form.fullName, phone: form.phone, subscriber: form.subscriber });
-          setProfile({ full_name: form.fullName, phone: form.phone, subscriber: form.subscriber });
-        } else {
-          setMessage("Hesabın oluşturuldu. E-postandaki doğrulama bağlantısına tıkla, sonra giriş yap.");
-          setMode("login");
-        }
+        if (!data.user) throw new Error("Üyelik oluşturulamadı.");
+        if (!data.session) { setMode("login"); setMessage("Üyeliğin oluşturuldu. E-postandaki doğrulama bağlantısından sonra giriş yap."); return; }
+        const { error: profileError } = await client.from("profiles").upsert({ id: data.user.id, username: form.username.trim(), full_name: form.fullName.trim(), phone: form.phone.trim(), subscriber: form.subscriber });
+        if (profileError) throw profileError;
       } else {
-        const { error } = await client.auth.signInWithPassword({ email: form.email, password: form.password });
+        const { error } = await client.auth.signInWithPassword({ email: form.email.trim(), password: form.password });
         if (error) throw error;
-        const { data: user } = await client.auth.getUser();
-        const { data: savedProfile } = await client.from("profiles").select("full_name, phone, subscriber").eq("id", user.user?.id).maybeSingle();
-        setProfile(savedProfile);
-        setMessage("Giriş başarılı.");
       }
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "İşlem başarısız oldu.");
-    } finally {
-      setLoading(false);
-    }
+      await loadProfile();
+      setMessage("Giriş başarılı.");
+    } catch (error) { setMessage(error instanceof Error ? error.message : "İşlem başarısız oldu."); }
+    finally { setLoading(false); }
   };
 
-  const signOut = async () => {
-    await getSupabaseClient().auth.signOut();
-    setProfile(null);
-    setForm({ email: "", password: "", fullName: "", phone: "", subscriber: false });
+  const socialLogin = async (provider: "google" | "facebook") => {
+    setLoading(true); setMessage("");
+    try {
+      const { error } = await getSupabaseClient().auth.signInWithOAuth({ provider, options: { redirectTo: `${window.location.origin}/musteri` } });
+      if (error) throw error;
+    } catch (error) { setMessage(error instanceof Error ? error.message : "Sosyal giriş başlatılamadı."); setLoading(false); }
   };
 
-  if (profile) return <main className="min-h-screen bg-[var(--cream)] px-5 py-12"><div className="mx-auto max-w-2xl"><a href="/" className="mb-12 inline-flex items-center gap-2 text-sm font-bold text-[var(--green)]"><ArrowLeft size={16} /> Ana sayfaya dön</a><section className="rounded-3xl bg-white p-8 shadow-sm sm:p-12"><div className="flex items-center justify-between"><div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--lime)] text-[var(--green)]"><UserRound size={26} /></div><button onClick={signOut} className="flex items-center gap-2 rounded-full border border-[var(--line)] px-4 py-2 text-sm font-bold"><LogOut size={16} /> Çıkış</button></div><p className="mt-8 text-xs font-bold uppercase tracking-[.18em] text-[var(--green)]">Müşteri hesabım</p><h1 className="display mt-3 text-4xl font-extrabold">Hoş geldin, {profile.full_name || "oyuncu"}.</h1><div className="mt-8 grid gap-3 sm:grid-cols-2"><div className="rounded-2xl bg-[#f5f7f3] p-5"><p className="text-sm text-[var(--muted)]">Telefon</p><p className="mt-2 font-bold">{profile.phone || "Eklenmemiş"}</p></div><div className="rounded-2xl bg-[#f5f7f3] p-5"><p className="text-sm text-[var(--muted)]">Üyelik durumu</p><p className="mt-2 flex items-center gap-2 font-bold text-[var(--green)]">{profile.subscriber ? <><Check size={17} /> Aktif abone</> : "Normal müşteri"}</p></div></div><a href="/#rezervasyon" className="mt-8 inline-flex rounded-full bg-[var(--green)] px-5 py-3 text-sm font-bold text-white">Rezervasyon yap</a></section></div></main>;
-  return <main className="flex min-h-screen items-center justify-center bg-[var(--green)] px-5 py-12"><div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl sm:p-10"><a href="/" className="mb-10 flex items-center gap-2 text-sm font-bold text-[var(--green)]"><ArrowLeft size={16} /> Siteye dön</a><div className="mb-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--lime)] text-[var(--green)]"><LockKeyhole size={26} /></div><p className="text-xs font-bold uppercase tracking-[.18em] text-[var(--green)]">Bağmancı Halı Saha</p><h1 className="display mt-3 text-4xl font-extrabold">{mode === "login" ? "Müşteri girişi" : "Üyelik oluştur"}</h1><p className="mt-3 text-sm leading-6 text-[var(--muted)]">Rezervasyonlarını, aboneliğini ve avantajlarını hesabından takip et.</p>{mode === "signup" && <><label className="mt-8 block text-sm font-bold">Ad soyad<input value={form.fullName} onChange={(event) => setForm({ ...form, fullName: event.target.value })} className="mt-2 w-full rounded-xl border border-[var(--line)] px-4 py-3 outline-none focus:border-[var(--green)]" /></label><label className="mt-4 block text-sm font-bold">Telefon<input value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} className="mt-2 w-full rounded-xl border border-[var(--line)] px-4 py-3 outline-none focus:border-[var(--green)]" /></label><label className="mt-4 flex items-center gap-3 text-sm font-bold"><input type="checkbox" checked={form.subscriber} onChange={(event) => setForm({ ...form, subscriber: event.target.checked })} className="h-4 w-4 accent-[var(--green)]" /> Abone olmak istiyorum</label></>}<label className="mt-4 block text-sm font-bold">E-posta<input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} className="mt-2 w-full rounded-xl border border-[var(--line)] px-4 py-3 outline-none focus:border-[var(--green)]" /></label><label className="mt-4 block text-sm font-bold">Şifre<input type="password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} className="mt-2 w-full rounded-xl border border-[var(--line)] px-4 py-3 outline-none focus:border-[var(--green)]" /></label><button disabled={loading} onClick={submit} className="mt-6 w-full rounded-full bg-[var(--green)] px-5 py-4 text-sm font-extrabold text-white disabled:opacity-60">{loading ? "Bekleyin..." : mode === "login" ? "Giriş yap" : "Üye ol"}</button>{message && <p className="mt-4 rounded-xl bg-[#f5f7f3] p-3 text-sm font-semibold text-[var(--green)]">{message}</p>}<button onClick={() => { setMode(mode === "login" ? "signup" : "login"); setMessage(""); }} className="mt-6 w-full text-sm font-bold text-[var(--green)]">{mode === "login" ? "Hesabın yok mu? Üye ol" : "Zaten hesabın var mı? Giriş yap"}</button></div></main>;
+  const phoneLogin = async () => {
+    if (!form.phone.trim()) { setMessage("Telefon numaranı yaz."); return; }
+    setLoading(true); setMessage("");
+    try {
+      const { error } = await getSupabaseClient().auth.signInWithOtp({ phone: form.phone.trim() });
+      if (error) throw error;
+      setPhoneCodeSent(true);
+      setMessage("Telefonuna gelen doğrulama kodunu girerek üyeliğini doğrula.");
+    } catch (error) { setMessage(error instanceof Error ? error.message : "Telefon girişi başlatılamadı."); }
+    finally { setLoading(false); }
+  };
+
+  const verifyPhone = async () => {
+    if (!form.phone.trim() || !form.password.trim()) { setMessage("Telefon ve doğrulama kodu zorunlu."); return; }
+    setLoading(true); setMessage("");
+    try {
+      const { error } = await getSupabaseClient().auth.verifyOtp({ phone: form.phone.trim(), token: form.password.trim(), type: "sms" });
+      if (error) throw error;
+      await loadProfile();
+    } catch (error) { setMessage(error instanceof Error ? error.message : "Kod doğrulanamadı."); }
+    finally { setLoading(false); }
+  };
+
+  const signOut = async () => { await getSupabaseClient().auth.signOut(); setProfile(null); setForm(blankForm); };
+
+  if (profile) return <main className="customer-page min-h-screen px-5 py-10"><div className="mx-auto max-w-3xl"><a href="/" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-[var(--green)]"><ArrowLeft size={16} /> Siteye dön</a><section className="customer-panel rounded-[28px] bg-white p-7 shadow-xl sm:p-12"><div className="flex items-center justify-between"><div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--lime)] text-[var(--green)]"><UserRound size={26} /></div><button type="button" onClick={signOut} className="flex items-center gap-2 rounded-full border border-[var(--line)] px-4 py-2 text-sm font-bold"><LogOut size={16} /> Çıkış</button></div><p className="mt-8 text-xs font-bold uppercase tracking-[.18em] text-[var(--green)]">Oyuncu hesabı</p><h1 className="display mt-3 text-4xl font-extrabold">Hoş geldin, {profile.username || profile.full_name || "oyuncu"}.</h1><div className="mt-8 grid gap-3 sm:grid-cols-2"><div className="rounded-2xl bg-[#f5f7f3] p-5"><p className="text-sm text-[var(--muted)]">Telefon</p><p className="mt-2 font-bold">{profile.phone || "Eklenmemiş"}</p></div><div className="rounded-2xl bg-[#f5f7f3] p-5"><p className="text-sm text-[var(--muted)]">Üyelik</p><p className="mt-2 flex items-center gap-2 font-bold text-[var(--green)]">{profile.subscriber ? <><Check size={17} /> Aktif abone</> : "Standart üyelik"}</p></div></div><a href="/#rezervasyon" className="mt-8 inline-flex items-center gap-2 rounded-full bg-[var(--green)] px-5 py-3 text-sm font-bold text-white">Rezervasyon yap <ArrowRight size={16} /></a></section></div></main>;
+
+  return <main className="customer-page min-h-screen px-5 py-8 sm:px-8 sm:py-12"><div className="mx-auto grid min-h-[calc(100vh-6rem)] max-w-6xl overflow-hidden rounded-[32px] bg-white shadow-2xl lg:grid-cols-[.9fr_1.1fr]"><div className="customer-art relative hidden min-h-[600px] overflow-hidden p-10 text-white lg:flex lg:flex-col lg:justify-between"><div><p className="text-xs font-bold uppercase tracking-[.25em] text-[var(--lime)]">BAĞMANCI HALI SAHA</p><h1 className="display mt-5 max-w-sm text-6xl font-extrabold leading-[.9]">Takımını kur.<br /><span className="text-[var(--lime)]">Sahaya çık.</span></h1></div><div><p className="max-w-sm text-lg leading-7 text-white/75">Rezervasyonlarını ve maç avantajlarını tek oyuncu hesabından yönet.</p><div className="mt-8 flex items-center gap-3 text-sm font-bold"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--lime)] text-[var(--green)]"><Phone size={19} /></span> Maçın adresi belli.</div></div></div><div className="p-7 sm:p-12 lg:p-16"><a href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--green)]"><ArrowLeft size={16} /> Siteye dön</a><div className="mt-12 max-w-lg"><div className="mb-6 flex items-center gap-2"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--lime)] text-[var(--green)]"><LockKeyhole size={23} /></span><p className="text-xs font-bold uppercase tracking-[.22em] text-[var(--green)]">Oyuncu alanı</p></div><h2 className="display text-5xl font-extrabold leading-none">{mode === "login" ? "Tekrar sahaya dön." : "Kendi takım hesabını aç."}</h2><p className="mt-4 max-w-md text-base leading-7 text-[var(--muted)]">Üye olmadan giriş yok. Hesabını oluştur, sonra rezervasyonlarını takip et.</p><div className="mt-8 flex gap-2 rounded-full bg-[#f3f6f0] p-1"><button type="button" onClick={() => { setMode("login"); setMessage(""); }} className={`flex-1 rounded-full px-4 py-3 text-sm font-bold ${mode === "login" ? "bg-[var(--green)] text-white" : "text-[var(--muted)]"}`}>Giriş yap</button><button type="button" onClick={() => { setMode("signup"); setMessage(""); }} className={`flex-1 rounded-full px-4 py-3 text-sm font-bold ${mode === "signup" ? "bg-[var(--green)] text-white" : "text-[var(--muted)]"}`}>Üye ol</button></div>{mode === "signup" && <div className="mt-5 grid gap-4 sm:grid-cols-2"><label className="text-sm font-bold">Kullanıcı adı<input value={form.username} onChange={(event) => setField("username", event.target.value)} placeholder="takimkaptani" className="customer-input" /></label><label className="text-sm font-bold">Ad soyad<input value={form.fullName} onChange={(event) => setField("fullName", event.target.value)} placeholder="Adın soyadın" className="customer-input" /></label></div>}<label className="mt-4 block text-sm font-bold">E-posta<input type="email" value={form.email} onChange={(event) => setField("email", event.target.value)} placeholder="ornek@mail.com" className="customer-input" /></label><label className="mt-4 block text-sm font-bold">Şifre<input type="password" value={form.password} onChange={(event) => setField("password", event.target.value)} placeholder="En az 6 karakter" className="customer-input" /></label>{mode === "signup" && <label className="mt-4 flex items-center gap-3 text-sm font-bold"><input type="checkbox" checked={form.subscriber} onChange={(event) => setField("subscriber", event.target.checked)} className="h-4 w-4 accent-[var(--green)]" /> Abone avantajlarını aç</label>}<button type="button" disabled={loading} onClick={submit} className="customer-primary-button mt-6">{loading ? "Bekleyin..." : mode === "login" ? "Giriş yap" : "Üyeliği oluştur"}<ArrowRight size={17} /></button><div className="my-6 flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-[var(--muted)]"><span className="h-px flex-1 bg-[var(--line)]" /> veya <span className="h-px flex-1 bg-[var(--line)]" /></div><div className="grid gap-3 sm:grid-cols-3"><button type="button" disabled={loading} onClick={() => socialLogin("google")} className="customer-social-button"><Chrome size={17} /> Google</button><button type="button" disabled={loading} onClick={() => socialLogin("facebook")} className="customer-social-button"><span className="text-lg font-extrabold">f</span> Facebook</button><button type="button" disabled={loading} onClick={phoneLogin} className="customer-social-button"><Phone size={17} /> Telefon</button></div>{message && <p className="mt-5 rounded-2xl bg-[#f3f6f0] p-4 text-sm font-semibold leading-6 text-[var(--green)]">{message}</p>}</div></div></div></main>;
 }

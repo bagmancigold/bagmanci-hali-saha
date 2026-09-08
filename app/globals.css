@@ -47,6 +47,15 @@ button { appearance: none; }
 .noise { position: relative; isolation: isolate; }
 .noise::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .08; z-index: -1; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E"); }
 .field-lines { background-image: linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px); background-size: 42px 42px; }
+.customer-page { background: radial-gradient(circle at 10% 10%, rgb(217 243 106 / 20%), transparent 24%), var(--green); }
+.customer-art { background: linear-gradient(145deg, rgb(23 56 42 / 88%), rgb(36 83 61 / 94%)), url("https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1100&q=85") center / cover; }
+.customer-panel { border: 1px solid var(--line); }
+.customer-input { display: block; width: 100%; margin-top: 8px; min-height: 50px; border: 1px solid var(--line); border-radius: 14px; padding: 0 15px; outline: none; color: var(--ink); background: white; }
+.customer-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgb(36 83 61 / 12%); }
+.customer-primary-button { display: inline-flex; width: 100%; min-height: 54px; align-items: center; justify-content: center; gap: 10px; border: 0; border-radius: 999px; background: var(--green); color: white; font-weight: 800; }
+.customer-primary-button:hover { background: #17382a; }
+.customer-social-button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; background: white; color: var(--ink); font-size: 13px; font-weight: 800; }
+.customer-social-button:hover { border-color: var(--green); color: var(--green); }
 
 @media (max-width: 640px) {
   .display { letter-spacing: -0.035em; }
