@@ -9,7 +9,7 @@ export default function SiteImageSync() {
       try {
         const { getSupabaseClient } = await import("../../lib/supabase");
         const { data } = await getSupabaseClient().from("site_settings").select("hero_image, match_image, background_image").eq("id", "main").maybeSingle();
-        const settings = data ?? {};
+        const settings = data ?? { hero_image: "", match_image: "", background_image: "" };
         const hero = document.querySelector<HTMLImageElement>('img[alt="Bağmancı Halı Saha"]');
         const match = document.querySelector<HTMLImageElement>('img[alt="Bağmancı Halı Saha maç kaydı"]');
         const field = document.querySelector<HTMLElement>("section.noise");
