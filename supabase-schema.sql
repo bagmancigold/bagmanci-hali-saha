@@ -10,8 +10,11 @@ create table if not exists public.site_settings (
   id text primary key,
   hero_image text not null default '',
   match_image text not null default '',
+  background_image text not null default '',
   updated_at timestamptz not null default now()
 );
+
+alter table public.site_settings add column if not exists background_image text not null default '';
 
 alter table public.site_settings enable row level security;
 
