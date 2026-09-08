@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, CalendarDays, Check, Clock3, DollarSign, LockKeyhole, Menu, Phone, Settings, ShieldCheck, Trophy, Users, X } from "lucide-react";
 import { getSupabaseClient } from "../../lib/supabase";
 
@@ -18,6 +18,19 @@ export default function AdminPage() {
   const [fieldOpen, setFieldOpen] = useState(true);
   const [notice, setNotice] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    let client;
+    try {
+      client = getSupabaseClient();
+    } catch {
+      return;
+    }
+
+    client.auth.getSession().then(({ data }) => setLoggedIn(Boolean(data.session)));
+    const { data: listener } = client.auth.onAuthStateChange((_event, session) => setLoggedIn(Boolean(session)));
+    return () => listener.subscription.unsubscribe();
+  }, []);
 
   const handleLogin = async () => {
     if (!loginForm.username || !loginForm.password) {
