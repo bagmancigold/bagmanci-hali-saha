@@ -38,10 +38,23 @@ export default function AdminPage() {
       setLoggedIn(data.currentLevel === "aal2");
     };
     syncAssurance();
+    const now = new Date();
+    const nextLogout = new Date(now);
+    nextLogout.setHours(3, 0, 0, 0);
+    if (nextLogout <= now) nextLogout.setDate(nextLogout.getDate() + 1);
+    const logoutTimer = window.setTimeout(async () => {
+      await client.auth.signOut();
+      setLoggedIn(false);
+      setMfaMode(null);
+      setLoginError("Güvenlik nedeniyle admin oturumunuz saat 03:00'te kapatıldı.");
+    }, nextLogout.getTime() - now.getTime());
     const { data: listener } = client.auth.onAuthStateChange((_event, session) => {
       if (!session) setLoggedIn(false);
     });
-    return () => listener.subscription.unsubscribe();
+    return () => {
+      window.clearTimeout(logoutTimer);
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   const handleLogin = async () => {
