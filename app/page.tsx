@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, Instagram, MapPin, Phone, Play, ShieldCheck, Trophy, Users } from "lucide-react";
 import SiteHeader from "./components/SiteHeader";
 import SiteImageSync from "./components/SiteImageSync";
+import MatchArchive from "./components/MatchArchive";
 
 const days = [
   { day: "Pzt", date: "12", full: "12 Haziran" }, { day: "Sal", date: "13", full: "13 Haziran" },
@@ -50,6 +51,7 @@ export default function Home() {
   return <main id="top">
     <SiteHeader />
     <SiteImageSync />
+    <MatchArchive />
 
     <section className="noise field-lines relative flex min-h-[700px] items-center overflow-hidden bg-[var(--green)] px-5 pb-16 pt-32 text-white lg:min-h-[780px] lg:px-8"><div className="mx-auto grid w-full max-w-[1240px] items-end gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16"><div className="relative z-10 max-w-[680px]"><div className="mb-7 flex items-center gap-2 text-sm font-semibold text-[var(--lime)]"><span className="h-2 w-2 animate-pulse rounded-full bg-[var(--lime)]" /> Bağmancı Halı Saha · Şanlıurfa</div><h1 className="display max-w-[680px] text-[clamp(3.8rem,8vw,7.5rem)] font-extrabold leading-[.9]">Maçın adresi <span className="text-[var(--lime)]">belli.</span></h1><p className="mt-8 max-w-[470px] text-lg leading-8 text-white/70">Takımını topla, paketi seç, sahanı ayırt. Gündüz tarifesi 1200 TL, gece tarifesi 1800 TL.</p><a href="#paketler" className="mt-9 inline-flex items-center gap-3 rounded-full bg-white px-6 py-4 text-sm font-bold text-[var(--green)] hover:bg-[var(--lime)]">Paket seç <ArrowRight size={18} /></a></div><div className="relative mx-auto w-full max-w-[500px] lg:mb-[-55px]"><div className="relative aspect-[4/5] overflow-hidden rounded-[180px_180px_18px_18px] border-[10px] border-white/10"><img className="h-full w-full object-cover" src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=900&q=85" alt="Bağmancı Halı Saha" /><div className="absolute inset-0 bg-gradient-to-t from-[var(--green)]/70 via-transparent to-transparent" /></div><div className="absolute -bottom-7 -left-5 flex items-center gap-3 rounded-2xl bg-white p-4 text-[var(--ink)] shadow-2xl sm:-left-10"><div className="flex -space-x-2"><span className="h-9 w-9 rounded-full border-2 border-white bg-[url('https://i.pravatar.cc/80?img=12')] bg-cover" /><span className="h-9 w-9 rounded-full border-2 border-white bg-[url('https://i.pravatar.cc/80?img=32')] bg-cover" /><span className="h-9 w-9 rounded-full border-2 border-white bg-[url('https://i.pravatar.cc/80?img=13')] bg-cover" /></div><div><p className="text-xs text-[var(--muted)]">Bu hafta sahada</p><p className="font-extrabold">120+ oyuncu</p></div></div></div></div><div className="absolute bottom-7 left-5 hidden items-center gap-3 text-xs font-semibold text-white/50 lg:flex"><span className="h-px w-10 bg-white/30" /> Şanlıurfa · Bağmancı</div></section>
 

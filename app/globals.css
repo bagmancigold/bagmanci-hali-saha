@@ -56,6 +56,21 @@ button { appearance: none; }
 .customer-primary-button:hover { background: #17382a; }
 .customer-social-button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; background: white; color: var(--ink); font-size: 13px; font-weight: 800; }
 .customer-social-button:hover { border-color: var(--green); color: var(--green); }
+.match-archive ~ section#kayitlar { display: none; }
+.match-step { position: relative; border: 1px solid var(--line); border-radius: 22px; padding: 24px; background: white; }
+.match-step > span { display: block; margin-bottom: 24px; color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .16em; }
+.match-step > svg { margin-bottom: 18px; color: var(--green); }
+.match-step h3 { font-family: 'Manrope', sans-serif; font-size: 18px; font-weight: 800; }
+.match-step p { margin-top: 8px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.match-filter-input { min-height: 50px; width: 100%; border: 1px solid var(--line); border-radius: 14px; background: white; padding: 0 16px; color: var(--ink); outline: none; }
+.match-filter-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgb(36 83 61 / 12%); }
+.match-card { display: flex; width: 100%; align-items: center; gap: 12px; border: 1px solid var(--line); border-radius: 18px; background: white; padding: 10px; text-align: left; color: var(--ink); }
+.match-card:hover, .match-card-active { border-color: var(--green); box-shadow: 0 8px 24px rgb(36 83 61 / 10%); }
+.match-card img { height: 58px; width: 78px; flex: none; border-radius: 12px; object-fit: cover; }
+.match-card span { min-width: 0; flex: 1; }
+.match-card strong, .match-card small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.match-card strong { font-size: 13px; }
+.match-card small { margin-top: 5px; color: var(--muted); font-size: 11px; }
 
 @media (max-width: 640px) {
   .display { letter-spacing: -0.035em; }
