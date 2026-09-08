@@ -27,6 +27,21 @@ as $$
   select coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false);
 $$;
 
+do $$
+declare
+  policy_record record;
+begin
+  for policy_record in
+    select schemaname, tablename, policyname
+    from pg_policies
+    where schemaname = 'public'
+      and tablename in ('profiles', 'site_settings')
+  loop
+    execute format('drop policy if exists %I on %I.%I', policy_record.policyname, policy_record.schemaname, policy_record.tablename);
+  end loop;
+end
+$$;
+
 create policy "public can read site settings" on public.site_settings
 for select to anon, authenticated using (true);
 
