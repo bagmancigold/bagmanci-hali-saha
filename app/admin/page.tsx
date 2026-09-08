@@ -64,9 +64,9 @@ export default function AdminPage() {
     }
     try {
       const client = getSupabaseClient();
-      const { error } = await client.auth.signInWithPassword({ email: loginForm.username, password: loginForm.password });
+      const { error } = await client.auth.signInWithPassword({ email: loginForm.username.trim(), password: loginForm.password });
       if (error) {
-        setLoginError("E-posta veya şifre hatalı.");
+        setLoginError(`Supabase: ${error.message}`);
         return;
       }
       const { data: factors } = await client.auth.mfa.listFactors();
