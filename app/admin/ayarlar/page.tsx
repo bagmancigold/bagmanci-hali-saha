@@ -11,10 +11,16 @@ export default function SiteSettingsPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    getSupabaseClient().from("site_settings").select("hero_image, match_image").eq("id", "main").maybeSingle().then(({ data }) => {
-      if (data) setImages({ hero: data.hero_image || defaultSiteImages.hero, match: data.match_image || defaultSiteImages.match });
-      setMessage("");
-    }).catch(() => setMessage("Ayar tablosu hazır değil. Supabase SQL şemasını çalıştırın."));
+    const loadSettings = async () => {
+      try {
+        const { data } = await getSupabaseClient().from("site_settings").select("hero_image, match_image").eq("id", "main").maybeSingle();
+        if (data) setImages({ hero: data.hero_image || defaultSiteImages.hero, match: data.match_image || defaultSiteImages.match });
+        setMessage("");
+      } catch {
+        setMessage("Ayar tablosu hazır değil. Supabase SQL şemasını çalıştırın.");
+      }
+    };
+    loadSettings();
   }, []);
 
   const save = async () => {
