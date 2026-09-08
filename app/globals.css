@@ -71,6 +71,13 @@ button { appearance: none; }
 .match-card strong, .match-card small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .match-card strong { font-size: 13px; }
 .match-card small { margin-top: 5px; color: var(--muted); font-size: 11px; }
+main#top { display: flex; flex-direction: column; }
+main#top > .noise { order: 1; }
+main#top > #paketler { order: 2; }
+main#top > #rezervasyon { order: 3; }
+main#top > .match-archive { order: 4; }
+main#top > #iletisim { order: 5; }
+main#top > footer { order: 6; }
 
 @media (max-width: 640px) {
   .display { letter-spacing: -0.035em; }
