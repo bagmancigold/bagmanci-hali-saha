@@ -25,6 +25,7 @@ alter table public.site_settings add column if not exists iban_holder text not n
 
 create table if not exists public.booking_requests (
   id uuid primary key default gen_random_uuid(),
+  payment_token uuid not null default gen_random_uuid(),
   customer_name text not null,
   phone text not null,
   booking_date date not null,
@@ -38,11 +39,36 @@ create table if not exists public.booking_requests (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.subscription_requests (
+  id uuid primary key default gen_random_uuid(),
+  customer_name text not null,
+  phone text not null,
+  subscription_day text not null,
+  subscription_time text not null,
+  amount numeric(10,2) not null default 0,
+  status text not null default 'pending' check (status in ('pending', 'paid', 'approved', 'rejected')),
+  created_at timestamptz not null default now()
+);
+alter table public.subscription_requests enable row level security;
+drop policy if exists "public can create subscription requests" on public.subscription_requests;
+drop policy if exists "admins manage subscription requests" on public.subscription_requests;
+create policy "public can create subscription requests" on public.subscription_requests for insert to anon, authenticated with check (true);
+create policy "admins manage subscription requests" on public.subscription_requests for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
 alter table public.booking_requests enable row level security;
 drop policy if exists "public can create booking requests" on public.booking_requests;
 drop policy if exists "admins manage booking requests" on public.booking_requests;
 create policy "public can create booking requests" on public.booking_requests for insert to anon, authenticated with check (true);
 create policy "admins manage booking requests" on public.booking_requests for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+create or replace function public.choose_booking_payment(p_booking_id uuid, p_payment_token uuid, p_payment_choice text)
+returns boolean language plpgsql security definer set search_path = public as $$
+begin
+  if p_payment_choice not in ('deposit', 'full') then raise exception 'Geçersiz ödeme seçimi'; end if;
+  update public.booking_requests set payment_choice = p_payment_choice where id = p_booking_id and payment_token = p_payment_token;
+  return found;
+end;
+$$;
 
 alter table public.site_settings enable row level security;
 

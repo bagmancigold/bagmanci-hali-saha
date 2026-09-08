@@ -16,8 +16,9 @@ export default function PaymentPage() {
 
   useEffect(() => {
     const load = async () => {
-      const id = new URLSearchParams(window.location.search).get("booking");
-      if (!id) { setMessage("Ödeme talebi bulunamadı."); return; }
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("booking");
+      if (!id || !params.get("token")) { setMessage("Ödeme talebi bulunamadı."); return; }
       try {
         const client = getSupabaseClient();
         const [{ data, error }, { data: settings }] = await Promise.all([
@@ -37,15 +38,9 @@ export default function PaymentPage() {
     setSaving(true); setMessage("");
     try {
       const client = getSupabaseClient();
-      let proofPath = "";
-      if (proof) {
-        const path = `payment-proofs/${booking.id}-${Date.now()}.${proof.name.split(".").pop() || "jpg"}`;
-        const { error } = await client.storage.from("site-assets").upload(path, proof, { contentType: proof.type, upsert: false });
-        if (error) throw error;
-        proofPath = path;
-      }
-      const { error } = await client.from("booking_requests").update({ payment_choice: choice, payment_status: proofPath ? "proof_submitted" : "pending", notes: proofPath ? `Dekont: ${proofPath}` : "Ödeme bildirimi bekleniyor." }).eq("id", booking.id);
-      if (error) throw error;
+      const token = new URLSearchParams(window.location.search).get("token");
+      const { data: selected, error } = await client.rpc("choose_booking_payment", { p_booking_id: booking.id, p_payment_token: token, p_payment_choice: choice });
+      if (error || !selected) throw error || new Error("Ödeme seçimi doğrulanamadı.");
       setMessage("Ödeme bildirimin alındı. Admin onayından sonra rezervasyonun kesinleşecek.");
     } catch (error) { setMessage(error instanceof Error ? error.message : "Ödeme bildirimi gönderilemedi."); }
     finally { setSaving(false); }

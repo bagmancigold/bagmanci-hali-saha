@@ -46,11 +46,11 @@ export default function Home() {
     if (!selectedSlot || !form.name || !form.phone) { setNotice("Lütfen saat, ad soyad ve telefon alanlarını doldurun."); return; }
     setNotice("Maç kaydı oluşturuluyor...");
     try {
-      const { data, error } = await getSupabaseClient().from("booking_requests").insert({ customer_name: form.name.trim(), phone: form.phone.trim(), booking_date: `2024-06-${selectedDay.padStart(2, "0")}`, booking_time: selectedSlot, package_name: selectedPackage.title, total_amount: price, deposit_amount: 600, payment_choice: "deposit", payment_status: "pending" }).select("id").single();
+      const { data, error } = await getSupabaseClient().from("booking_requests").insert({ customer_name: form.name.trim(), phone: form.phone.trim(), booking_date: `2024-06-${selectedDay.padStart(2, "0")}`, booking_time: selectedSlot, package_name: selectedPackage.title, total_amount: price, deposit_amount: 600, payment_choice: "deposit", payment_status: "pending" }).select("id, payment_token").single();
       if (error) throw error;
       setBooked((current) => [...current, `${selectedDay}-${selectedSlot}`]);
       setSelectedSlot(null); setForm({ name: "", phone: "", subscriber: false });
-      window.location.href = `/odeme?booking=${data.id}`;
+      window.location.href = `/odeme?booking=${data.id}&token=${data.payment_token}`;
     } catch (error) { setNotice(error instanceof Error ? `Maç kaydı oluşturulamadı: ${error.message}` : "Maç kaydı oluşturulamadı."); }
   };
 
