@@ -31,7 +31,11 @@ stable
 security definer
 set search_path = public
 as $$
-  select coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false);
+  select coalesce(
+    (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+    or (auth.jwt() ->> 'email') = 'bagmanciabdullah93@gmail.com',
+    false
+  );
 $$;
 
 insert into storage.buckets (id, name, public)
