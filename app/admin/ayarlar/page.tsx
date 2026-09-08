@@ -18,7 +18,8 @@ export default function SiteSettingsPage() {
         const { data: assurance } = await client.auth.mfa.getAuthenticatorAssuranceLevel();
         if (assurance?.currentLevel !== "aal2") { setMessage("Bu sayfa için admin girişi ve 2FA gerekir."); return; }
         setAuthorized(true);
-        const { data } = await client.from("site_settings").select("hero_image, match_image, background_image").eq("id", "main").maybeSingle();
+        const { data, error } = await client.from("site_settings").select("hero_image, match_image, background_image").eq("id", "main").maybeSingle();
+        if (error) throw error;
         if (data) setImages({ hero: data.hero_image || defaultSiteImages.hero, match: data.match_image || defaultSiteImages.match, background: data.background_image || defaultSiteImages.background });
         setMessage("");
       } catch { setMessage("Ayarlar yüklenemedi. Supabase şemasını ve admin MFA girişini kontrol edin."); }
@@ -42,8 +43,13 @@ export default function SiteSettingsPage() {
 
   const save = async () => {
     setSaving(true); setMessage("");
-    const { error } = await getSupabaseClient().from("site_settings").upsert({ id: "main", hero_image: images.hero, background_image: images.background, match_image: images.match, updated_at: new Date().toISOString() });
-    setMessage(error ? `Kayıt başarısız: ${error.message}` : "Görseller kaydedildi.");
+    try {
+      const { error } = await getSupabaseClient().from("site_settings").upsert({ id: "main", hero_image: images.hero, background_image: images.background, match_image: images.match, updated_at: new Date().toISOString() });
+      if (error) throw error;
+      setMessage("Görseller kaydedildi.");
+    } catch (error) {
+      setMessage(error instanceof Error ? `Kayıt başarısız: ${error.message}` : "Kayıt başarısız.");
+    }
     setSaving(false);
   };
 

@@ -11,7 +11,11 @@ export default function AdminSettingsShortcut() {
 
   useEffect(() => {
     if (!pathname.startsWith("/admin") || pathname === "/admin/ayarlar") return;
-    getSupabaseClient().auth.mfa.getAuthenticatorAssuranceLevel().then(({ data }) => setAuthorized(Boolean(data?.currentLevel === "aal2")));
+    const client = getSupabaseClient();
+    const check = () => client.auth.mfa.getAuthenticatorAssuranceLevel().then(({ data }) => setAuthorized(Boolean(data?.currentLevel === "aal2")));
+    check();
+    const { data: listener } = client.auth.onAuthStateChange(() => { check(); });
+    return () => listener.subscription.unsubscribe();
   }, [pathname]);
 
   if (!authorized || !pathname.startsWith("/admin")) return null;
