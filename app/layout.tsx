@@ -4,7 +4,10 @@ import AdminSettingsShortcut from "./components/AdminSettingsShortcut";
 
 export const metadata: Metadata = {
   title: "Bağmancı Halı Saha | Maçın adresi belli",
-  description: "Bağmancı Halı Saha için paket seçin, saatinizi ayırtın ve takımınızı maça hazırlayın."
+  description: "Bağmancı Halı Saha için paket seçin, saatinizi ayırtın ve takımınızı maça hazırlayın.",
+  verification: {
+    google: "_inhOjOnnu_teMUeWlzPxQQw_AjqBZSj_0k3lrJ6z-Y"
+  }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
