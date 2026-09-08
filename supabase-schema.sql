@@ -6,6 +6,15 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.site_settings (
+  id text primary key,
+  hero_image text not null default '',
+  match_image text not null default '',
+  updated_at timestamptz not null default now()
+);
+
+alter table public.site_settings enable row level security;
+
 alter table public.profiles enable row level security;
 
 create or replace function public.is_admin()
@@ -17,6 +26,12 @@ set search_path = public
 as $$
   select coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false);
 $$;
+
+create policy "public can read site settings" on public.site_settings
+for select to anon, authenticated using (true);
+
+create policy "admins manage site settings" on public.site_settings
+for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 create policy "customers read own profile" on public.profiles
 for select to authenticated using (id = auth.uid() or public.is_admin());
