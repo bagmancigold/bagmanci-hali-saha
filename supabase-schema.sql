@@ -19,6 +19,30 @@ create table if not exists public.site_settings (
 );
 
 alter table public.site_settings add column if not exists background_image text not null default '';
+alter table public.site_settings add column if not exists bank_name text not null default '';
+alter table public.site_settings add column if not exists iban text not null default '';
+alter table public.site_settings add column if not exists iban_holder text not null default '';
+
+create table if not exists public.booking_requests (
+  id uuid primary key default gen_random_uuid(),
+  customer_name text not null,
+  phone text not null,
+  booking_date date not null,
+  booking_time text not null,
+  package_name text not null,
+  total_amount numeric(10,2) not null default 0,
+  deposit_amount numeric(10,2) not null default 600,
+  payment_choice text not null default 'deposit' check (payment_choice in ('deposit', 'full')),
+  payment_status text not null default 'pending' check (payment_status in ('pending', 'proof_submitted', 'paid', 'approved', 'rejected')),
+  notes text not null default '',
+  created_at timestamptz not null default now()
+);
+
+alter table public.booking_requests enable row level security;
+drop policy if exists "public can create booking requests" on public.booking_requests;
+drop policy if exists "admins manage booking requests" on public.booking_requests;
+create policy "public can create booking requests" on public.booking_requests for insert to anon, authenticated with check (true);
+create policy "admins manage booking requests" on public.booking_requests for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 alter table public.site_settings enable row level security;
 

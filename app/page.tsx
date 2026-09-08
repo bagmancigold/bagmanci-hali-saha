@@ -5,6 +5,7 @@ import { ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, Ins
 import SiteHeader from "./components/SiteHeader";
 import SiteImageSync from "./components/SiteImageSync";
 import MatchArchive from "./components/MatchArchive";
+import { getSupabaseClient } from "../lib/supabase";
 
 const days = [
   { day: "Pzt", date: "12", full: "12 Haziran" }, { day: "Sal", date: "13", full: "13 Haziran" },
@@ -41,11 +42,16 @@ export default function Home() {
     setNotice(`${pack.title} seçildi. Şimdi gün ve saatini belirleyebilirsin.`);
     document.getElementById("rezervasyon")?.scrollIntoView({ behavior: "smooth" });
   };
-  const submitBooking = () => {
+  const submitBooking = async () => {
     if (!selectedSlot || !form.name || !form.phone) { setNotice("Lütfen saat, ad soyad ve telefon alanlarını doldurun."); return; }
-    setBooked((current) => [...current, `${selectedDay}-${selectedSlot}`]);
-    setNotice(`${selectedLabel} ${selectedSlot} için kaydın alındı. Toplam: ${price ? `${price.toFixed(0)} TL` : "ücretsiz"}.`);
-    setSelectedSlot(null); setForm({ name: "", phone: "", subscriber: false });
+    setNotice("Maç kaydı oluşturuluyor...");
+    try {
+      const { data, error } = await getSupabaseClient().from("booking_requests").insert({ customer_name: form.name.trim(), phone: form.phone.trim(), booking_date: `2024-06-${selectedDay.padStart(2, "0")}`, booking_time: selectedSlot, package_name: selectedPackage.title, total_amount: price, deposit_amount: 600, payment_choice: "deposit", payment_status: "pending" }).select("id").single();
+      if (error) throw error;
+      setBooked((current) => [...current, `${selectedDay}-${selectedSlot}`]);
+      setSelectedSlot(null); setForm({ name: "", phone: "", subscriber: false });
+      window.location.href = `/odeme?booking=${data.id}`;
+    } catch (error) { setNotice(error instanceof Error ? `Maç kaydı oluşturulamadı: ${error.message}` : "Maç kaydı oluşturulamadı."); }
   };
 
   return <main id="top">
