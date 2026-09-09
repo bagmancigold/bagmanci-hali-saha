@@ -143,3 +143,21 @@ with check (id = auth.uid() or public.is_admin());
 
 -- Run this once for your admin user after replacing the email.
 -- update auth.users set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || '{"role":"admin"}'::jsonb where email = 'bagmanciabdullah93@gmail.com';
+
+
+create table if not exists public.match_records (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  match_date date not null,
+  field_name text not null,
+  duration text not null,
+  video_url text not null,
+  thumbnail_url text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.match_records enable row level security;
+drop policy if exists "public can read match records" on public.match_records;
+drop policy if exists "admins manage match records" on public.match_records;
+create policy "public can read match records" on public.match_records for select to anon, authenticated using (true);
+create policy "admins manage match records" on public.match_records for all to authenticated using (public.is_admin()) with check (public.is_admin());

@@ -1,0 +1,15 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { ArrowLeft, Check, X } from "lucide-react";
+import { getSupabaseClient } from "../../../lib/supabase";
+
+type Subscription = { id: string; customer_name: string; phone: string; subscription_day: string; subscription_time: string; amount: number; status: string; created_at: string };
+
+export default function AdminSubscriptionsPage() {
+  const [items, setItems] = useState<Subscription[]>([]);
+  const [message, setMessage] = useState("Yükleniyor...");
+  useEffect(() => { (async () => { try { const client = getSupabaseClient(); const { data: assurance } = await client.auth.mfa.getAuthenticatorAssuranceLevel(); if (assurance?.currentLevel !== "aal2") { setMessage("Admin girişi ve 2FA gerekli."); return; } const { data, error } = await client.from("subscription_requests").select("*").order("created_at", { ascending: false }); if (error) throw error; setItems(data || []); setMessage(data?.length ? "" : "Henüz abonelik talebi yok."); } catch (error) { setMessage(error instanceof Error ? error.message : "Talepler yüklenemedi."); } })(); }, []);
+  const update = async (id: string, status: string) => { const { error } = await getSupabaseClient().from("subscription_requests").update({ status }).eq("id", id); if (error) { setMessage(error.message); return; } setItems((current) => current.map((item) => item.id === id ? { ...item, status } : item)); };
+  return <main className="min-h-screen bg-[#f5f7f3] px-5 py-10 text-[var(--ink)] lg:px-10"><div className="mx-auto max-w-6xl"><a href="/admin" className="inline-flex items-center gap-2 text-sm font-bold text-[var(--green)]"><ArrowLeft size={16} /> Admin paneline dön</a><p className="mt-10 text-xs font-bold uppercase tracking-[.18em] text-[var(--green)]">Kontrol merkezi</p><h1 className="display mt-3 text-4xl font-extrabold">Abonelik talepleri</h1>{message && <p className="mt-6 rounded-xl bg-white p-4 text-sm font-semibold text-[var(--green)]">{message}</p>}<div className="mt-8 space-y-4">{items.map((item) => <article key={item.id} className="rounded-2xl bg-white p-6 shadow-sm"><div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center"><div><p className="font-extrabold">{item.customer_name} · {item.phone}</p><p className="mt-2 text-sm text-[var(--muted)]">Her {item.subscription_day} · {item.subscription_time} · Ücretin tamamı ödeme ile onaylanacak</p></div><div className="flex items-center gap-2"><span className="rounded-full bg-[#f3f6f0] px-3 py-2 text-xs font-bold text-[var(--green)]">{item.status}</span><button type="button" onClick={() => update(item.id, "approved")} className="flex items-center gap-1 rounded-full bg-[var(--green)] px-4 py-2 text-xs font-bold text-white"><Check size={14} /> Onayla</button><button type="button" onClick={() => update(item.id, "rejected")} className="flex items-center gap-1 rounded-full bg-red-50 px-4 py-2 text-xs font-bold text-red-700"><X size={14} /> Reddet</button></div></div></article>)}</div></div></main>;
+}
