@@ -50,6 +50,21 @@ create table if not exists public.subscription_requests (
   created_at timestamptz not null default now()
 );
 alter table public.subscription_requests enable row level security;
+
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select coalesce(
+    (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
+    or (auth.jwt() ->> 'email') = 'bagmanciabdullah93@gmail.com',
+    false
+  );
+$$;
+
 drop policy if exists "public can create subscription requests" on public.subscription_requests;
 drop policy if exists "admins manage subscription requests" on public.subscription_requests;
 create policy "public can create subscription requests" on public.subscription_requests for insert to anon, authenticated with check (true);
@@ -73,20 +88,6 @@ $$;
 alter table public.site_settings enable row level security;
 
 alter table public.profiles enable row level security;
-
-create or replace function public.is_admin()
-returns boolean
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select coalesce(
-    (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
-    or (auth.jwt() ->> 'email') = 'bagmanciabdullah93@gmail.com',
-    false
-  );
-$$;
 
 insert into storage.buckets (id, name, public)
 values ('site-assets', 'site-assets', true)
