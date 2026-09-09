@@ -56,6 +56,14 @@ button { appearance: none; }
 .customer-primary-button:hover { background: #17382a; }
 .customer-social-button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; background: white; color: var(--ink); font-size: 13px; font-weight: 800; }
 .customer-social-button:hover { border-color: var(--green); color: var(--green); }
+.payment-page { background: radial-gradient(circle at 85% 15%, rgb(217 243 106 / 18%), transparent 28%), var(--cream); }
+.payment-bank { background: linear-gradient(150deg, #17382a, #24533d); color: white; box-shadow: 0 20px 45px rgb(23 56 42 / 18%); }
+.payment-bank h2 { color: white; }
+.payment-bank > p { color: rgb(255 255 255 / 82%); }
+.payment-bank > div { border: 1px solid rgb(255 255 255 / 14%); background: rgb(255 255 255 / 12%); }
+.payment-bank > div p { color: white; }
+.payment-bank > div p:first-child { color: rgb(255 255 255 / 70%); }
+.payment-bank > p:last-child { color: rgb(255 255 255 / 78%); }
 .match-archive ~ section#kayitlar { display: none; }
 .match-step { position: relative; border: 1px solid var(--line); border-radius: 22px; padding: 24px; background: white; }
 .match-step > span { display: block; margin-bottom: 24px; color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .16em; }
