@@ -33,11 +33,14 @@ create table if not exists public.booking_requests (
   package_name text not null,
   total_amount numeric(10,2) not null default 0,
   deposit_amount numeric(10,2) not null default 600,
+  paid_amount numeric(10,2) not null default 0,
   payment_choice text not null default 'deposit' check (payment_choice in ('deposit', 'full')),
   payment_status text not null default 'pending' check (payment_status in ('pending', 'proof_submitted', 'paid', 'approved', 'rejected')),
   notes text not null default '',
   created_at timestamptz not null default now()
 );
+
+alter table public.booking_requests add column if not exists paid_amount numeric(10,2) not null default 0;
 
 create table if not exists public.subscription_requests (
   id uuid primary key default gen_random_uuid(),

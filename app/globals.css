@@ -64,6 +64,19 @@ button { appearance: none; }
 .payment-bank > div p { color: white; }
 .payment-bank > div p:first-child { color: rgb(255 255 255 / 70%); }
 .payment-bank > p:last-child { color: rgb(255 255 255 / 78%); }
+.payment-bank .payment-info-grid { display: grid; gap: 10px; }
+.payment-bank .payment-info-item { border: 1px solid rgb(255 255 255 / 20%); border-radius: 14px; background: rgb(255 255 255 / 14%); padding: 13px 14px; }
+.payment-bank .payment-info-item p:first-child { margin-bottom: 5px; color: rgb(255 255 255 / 68%); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.payment-bank .payment-info-item p:last-child { color: white; font-size: 14px; font-weight: 800; line-height: 1.45; }
+.payment-bank .payment-copy-button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgb(255 255 255 / 30%); border-radius: 10px; background: rgb(255 255 255 / 14%); padding: 8px 10px; color: white; font-size: 12px; font-weight: 800; }
+.payment-bank .payment-copy-button:hover { background: var(--lime); color: var(--green); }
+.payment-bank .payment-note { border-top: 1px solid rgb(255 255 255 / 18%); padding-top: 16px; }
+.payment-bank > div > div { border: 1px solid rgb(255 255 255 / 20%); border-radius: 14px; background: rgb(255 255 255 / 14%); padding: 13px 14px; }
+.payment-bank > div > div + div { margin-top: 10px; }
+.payment-bank > div > div p:first-child { margin-bottom: 5px; color: rgb(255 255 255 / 68%); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.payment-bank > div > div p:last-child { color: white; font-size: 14px; font-weight: 800; line-height: 1.45; }
+.payment-bank > div > div button { display: inline-flex; align-items: center; justify-content: center; border: 1px solid rgb(255 255 255 / 30%); border-radius: 10px; background: rgb(255 255 255 / 14%); padding: 8px 10px; color: white; }
+.payment-bank > div > div button:hover { background: var(--lime); color: var(--green); }
 .match-archive ~ section#kayitlar { display: none; }
 .match-step { position: relative; border: 1px solid var(--line); border-radius: 22px; padding: 24px; background: white; }
 .match-step > span { display: block; margin-bottom: 24px; color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .16em; }
