@@ -57,7 +57,7 @@ button { appearance: none; }
 .customer-social-button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; background: white; color: var(--ink); font-size: 13px; font-weight: 800; }
 .customer-social-button:hover { border-color: var(--green); color: var(--green); }
 .payment-page { background: radial-gradient(circle at 85% 15%, rgb(217 243 106 / 18%), transparent 28%), var(--cream); }
-.payment-bank { background: linear-gradient(150deg, #17382a, #24533d); color: white; box-shadow: 0 20px 45px rgb(23 56 42 / 18%); }
+.payment-bank { background-image: linear-gradient(150deg, rgb(23 56 42 / 94%), rgb(36 83 61 / 90%)), url("https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1100&q=85"); background-position: center; background-size: cover; background-color: #17382a; color: white; box-shadow: 0 20px 45px rgb(23 56 42 / 18%); }
 .payment-bank h2 { color: white; }
 .payment-bank > p { color: rgb(255 255 255 / 82%); }
 .payment-bank > div { border: 1px solid rgb(255 255 255 / 14%); background: rgb(255 255 255 / 12%); }
