@@ -29,6 +29,14 @@ button { appearance: none; }
 .header-login-position { position: absolute; right: 20px; top: 14px; min-width: 132px; }
 .header-account-position { position: absolute; right: 20px; top: 14px; }
 .header-reservation-button { position: absolute; right: 175px; top: 18px; border: 1px solid rgb(212 175 55 / 70%); border-radius: 999px; background: rgb(212 175 55 / 12%); padding: 10px 14px; color: var(--lime); font-size: 12px; font-weight: 900; text-decoration: none; }
+.schedule-row { display: grid; gap: 8px; margin-top: 12px; }
+.schedule-row-label { color: var(--green); font-size: 10px; font-weight: 900; letter-spacing: .16em; }
+.schedule-row-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 2px 2px 10px; scrollbar-width: thin; overscroll-behavior-x: contain; }
+.schedule-slot { display: inline-flex; min-width: 116px; min-height: 58px; flex: 0 0 116px; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 1px solid #d7c27a; border-radius: 14px; background: rgb(255 255 255 / 72%); color: var(--ink); font-size: 15px; font-weight: 800; }
+.schedule-slot:hover { border-color: var(--green); background: white; }
+.schedule-slot-selected { border-color: var(--lime); background: var(--lime); color: var(--green); box-shadow: 0 0 0 2px rgb(212 175 55 / 25%); }
+.schedule-slot-locked { cursor: not-allowed; border-color: #c8ceca; background: #dfe3df; color: #7b847e; opacity: .46; }
+.schedule-slot-locked small { font-size: 8px; font-weight: 900; letter-spacing: .04em; }
 .header-account-button { display: inline-flex; min-height: 48px; align-items: center; gap: 8px; border: 0; border-radius: 999px; background: var(--lime); padding: 0 16px; color: var(--green); font-size: 14px; font-weight: 900; }
 .header-account-menu { position: absolute; right: 0; top: 56px; width: 250px; border: 1px solid var(--line); border-radius: 18px; background: white; padding: 16px; color: var(--ink); box-shadow: 0 18px 40px rgb(23 56 42 / 20%); }
 .header-account-menu p { color: var(--muted); font-size: 11px; }
@@ -98,7 +106,7 @@ button { appearance: none; }
 .gold-theme .reservation-card, .gold-theme .payment-choice { color: var(--ink); }
 @media (max-width: 640px) {
   .header-account-position { right: 20px; top: 16px; }
-  .header-reservation-button { right: 116px; top: 19px; padding: 8px 10px; font-size: 10px; }
+  .header-reservation-button { left: 92px; right: auto; top: 19px; padding: 8px 10px; font-size: 10px; }
   .header-account-button { min-height: 44px; padding: 0 12px; font-size: 12px; }
   .header-account-button span { display: none; }
   .account-heading { align-items: start; flex-direction: column; }

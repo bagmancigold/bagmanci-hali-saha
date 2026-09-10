@@ -59,6 +59,12 @@ const slots = [
   "00:00",
   "01:00",
 ];
+const daytimeSlots = slots.filter(
+  (slot) => Number(slot.slice(0, 2)) >= 9 && Number(slot.slice(0, 2)) <= 17,
+);
+const nighttimeSlots = slots.filter(
+  (slot) => Number(slot.slice(0, 2)) >= 18 || Number(slot.slice(0, 2)) < 2,
+);
 const packages = [
   {
     title: "Gündüz Tarifesi",
@@ -314,6 +320,54 @@ export default function Home() {
         item.subscription_time.startsWith(slot) &&
         item.active,
     );
+  const renderSlot = (slot: string) => {
+    const slotHour = Number(slot.slice(0, 2));
+    const isBooked = booked.some((booking) => {
+      if (booking.date !== selectedDay) return false;
+      const startHour = Number(booking.time.slice(0, 2));
+      return slotHour >= startHour && slotHour < startHour + booking.duration;
+    });
+    const isSubscriptionLocked = subscriptionLocked(slot);
+    const isOwnSubscription = ownSubscriptionSlot(slot);
+    const exceedsClosing = selectedDuration > 1 && slot === "01:00";
+    const isLocked =
+      (isBooked && !isOwnSubscription) ||
+      (isSubscriptionLocked && !isOwnSubscription) ||
+      exceedsClosing;
+    return (
+      <button
+        key={slot}
+        type="button"
+        disabled={isLocked}
+        onClick={() => {
+          setSelectedSlot(slot);
+          if (isOwnSubscription)
+            setForm((current) => ({
+              ...current,
+              name: profileDefaults.name,
+              phone: profileDefaults.phone,
+              subscriber: true,
+            }));
+          setNotice("");
+        }}
+        className={`schedule-slot ${isLocked ? "schedule-slot-locked" : selectedSlot === slot ? "schedule-slot-selected" : ""}`}
+      >
+        {isSubscriptionLocked && !isOwnSubscription ? (
+          <>
+            <span>{slot}</span>
+            <small>DOLU (ABONELİK)</small>
+          </>
+        ) : isBooked && !isOwnSubscription ? (
+          <>
+            <span>{slot}</span>
+            <small>KAPORA / REZERVASYON</small>
+          </>
+        ) : (
+          slot
+        )}
+      </button>
+    );
+  };
 
   return (
     <main id="top" className={subscriberVerified ? "gold-theme" : ""}>
@@ -518,55 +572,17 @@ export default function Home() {
                   </button>
                 ))}
               </div>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {slots.map((slot) => {
-                  const slotHour = Number(slot.slice(0, 2));
-                  const isBooked = booked.some((booking) => {
-                    if (booking.date !== selectedDay) return false;
-                    const startHour = Number(booking.time.slice(0, 2));
-                    return (
-                      slotHour >= startHour &&
-                      slotHour < startHour + booking.duration
-                    );
-                  });
-                  const isSubscriptionLocked = subscriptionLocked(slot);
-                  const isOwnSubscription = ownSubscriptionSlot(slot);
-                  const exceedsClosing =
-                    selectedDuration > 1 && slot === "01:00";
-                  return (
-                    <button
-                      key={slot}
-                      disabled={
-                        (isBooked && !isOwnSubscription) ||
-                        (isSubscriptionLocked && !isOwnSubscription) ||
-                        exceedsClosing
-                      }
-                      onClick={() => {
-                        setSelectedSlot(slot);
-                        if (isOwnSubscription)
-                          setForm((current) => ({
-                            ...current,
-                            name: profileDefaults.name,
-                            phone: profileDefaults.phone,
-                            subscriber: true,
-                          }));
-                        setNotice("");
-                      }}
-                      className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${(isBooked && !isOwnSubscription) || (isSubscriptionLocked && !isOwnSubscription) || exceedsClosing ? "cursor-not-allowed border-transparent bg-[#e8ece7] text-[var(--muted)] opacity-50" : selectedSlot === slot ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-[var(--line)] hover:border-[var(--green)]"}`}
-                    >
-                      {isSubscriptionLocked && !isOwnSubscription ? (
-                        <>
-                          <span>{slot}</span>
-                          <small className="block text-[10px] font-black uppercase">
-                            DOLU (ABONELİK)
-                          </small>
-                        </>
-                      ) : (
-                        slot
-                      )}
-                    </button>
-                  );
-                })}
+              <div className="schedule-row">
+                <div className="schedule-row-label">GÜNDÜZ</div>
+                <div className="schedule-row-scroll">
+                  {daytimeSlots.map(renderSlot)}
+                </div>
+              </div>
+              <div className="schedule-row">
+                <div className="schedule-row-label">GECE</div>
+                <div className="schedule-row-scroll">
+                  {nighttimeSlots.map(renderSlot)}
+                </div>
               </div>
             </div>
             <div className="bg-[var(--green)] p-6 text-white sm:p-8">
