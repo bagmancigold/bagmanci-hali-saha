@@ -68,7 +68,6 @@ const dateText = (date: Date) =>
 export default function AdminBookingsPage() {
   const [authorized, setAuthorized] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
-  const [selectedDate, setSelectedDate] = useState("");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [subscriptionSlots, setSubscriptionSlots] = useState<
     SubscriptionSlot[]
@@ -101,9 +100,6 @@ export default function AdminBookingsPage() {
     () => iso(new Date(weekStart.getFullYear(), weekStart.getMonth() + 1, 0, 12)),
     [weekStart],
   );
-  useEffect(() => {
-    setSelectedDate((current) => (dates.includes(current) ? current : dates[0]));
-  }, [dates]);
 
   const load = async () => {
     const client = getSupabaseClient();
@@ -289,22 +285,6 @@ export default function AdminBookingsPage() {
             {dateText(new Date(weekStart.getTime() + 6 * 86400000))}
           </p>
         </div>
-        <div className="admin-day-picker-wrap">
-          <span className="admin-day-picker-label">GÜN SEÇ</span>
-          <div className="admin-day-picker" aria-label="Defter günü seçimi">
-          {dates.map((date, dayIndex) => (
-            <button
-              key={date}
-              type="button"
-              onClick={() => setSelectedDate(date)}
-              className={selectedDate === date ? "admin-day-picker-active" : ""}
-            >
-              <strong>{days[dayIndex]}</strong>
-              <span>{date.slice(8, 10)}.{date.slice(5, 7)}</span>
-            </button>
-          ))}
-          </div>
-        </div>
         <button type="button" className="manual-booking-button mb-4" onClick={() => openManual()}><Plus size={17} /> Manuel Maç Ekle</button>
         <div className="reservation-summary mb-4 grid w-full grid-cols-2 gap-3">
           <div className="reservation-summary-card">
@@ -366,9 +346,7 @@ export default function AdminBookingsPage() {
             <div className="reservation-hour reservation-total-heading">
               Toplam
             </div>
-            {dates.filter((date) => date === selectedDate).map((date) => {
-              const dayIndex = dates.indexOf(date);
-              return (
+            {dates.map((date, dayIndex) => (
               <div className="contents" key={date}>
                 <div
                   className={`reservation-day ${date === localDate ? "reservation-day-current" : ""}`}
@@ -426,8 +404,7 @@ export default function AdminBookingsPage() {
                   ₺{dayTotal(date).toLocaleString("tr-TR")}
                 </div>
               </div>
-              );
-            })}
+            ))}
           </div>
         </div>
         <p className="mt-3 text-[11px] text-[var(--muted)]">
