@@ -595,7 +595,7 @@ export default function Home() {
 
       <section
         id="rezervasyon"
-        className="scroll-mt-32 bg-white px-5 py-20 lg:px-8 lg:py-28"
+        className="scroll-mt-32 bg-white px-5 py-20 dark:bg-[#04130d] lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10">
@@ -603,32 +603,32 @@ export default function Home() {
               ★ Sabit Abone Olun, 2. Haftadan İtibaren Maç Başı 100 TL Tasarruf
               Edin
             </div>
-            <p className="mb-4 text-sm font-bold uppercase tracking-[.18em] text-[var(--green)]">
+            <p className="mb-4 text-sm font-bold uppercase tracking-[.18em] text-[var(--green)] dark:text-amber-300">
               Canlı takvim
             </p>
-            <h2 className="display text-4xl font-extrabold leading-none sm:text-5xl">
+            <h2 className="display text-4xl font-extrabold leading-none dark:text-white sm:text-5xl">
               Sahanı ayır,{" "}
-              <span className="text-[var(--green)]">maça başla.</span>
+              <span className="text-[var(--green)] dark:text-amber-400">maça başla.</span>
             </h2>
           </div>
-          <div className="grid min-w-0 overflow-visible rounded-[28px] border border-[var(--line)] lg:grid-cols-[1.4fr_.8fr]">
+          <div className="grid min-w-0 overflow-visible rounded-[28px] border border-[var(--line)] dark:border-emerald-800/40 dark:bg-[#0a231a]/80 dark:backdrop-blur-md lg:grid-cols-[1.4fr_.8fr]">
             <div className="min-w-0 p-5 sm:p-8">
               <div className="mb-7 flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[var(--muted)]">{weekTitle}</p>
-                  <p className="display text-xl font-extrabold">Müsaitlikler</p>
+                  <p className="text-sm text-[var(--muted)] dark:text-emerald-200/60">{weekTitle}</p>
+                  <p className="display text-xl font-extrabold dark:text-white">Müsaitlikler</p>
                 </div>
                 <div className="flex gap-2">
                   <button
                     aria-label="Önceki hafta"
-                    className="rounded-full border border-[var(--line)] p-2 text-[var(--muted)]"
+                    className="rounded-full border border-[var(--line)] p-2 text-[var(--muted)] dark:border-amber-400/30 dark:text-amber-300 dark:hover:border-amber-400"
                     onClick={() => setWeekOffset(Math.max(0, weekOffset - 1))}
                   >
                     <ChevronLeft size={17} />
                   </button>
                   <button
                     aria-label="Sonraki hafta"
-                    className="rounded-full border border-[var(--line)] p-2 text-[var(--muted)]"
+                    className="rounded-full border border-[var(--line)] p-2 text-[var(--muted)] dark:border-amber-400/30 dark:text-amber-300 dark:hover:border-amber-400"
                     onClick={() => setWeekOffset(weekOffset + 1)}
                   >
                     <ChevronRight size={17} />
@@ -650,7 +650,7 @@ export default function Home() {
                       setSelectedSlot(null);
                       setNotice("");
                     }}
-                    className={`min-w-[68px] flex-shrink-0 rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "cursor-not-allowed border-transparent bg-[#f1f3ef] text-[var(--muted)] opacity-45" : selectedDay === item.date ? "border-[var(--green)] bg-[var(--green)] text-white" : "border-[var(--line)] hover:border-[var(--green)]"}`}
+                    className={`min-w-[68px] flex-shrink-0 rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "cursor-not-allowed border-transparent bg-[#f1f3ef] text-[var(--muted)] opacity-45 dark:bg-black/30 dark:text-emerald-100/30" : selectedDay === item.date ? "border-[var(--green)] bg-[var(--green)] text-white dark:border-amber-400 dark:bg-[#0d2e22] dark:text-white dark:shadow-[0_0_14px_rgba(251,191,36,0.45)]" : "border-[var(--line)] hover:border-[var(--green)] dark:border-amber-500/30 dark:bg-[#0d2e22] dark:text-white dark:hover:border-amber-400"}`}
                   >
                     <span className="mt-1 block text-xs font-semibold opacity-60">
                       {item.day}

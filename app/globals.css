@@ -773,17 +773,21 @@ main#top > footer { order: 6; }
 
 /* Schedule slots: crisp gold-bordered emerald glass in dark mode */
 .dark .schedule-slot {
-  border-color: rgb(212 175 55 / 45%);
-  background: rgb(8 46 34 / 62%);
+  border-color: rgb(251 191 36 / 40%);
+  background: #0d2e22;
   backdrop-filter: blur(10px);
-  color: #F8FAFC;
+  color: #FFFFFF;
   box-shadow: 0 4px 14px rgb(0 0 0 / 30%);
 }
-.dark .schedule-slot i { color: #b7c9c0; }
-.dark .schedule-slot:hover { border-color: #e7c851; background: rgb(8 46 34 / 85%); box-shadow: 0 0 16px rgb(212 175 55 / 25%); }
-.dark .schedule-slot-selected { border-color: #d4af37; background: #d4af37; color: #0a2e22; }
-.dark .schedule-slot-vip { background: radial-gradient(circle at 80% 20%, rgb(212 175 55 / 30%), transparent 42%), rgb(8 46 34 / 75%); }
-.dark .schedule-slot-locked { border-color: rgb(183 201 192 / 25%); background: rgb(6 26 20 / 55%); color: #6b7f76; opacity: .55; }
+.dark .schedule-slot i { color: #FBBF24; }
+.dark .schedule-slot:hover { border-color: #FBBF24; background: #103628; box-shadow: 0 0 16px rgb(251 191 36 / 30%); }
+.dark .schedule-slot-selected { border-color: #FBBF24; background: #FBBF24; color: #000000; font-weight: 800; }
+.dark .schedule-slot-selected i { color: #000000; }
+.dark .schedule-slot-vip { background: radial-gradient(circle at 80% 20%, rgb(251 191 36 / 30%), transparent 42%), #0d2e22; }
+.dark .schedule-slot-locked { border-color: transparent; background: rgb(0 0 0 / 40%); color: #6B7280; opacity: 1; }
+.dark .schedule-slot-locked i { color: #6B7280; }
+.dark .schedule-row-label { color: #FBBF24; }
+.dark .subscriber-summary-badge { border-color: #d4af37; background: rgb(212 175 55 / 12%); color: #fbe6a1; }
 
 /* Reservation grid (admin calendar) */
 .dark .reservation-corner, .dark .reservation-day, .dark .reservation-cell {
