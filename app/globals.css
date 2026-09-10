@@ -58,6 +58,15 @@ button { appearance: none; }
 .customer-social-button:hover { border-color: var(--green); color: var(--green); }
 .payment-page { background: radial-gradient(circle at 85% 15%, rgb(217 243 106 / 18%), transparent 28%), var(--cream); }
 .payment-bank { background-image: linear-gradient(150deg, rgb(23 56 42 / 94%), rgb(36 83 61 / 90%)), url("https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1100&q=85"); background-position: center; background-size: cover; background-color: #17382a; color: white; box-shadow: 0 20px 45px rgb(23 56 42 / 18%); }
+.payment-choice { display: grid; min-height: 116px; align-content: center; gap: 5px; border: 1px solid var(--line); border-radius: 18px; background: #fbfcf9; padding: 16px; text-align: left; color: var(--ink); transition: border-color .2s, background .2s, box-shadow .2s; }
+.payment-choice:hover { border-color: var(--green); background: #f4f8eb; }
+.payment-choice span { font-size: 13px; font-weight: 800; }
+.payment-choice strong { color: var(--green); font-family: 'Manrope', sans-serif; font-size: 22px; line-height: 1.1; }
+.payment-choice small { color: var(--muted); font-size: 12px; }
+.payment-choice-active { border-color: var(--green); background: #eaf5d1; box-shadow: inset 0 0 0 2px var(--green), 0 8px 18px rgb(36 83 61 / 10%); }
+.payment-submit { display: inline-flex; width: 100%; min-height: 54px; align-items: center; justify-content: center; gap: 9px; border: 0; border-radius: 14px; background: var(--green); padding: 0 18px; color: white; font-size: 14px; font-weight: 800; box-shadow: 0 10px 20px rgb(36 83 61 / 18%); }
+.payment-submit:hover { background: #17382a; transform: translateY(-1px); }
+.payment-submit:disabled { cursor: not-allowed; opacity: .55; transform: none; }
 .payment-bank h2 { color: white; }
 .payment-bank > p { color: rgb(255 255 255 / 82%); }
 .payment-bank > div { border: 1px solid rgb(255 255 255 / 14%); background: rgb(255 255 255 / 12%); }
