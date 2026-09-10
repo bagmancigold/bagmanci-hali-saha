@@ -68,6 +68,7 @@ const dateText = (date: Date) =>
 export default function AdminBookingsPage() {
   const [authorized, setAuthorized] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
+  const [expandedDate, setExpandedDate] = useState<string | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [subscriptionSlots, setSubscriptionSlots] = useState<
     SubscriptionSlot[]
@@ -349,7 +350,16 @@ export default function AdminBookingsPage() {
             {dates.map((date, dayIndex) => (
               <div className="contents" key={date}>
                 <div
-                  className={`reservation-day ${date === localDate ? "reservation-day-current" : ""}`}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setExpandedDate((current) => current === date ? null : date)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setExpandedDate((current) => current === date ? null : date);
+                    }
+                  }}
+                  className={`reservation-day ${date === localDate ? "reservation-day-current" : ""} ${expandedDate === date ? "reservation-day-expanded" : ""}`}
                 >
                   <strong>{days[dayIndex]}</strong>
                   <span>
@@ -411,6 +421,21 @@ export default function AdminBookingsPage() {
           Canlı saat sarı renkle işaretlenir. Dolu saatlerde takım kaptanı,
           telefon, ücret ve ödeme durumu görünür.
         </p>
+        {expandedDate && (
+          <section className="admin-day-records">
+            <div>
+              <span>SEÇİLEN GÜN</span>
+              <strong>{new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date(`${expandedDate}T12:00:00`))}</strong>
+            </div>
+            {bookings.filter((booking) => booking.booking_date === expandedDate).length ? bookings.filter((booking) => booking.booking_date === expandedDate).map((booking) => (
+              <div className="admin-day-record" key={booking.id}>
+                <b>{booking.booking_time}</b>
+                <span>{booking.customer_name}</span>
+                <small>{booking.phone} · ₺{booking.total_amount} · {statusLabels[booking.payment_status] || booking.payment_status}</small>
+              </div>
+            )) : <p className="admin-day-record-empty">Bu gün için kayıt bulunmuyor.</p>}
+          </section>
+        )}
         <section className="weekly-field-summary">
           <div className="weekly-field-summary-heading">
             <span>HAFTALIK SAHA ÖZETİ</span>
