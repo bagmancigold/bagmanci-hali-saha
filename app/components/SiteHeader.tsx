@@ -2,9 +2,11 @@
 
 import {
   ArrowRight,
+  CalendarDays,
   ChevronDown,
   LogOut,
   Menu,
+  Play,
   Settings,
   UserRound,
   X,
@@ -44,12 +46,12 @@ export default function SiteHeader() {
   };
 
   return (
-    <header className="site-header fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-[var(--green)]/95 backdrop-blur-md">
-      <div className="header-shell relative flex h-[76px] w-full items-center">
+    <header className="luxury-header site-header fixed left-0 right-0 top-0 z-50">
+      <div className="luxury-header-top">
         <button
           type="button"
           aria-label={open ? "Menüyü kapat" : "Menüyü aç"}
-          className="header-icon-button header-menu-button"
+          className="luxury-header-menu md:hidden"
           onClick={() => setOpen(!open)}
         >
           {open ? <X size={22} /> : <Menu size={22} />}
@@ -57,26 +59,20 @@ export default function SiteHeader() {
         <a
           href="/"
           aria-label="BAĞMANCI HALI SAHA ana sayfa"
-          className="header-brand display absolute left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap text-[15px] font-extrabold tracking-[.08em] text-white sm:text-lg"
+          className="luxury-header-brand display"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--lime)] text-[var(--green)]">
+          <span className="luxury-header-logo-mark">
             <SiteLogo size={25} />
           </span>
           <span>
             BAĞMANCI <span className="text-[var(--lime)]">HALI SAHA</span>
           </span>
         </a>
-        <a href="#rezervasyon" className="header-reservation-button">
-          Rezervasyon
-        </a>
-        <a href="#kayitlar" className="header-match-button">
-          Maç Tekrarı
-        </a>
         {userName ? (
-          <div className="header-account-position">
+          <div className="luxury-header-account">
             <button
               type="button"
-              className="header-account-button"
+              className="luxury-account-button"
               onClick={() => setAccountOpen((value) => !value)}
             >
               <UserRound size={16} />
@@ -84,7 +80,7 @@ export default function SiteHeader() {
               <ChevronDown size={15} />
             </button>
             {accountOpen && (
-              <div className="header-account-menu">
+              <div className="luxury-account-menu">
                 <p>Merhaba,</p>
                 <strong>{userName}</strong>
                 <a href="/hesabim">
@@ -105,16 +101,22 @@ export default function SiteHeader() {
         ) : (
           <a
             href="/musteri"
-            className="header-login-button header-login-position"
+            className="luxury-account-button luxury-login-button"
           >
-            <span className="header-login-full">GİRİŞ YAP</span>
-            <span className="header-login-short">GİRİŞ</span>
-            <ArrowRight size={16} />
+            <UserRound size={16} /> <span>GİRİŞ YAP</span>
           </a>
         )}
       </div>
+      <nav className="luxury-sub-bar" aria-label="Ana navigasyon">
+        <a href="#rezervasyon" onClick={() => setOpen(false)}>
+          <CalendarDays size={15} /> Rezervasyon
+        </a>
+        <a href="#kayitlar" onClick={() => setOpen(false)}>
+          <Play size={15} /> Maç Tekrarı
+        </a>
+      </nav>
       <nav
-        className={`${open ? "flex" : "hidden"} mx-5 mb-4 flex-col gap-5 rounded-2xl bg-white p-6 text-[var(--ink)] shadow-xl`}
+        className={`${open ? "flex" : "hidden"} luxury-mobile-menu`}
       >
         <a
           className="text-sm font-semibold"

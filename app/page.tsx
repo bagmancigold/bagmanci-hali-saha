@@ -40,6 +40,13 @@ const getWeekDays = (offset: number) => {
     };
   });
 };
+const getIsoWeek = (date: Date) => {
+  const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = utcDate.getUTCDay() || 7;
+  utcDate.setUTCDate(utcDate.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+  return Math.ceil(((utcDate.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+};
 const slots = [
   "09:00",
   "10:00",
@@ -151,7 +158,8 @@ export default function Home() {
   const [videoPlaying, setVideoPlaying] = useState(false);
   const selectedLabel =
     days.find((day) => day.date === selectedDay)?.full ?? selectedDay;
-  const weekTitle = `${new Intl.DateTimeFormat("tr-TR", { month: "long", year: "numeric" }).format(new Date(`${days[0].date}T12:00:00`))} • ${Math.ceil((new Date(`${days[0].date}T12:00:00`).getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / 604800000)}. Hafta`;
+  const weekTitleDate = new Date(`${days[0].date}T12:00:00`);
+  const weekTitle = `${new Intl.DateTimeFormat("tr-TR", { month: "long", year: "numeric" }).format(weekTitleDate)} • ${getIsoWeek(weekTitleDate)}. Hafta`;
   const isNightSlot = selectedSlot
     ? Number(selectedSlot.slice(0, 2)) >= 18 ||
       Number(selectedSlot.slice(0, 2)) < 2
@@ -224,7 +232,7 @@ export default function Home() {
         setSubscriberVerified(isActiveSubscriber);
         setProfileDefaults({
           name: profile?.full_name || data.user.user_metadata?.full_name || "",
-          phone: profile?.phone || "",
+          phone: profile?.phone || data.user.user_metadata?.phone || "",
         });
         const { count } = await client
           .from("booking_requests")
@@ -247,7 +255,7 @@ export default function Home() {
             profile?.full_name ||
             data.user.user_metadata?.full_name ||
             current.name,
-          phone: profile?.phone || current.phone,
+          phone: profile?.phone || data.user.user_metadata?.phone || current.phone,
           subscriber: Boolean(profile?.subscriber),
         }));
       });
@@ -272,6 +280,10 @@ export default function Home() {
     setNotice("Maç kaydı oluşturuluyor...");
     try {
       const client = getSupabaseClient();
+      if (await refreshSlotAvailability()) {
+        setNotice("Seçtiğiniz saat artık müsait değil. Lütfen başka bir saat seçin.");
+        return;
+      }
       const { data: authData } = await client.auth.getUser();
       const { data, error } = await client
         .from("booking_requests")
@@ -329,14 +341,36 @@ export default function Home() {
     );
   const isSlotUnavailable = (slot: string, duration: number) => {
     const startHour = Number(slot.slice(0, 2));
+    const requestedEnd = startHour + duration;
     return booked.some((booking) => {
       if (booking.date !== selectedDay) return false;
       const bookingStart = Number(booking.time.slice(0, 2));
       const bookingEnd = bookingStart + booking.duration;
-      return Array.from(
-        { length: Math.ceil(duration) },
-        (_, index) => (startHour + index) % 24,
-      ).some((hour) => hour >= bookingStart && hour < bookingEnd);
+      return startHour < bookingEnd && requestedEnd > bookingStart;
+    });
+  };
+  const isDurationUnavailable = (slot: string, duration: number) => {
+    const startHour = Number(slot.slice(0, 2));
+    const lockedBySubscription = Array.from(
+      { length: Math.ceil(duration) },
+      (_, index) => `${(startHour + index) % 24}`.padStart(2, "0") + ":00",
+    ).some((hour) => subscriptionLocked(hour));
+    return isSlotUnavailable(slot, duration) || lockedBySubscription;
+  };
+  const refreshSlotAvailability = async () => {
+    if (!selectedSlot) return false;
+    const { data, error } = await getSupabaseClient()
+      .from("booking_requests")
+      .select("booking_time, duration_hours")
+      .eq("booking_date", selectedDay)
+      .neq("payment_status", "rejected");
+    if (error) throw error;
+    return (data || []).some((item) => {
+      const start = Number(selectedSlot.slice(0, 2));
+      const bookingStart = Number(item.booking_time.slice(0, 2));
+      const bookingDuration = Number(item.duration_hours || 1);
+      return start < bookingStart + bookingDuration &&
+        start + selectedDuration > bookingStart;
     });
   };
   const selectDuration = (duration: number) => {
@@ -345,7 +379,7 @@ export default function Home() {
       setDurationNotice("Önce bir saat seçin.");
       return;
     }
-    if (isSlotUnavailable(selectedSlot, duration)) {
+    if (isDurationUnavailable(selectedSlot, duration)) {
       setDurationNotice(
         duration === 1.5
           ? "Seçtiğiniz saatin arkasındaki saat dolu olduğu için yarım saat uzatma eklenemez. Lütfen 1 saati seçin veya ardışık boş saat aralığı bulun."
@@ -384,7 +418,7 @@ export default function Home() {
           setSelectedSlot(slot);
           if (
             selectedDuration > 1 &&
-            isSlotUnavailable(slot, selectedDuration)
+            isDurationUnavailable(slot, selectedDuration)
           ) {
             setSelectedDuration(1);
             setDurationNotice(
@@ -592,7 +626,7 @@ export default function Home() {
                 </div>
               </div>
               <div
-                className={`mb-6 grid grid-cols-7 gap-2 ${subscriberVerified ? "subscriber-calendar" : ""}`}
+                className={`schedule-days mb-6 ${subscriberVerified ? "subscriber-calendar" : ""}`}
               >
                 {days.map((item) => (
                   <button

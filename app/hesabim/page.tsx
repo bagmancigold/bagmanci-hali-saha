@@ -80,6 +80,7 @@ export default function AccountPage() {
       const client = getSupabaseClient();
       const { data } = await client.auth.getUser();
       if (!data.user) {
+        setLoading(false);
         window.location.href = "/musteri";
         return;
       }
@@ -94,7 +95,7 @@ export default function AccountPage() {
         .maybeSingle();
       if (!error && saved)
         setProfile({
-          phone: saved.phone || "",
+          phone: saved.phone || data.user.user_metadata?.phone || "",
           subscriber: Boolean(saved.subscriber),
           subscription_package: saved.subscription_package || "",
           preferred_subscription_day: saved.preferred_subscription_day || "",
@@ -131,16 +132,27 @@ export default function AccountPage() {
   const save = async () => {
     setSaving(true);
     setMessage("");
-    const { data } = await getSupabaseClient().auth.getUser();
+    const client = getSupabaseClient();
+    const { data } = await client.auth.getUser();
     if (!data.user) return;
+    const phone = profile.phone.replace(/\D/g, "").slice(0, 11);
+    const normalizedName = fullName.trim();
+    const { error: authError } = await client.auth.updateUser({
+      data: { full_name: normalizedName, phone },
+    });
+    if (authError) {
+      setSaving(false);
+      setMessage(`Telefon bilgisi güncellenemedi: ${authError.message}`);
+      return;
+    }
     if (!profile.subscriber || !subscription?.active) {
-      const { error } = await getSupabaseClient()
+      const { error } = await client
         .from("profiles")
         .upsert({
           id: data.user.id,
           email: data.user.email || "",
-          full_name: fullName,
-          phone: profile.phone.trim(),
+          full_name: normalizedName,
+          phone,
           subscriber: false,
         });
       setSaving(false);
@@ -155,7 +167,6 @@ export default function AccountPage() {
       setMessage("Abonelik günü ve saati seçmelisin.");
       return;
     }
-    const client = getSupabaseClient();
     const { data: occupiedSlot } = await client
       .from("subscription_slots")
       .select("user_id")
@@ -208,8 +219,8 @@ export default function AccountPage() {
     const { error } = await client.from("profiles").upsert({
       id: data.user.id,
       email: data.user.email || "",
-      full_name: fullName,
-      phone: profile.phone.trim(),
+      full_name: normalizedName,
+      phone,
       subscriber: profile.subscriber,
       subscription_package:
         profile.subscription_package || "Haftalık Sabit Saha Aboneliği",
