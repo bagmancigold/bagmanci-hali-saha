@@ -84,6 +84,20 @@ const packages = [
 ];
 const mapUrl =
   "https://www.google.com/maps/search/?api=1&query=Bagmanci+Hali+Saha+Sanliurfa";
+const fullDays = [
+  "Pazartesi",
+  "Salı",
+  "Çarşamba",
+  "Perşembe",
+  "Cuma",
+  "Cumartesi",
+  "Pazar",
+];
+type SubscriptionSlot = {
+  subscription_day: string;
+  subscription_time: string;
+  active: boolean;
+};
 
 function Logo() {
   return (
@@ -104,28 +118,45 @@ function Logo() {
 export default function Home() {
   const [weekOffset, setWeekOffset] = useState(0);
   const days = getWeekDays(weekOffset);
-  const [selectedDay, setSelectedDay] = useState(new Date().toISOString().slice(0, 10));
+  const [selectedDay, setSelectedDay] = useState(
+    new Date().toISOString().slice(0, 10),
+  );
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedPackage, setSelectedPackage] = useState(packages[0]);
   const [selectedDuration, setSelectedDuration] = useState(1);
-  const [booked, setBooked] = useState<{ date: string; time: string; duration: number }[]>([]);
+  const [booked, setBooked] = useState<
+    { date: string; time: string; duration: number }[]
+  >([]);
+  const [subscriptionSlots, setSubscriptionSlots] = useState<
+    SubscriptionSlot[]
+  >([]);
   const [form, setForm] = useState({ name: "", phone: "", subscriber: false });
   const [subscriberVerified, setSubscriberVerified] = useState(false);
   const [notice, setNotice] = useState("");
   const [videoPlaying, setVideoPlaying] = useState(false);
   const selectedLabel =
     days.find((day) => day.date === selectedDay)?.full ?? selectedDay;
-  const isNightSlot = selectedSlot ? Number(selectedSlot.slice(0, 2)) >= 18 || Number(selectedSlot.slice(0, 2)) < 2 : selectedPackage.title === "Gece Tarifesi";
-  const tariffPrice = selectedPackage.title === "Maç Kaydı" ? 0 : isNightSlot ? 1800 : 1200;
-  const bookingPackageTitle = selectedPackage.title === "Maç Kaydı" ? selectedPackage.title : `${isNightSlot ? "Gece" : "Gündüz"} Tarifesi`;
+  const isNightSlot = selectedSlot
+    ? Number(selectedSlot.slice(0, 2)) >= 18 ||
+      Number(selectedSlot.slice(0, 2)) < 2
+    : selectedPackage.title === "Gece Tarifesi";
+  const tariffPrice =
+    selectedPackage.title === "Maç Kaydı" ? 0 : isNightSlot ? 1800 : 1200;
+  const bookingPackageTitle =
+    selectedPackage.title === "Maç Kaydı"
+      ? selectedPackage.title
+      : `${isNightSlot ? "Gece" : "Gündüz"} Tarifesi`;
   const price =
     subscriberVerified && tariffPrice
       ? tariffPrice * selectedDuration * 0.9
       : tariffPrice * selectedDuration;
 
   useEffect(() => {
-    const currentDay = days.find((day) => day.date >= new Date().toISOString().slice(0, 10));
-    if (!days.some((day) => day.date === selectedDay)) setSelectedDay(currentDay?.date || days[0].date);
+    const currentDay = days.find(
+      (day) => day.date >= new Date().toISOString().slice(0, 10),
+    );
+    if (!days.some((day) => day.date === selectedDay))
+      setSelectedDay(currentDay?.date || days[0].date);
     const loadBookings = async () => {
       const start = days[0].date;
       const end = days[days.length - 1].date;
@@ -135,7 +166,18 @@ export default function Home() {
         .gte("booking_date", start)
         .lte("booking_date", end)
         .neq("payment_status", "rejected");
-      setBooked((data || []).map((item) => ({ date: item.booking_date, time: item.booking_time, duration: Number(item.duration_hours || 1) })));
+      setBooked(
+        (data || []).map((item) => ({
+          date: item.booking_date,
+          time: item.booking_time,
+          duration: Number(item.duration_hours || 1),
+        })),
+      );
+      const { data: lockedSlots } = await getSupabaseClient()
+        .from("subscription_slots")
+        .select("subscription_day, subscription_time, active")
+        .eq("active", true);
+      setSubscriptionSlots(lockedSlots || []);
     };
     loadBookings();
   }, [weekOffset]);
@@ -147,10 +189,18 @@ export default function Home() {
         if (!data.user) return;
         const { data: profile } = await getSupabaseClient()
           .from("profiles")
-          .select("subscriber")
+          .select(
+            "subscriber, preferred_subscription_day, preferred_subscription_time",
+          )
           .eq("id", data.user.id)
           .maybeSingle();
-        setSubscriberVerified(Boolean(profile?.subscriber));
+        setSubscriberVerified(
+          Boolean(
+            profile?.subscriber ||
+              (profile?.preferred_subscription_day &&
+                profile?.preferred_subscription_time),
+          ),
+        );
         setForm((current) => ({
           ...current,
           subscriber: Boolean(profile?.subscriber),
@@ -197,7 +247,10 @@ export default function Home() {
         .select("id, payment_token")
         .single();
       if (error) throw error;
-      setBooked((current) => [...current, { date: selectedDay, time: selectedSlot, duration: selectedDuration }]);
+      setBooked((current) => [
+        ...current,
+        { date: selectedDay, time: selectedSlot, duration: selectedDuration },
+      ]);
       setSelectedSlot(null);
       setForm({ name: "", phone: "", subscriber: false });
       window.location.href = `/odeme?booking=${data.id}&token=${data.payment_token}`;
@@ -210,8 +263,19 @@ export default function Home() {
     }
   };
 
+  const selectedWeekday = new Intl.DateTimeFormat("tr-TR", {
+    weekday: "long",
+  }).format(new Date(`${selectedDay}T12:00:00`));
+  const subscriptionLocked = (slot: string) =>
+    subscriptionSlots.some(
+      (item) =>
+        item.subscription_day === selectedWeekday &&
+        item.subscription_time.startsWith(slot) &&
+        item.active,
+    );
+
   return (
-    <main id="top">
+    <main id="top" className={subscriberVerified ? "gold-theme" : ""}>
       <SiteHeader />
       <SiteImageSync />
       <MatchArchive />
@@ -357,7 +421,13 @@ export default function Home() {
               <div className="mb-7 flex items-center justify-between">
                 <div>
                   <p className="text-sm text-[var(--muted)]">
-                    {days[0].year} · {Math.ceil((new Date(`${days[0].date}T12:00:00`).getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / 604800000)}. hafta
+                    {days[0].year} ·{" "}
+                    {Math.ceil(
+                      (new Date(`${days[0].date}T12:00:00`).getTime() -
+                        new Date(new Date().getFullYear(), 0, 1).getTime()) /
+                        604800000,
+                    )}
+                    . hafta
                   </p>
                   <p className="display text-xl font-extrabold">Müsaitlikler</p>
                 </div>
@@ -378,11 +448,16 @@ export default function Home() {
                   </button>
                 </div>
               </div>
-              <div className={`mb-6 grid grid-cols-7 gap-2 ${subscriberVerified ? "subscriber-calendar" : ""}`}>
+              <div
+                className={`mb-6 grid grid-cols-7 gap-2 ${subscriberVerified ? "subscriber-calendar" : ""}`}
+              >
                 {days.map((item) => (
                   <button
                     key={item.date}
-                    disabled={weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10)}
+                    disabled={
+                      weekOffset === 0 &&
+                      item.date < new Date().toISOString().slice(0, 10)
+                    }
                     onClick={() => {
                       setSelectedDay(item.date);
                       setSelectedSlot(null);
@@ -402,26 +477,44 @@ export default function Home() {
                   </button>
                 ))}
               </div>
-              <div className={`grid grid-cols-2 gap-2 sm:grid-cols-4 ${subscriberVerified ? "subscriber-slots" : ""}`}>
+              <div
+                className={`grid grid-cols-2 gap-2 sm:grid-cols-4 ${subscriberVerified ? "subscriber-slots" : ""}`}
+              >
                 {slots.map((slot) => {
                   const slotHour = Number(slot.slice(0, 2));
                   const isBooked = booked.some((booking) => {
                     if (booking.date !== selectedDay) return false;
                     const startHour = Number(booking.time.slice(0, 2));
-                    return slotHour >= startHour && slotHour < startHour + booking.duration;
+                    return (
+                      slotHour >= startHour &&
+                      slotHour < startHour + booking.duration
+                    );
                   });
-                  const exceedsClosing = selectedDuration > 1 && slot === "01:00";
+                  const isSubscriptionLocked = subscriptionLocked(slot);
+                  const exceedsClosing =
+                    selectedDuration > 1 && slot === "01:00";
                   return (
                     <button
                       key={slot}
-                      disabled={isBooked || exceedsClosing}
+                      disabled={
+                        isBooked || isSubscriptionLocked || exceedsClosing
+                      }
                       onClick={() => {
                         setSelectedSlot(slot);
                         setNotice("");
                       }}
-                      className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${isBooked || exceedsClosing ? "cursor-not-allowed border-transparent bg-[#e8ece7] text-[var(--muted)]" : selectedSlot === slot ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-[var(--line)] hover:border-[var(--green)]"}`}
+                      className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${isBooked || isSubscriptionLocked || exceedsClosing ? "cursor-not-allowed border-transparent bg-[#e8ece7] text-[var(--muted)] opacity-50" : selectedSlot === slot ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-[var(--line)] hover:border-[var(--green)]"}`}
                     >
-                      {slot}
+                      {isSubscriptionLocked ? (
+                        <>
+                          <span>{slot}</span>
+                          <small className="block text-[10px] font-black uppercase">
+                            DOLU (ABONELİK)
+                          </small>
+                        </>
+                      ) : (
+                        slot
+                      )}
                     </button>
                   );
                 })}
@@ -440,7 +533,19 @@ export default function Home() {
               <div className="mb-5">
                 <p className="mb-2 text-sm font-semibold">Maç süresi</p>
                 <div className="grid grid-cols-3 gap-2">
-                  {[1, 1.5, 2].map((duration) => <button key={duration} type="button" onClick={() => { setSelectedDuration(duration); setSelectedSlot(null); }} className={`rounded-xl border px-3 py-3 text-sm font-extrabold ${selectedDuration === duration ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-white/20 bg-white/10 text-white"}`}>{duration === 1.5 ? "1,5 saat" : `${duration} saat`}</button>)}
+                  {[1, 1.5, 2].map((duration) => (
+                    <button
+                      key={duration}
+                      type="button"
+                      onClick={() => {
+                        setSelectedDuration(duration);
+                        setSelectedSlot(null);
+                      }}
+                      className={`rounded-xl border px-3 py-3 text-sm font-extrabold ${selectedDuration === duration ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-white/20 bg-white/10 text-white"}`}
+                    >
+                      {duration === 1.5 ? "1,5 saat" : `${duration} saat`}
+                    </button>
+                  ))}
                 </div>
               </div>
               <label className="mb-3 block text-sm font-semibold">
@@ -459,7 +564,10 @@ export default function Home() {
                 <input
                   value={form.phone}
                   onChange={(event) =>
-                    setForm({ ...form, phone: event.target.value.replace(/\D/g, "").slice(0, 11) })
+                    setForm({
+                      ...form,
+                      phone: event.target.value.replace(/\D/g, "").slice(0, 11),
+                    })
                   }
                   className="mt-2 w-full rounded-xl border-0 bg-white/10 px-4 py-3 text-white outline-none placeholder:text-white/40"
                   placeholder="05xx xxx xx xx"
@@ -473,7 +581,9 @@ export default function Home() {
                   onChange={() => setForm({ ...form, subscriber: true })}
                   className="h-4 w-4 accent-[var(--lime)]"
                 />{" "}
-                {subscriberVerified ? "Aktif aboneliğe %10 indirim uygula" : "%10 indirim için müşteri hesabından abone ol"}
+                {subscriberVerified
+                  ? "Aktif aboneliğe %10 indirim uygula"
+                  : "%10 indirim için müşteri hesabından abone ol"}
               </label>
               <div className="mb-5 flex items-center justify-between border-t border-white/15 pt-5">
                 <span className="text-sm text-white/60">Ödenecek tutar</span>

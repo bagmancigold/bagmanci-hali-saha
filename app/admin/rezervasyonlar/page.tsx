@@ -21,6 +21,11 @@ type Booking = {
   payment_status: string;
   subscriber: boolean;
 };
+type SubscriptionSlot = {
+  subscription_day: string;
+  subscription_time: string;
+  active: boolean;
+};
 const hours = Array.from({ length: 15 }, (_, index) => {
   const start = (index + 11) % 24;
   return `${String(start).padStart(2, "0")}.00-${String((start + 1) % 24).padStart(2, "0")}.00`;
@@ -59,6 +64,9 @@ export default function AdminBookingsPage() {
   const [authorized, setAuthorized] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [subscriptionSlots, setSubscriptionSlots] = useState<
+    SubscriptionSlot[]
+  >([]);
   const [message, setMessage] = useState("Kontrol ediliyor...");
   const [now, setNow] = useState(() => new Date());
   const weekStart = useMemo(() => {
@@ -97,6 +105,11 @@ export default function AdminBookingsPage() {
     if (error) setMessage(error.message);
     else {
       setBookings(data || []);
+      const { data: slots } = await client
+        .from("subscription_slots")
+        .select("subscription_day, subscription_time, active")
+        .eq("active", true);
+      setSubscriptionSlots(slots || []);
       setMessage("");
     }
   };
@@ -120,22 +133,40 @@ export default function AdminBookingsPage() {
       const duration = Math.max(Number(item.duration_hours || 1), 1);
       return current >= start && current < start + duration;
     });
+  const subscriptionAt = (date: string, hour: string) => {
+    const weekday = new Intl.DateTimeFormat("tr-TR", {
+      weekday: "long",
+    }).format(new Date(`${date}T12:00:00`));
+    const startTime = hour.slice(0, 5).replace(".", ":");
+    return subscriptionSlots.some(
+      (slot) =>
+        slot.active &&
+        slot.subscription_day === weekday &&
+        slot.subscription_time.startsWith(startTime),
+    );
+  };
   const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const currentHour = `${String(now.getHours()).padStart(2, "0")}.00-${String((now.getHours() + 1) % 24).padStart(2, "0")}.00`;
   const summaryDate = dates.includes(localDate) ? localDate : dates[0];
-  const summaryBookings = bookings.filter((booking) => booking.booking_date === summaryDate);
+  const summaryBookings = bookings.filter(
+    (booking) => booking.booking_date === summaryDate,
+  );
   const daytimeMatches = summaryBookings.filter((booking) => {
     const hour = Number(booking.booking_time.slice(0, 2));
     return hour >= 2 && hour < 18;
   }).length;
   const nighttimeMatches = summaryBookings.length - daytimeMatches;
-  const dailyRevenue = summaryBookings.reduce((total, booking) => total + Number(booking.total_amount || 0), 0);
+  const dailyRevenue = summaryBookings.reduce(
+    (total, booking) => total + Number(booking.total_amount || 0),
+    0,
+  );
   const cumulativeRevenue = bookings
     .filter((booking) => booking.booking_date <= summaryDate)
     .reduce((total, booking) => total + Number(booking.total_amount || 0), 0);
-  const dayTotal = (date: string) => bookings
-    .filter((booking) => booking.booking_date === date)
-    .reduce((total, booking) => total + Number(booking.total_amount || 0), 0);
+  const dayTotal = (date: string) =>
+    bookings
+      .filter((booking) => booking.booking_date === date)
+      .reduce((total, booking) => total + Number(booking.total_amount || 0), 0);
   const clock = now.toLocaleTimeString("tr-TR", {
     hour: "2-digit",
     minute: "2-digit",
@@ -230,8 +261,16 @@ export default function AdminBookingsPage() {
               <b>{nighttimeMatches}</b>
             </div>
           </div>
-          <div className="reservation-summary-card"><span>GÜNÜN HASILATI</span><strong>₺{dailyRevenue.toLocaleString("tr-TR")}</strong><small>{dateText(new Date(`${summaryDate}T12:00:00`))}</small></div>
-          <div className="reservation-summary-card"><span>TOPLAM HASILAT</span><strong>₺{cumulativeRevenue.toLocaleString("tr-TR")}</strong><small>Hafta başlangıcından bugüne</small></div>
+          <div className="reservation-summary-card">
+            <span>GÜNÜN HASILATI</span>
+            <strong>₺{dailyRevenue.toLocaleString("tr-TR")}</strong>
+            <small>{dateText(new Date(`${summaryDate}T12:00:00`))}</small>
+          </div>
+          <div className="reservation-summary-card">
+            <span>TOPLAM HASILAT</span>
+            <strong>₺{cumulativeRevenue.toLocaleString("tr-TR")}</strong>
+            <small>Hafta başlangıcından bugüne</small>
+          </div>
         </div>
         {message && (
           <p className="mb-3 rounded-lg bg-white p-3 text-xs font-semibold text-[var(--green)]">
@@ -249,7 +288,9 @@ export default function AdminBookingsPage() {
                 {hour}
               </div>
             ))}
-            <div className="reservation-hour reservation-total-heading">Toplam</div>
+            <div className="reservation-hour reservation-total-heading">
+              Toplam
+            </div>
             {dates.map((date, dayIndex) => (
               <div className="contents" key={date}>
                 <div
@@ -262,16 +303,19 @@ export default function AdminBookingsPage() {
                 </div>
                 {hours.map((hour) => {
                   const booking = bookingAt(date, hour);
+                  const subscription = subscriptionAt(date, hour);
                   const current = date === localDate && hour === currentHour;
                   return (
                     <div
                       key={`${date}-${hour}`}
-                      className={`reservation-cell ${current ? "reservation-cell-current" : ""} ${booking ? "reservation-cell-booked" : ""} ${booking?.subscriber ? "reservation-cell-subscriber" : ""}`}
+                      className={`reservation-cell ${current ? "reservation-cell-current" : ""} ${booking ? "reservation-cell-booked" : ""} ${booking?.subscriber ? "reservation-cell-subscriber" : ""} ${subscription && !booking ? "reservation-cell-subscription-locked" : ""}`}
                     >
                       {booking && (
                         <>
                           <strong>{booking.customer_name}</strong>
-                          <span className="reservation-cell-phone">{booking.phone}</span>
+                          <span className="reservation-cell-phone">
+                            {booking.phone}
+                          </span>
                           <b>₺{booking.total_amount}</b>
                           <em>
                             {statusLabels[booking.payment_status] ||
@@ -279,10 +323,18 @@ export default function AdminBookingsPage() {
                           </em>
                         </>
                       )}
+                      {subscription && !booking && (
+                        <>
+                          <strong>KİLİTLİ</strong>
+                          <em>DOLU (ABONELİK)</em>
+                        </>
+                      )}
                     </div>
                   );
                 })}
-                <div className="reservation-total-cell">₺{dayTotal(date).toLocaleString("tr-TR")}</div>
+                <div className="reservation-total-cell">
+                  ₺{dayTotal(date).toLocaleString("tr-TR")}
+                </div>
               </div>
             ))}
           </div>

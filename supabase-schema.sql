@@ -5,12 +5,14 @@ create table if not exists public.profiles (
   phone text not null default '',
   subscriber boolean not null default false,
   subscription_package text not null default '',
+  preferred_subscription_day text not null default '',
   preferred_subscription_time text not null default '',
   created_at timestamptz not null default now()
 );
 
 alter table public.profiles add column if not exists username text not null default '';
 alter table public.profiles add column if not exists subscription_package text not null default '';
+alter table public.profiles add column if not exists preferred_subscription_day text not null default '';
 alter table public.profiles add column if not exists preferred_subscription_time text not null default '';
 create unique index if not exists profiles_username_unique on public.profiles (lower(username)) where username <> '';
 
@@ -106,6 +108,26 @@ create policy "public can create booking requests" on public.booking_requests fo
 drop policy if exists "customers read own booking requests" on public.booking_requests;
 create policy "customers read own booking requests" on public.booking_requests for select to authenticated using (user_id = auth.uid() or public.is_admin());
 create policy "admins manage booking requests" on public.booking_requests for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+create table if not exists public.subscription_slots (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  subscription_day text not null,
+  subscription_time text not null,
+  field_name text not null default 'Bağmancı Halı Saha',
+  remaining_weeks integer not null default 12,
+  active boolean not null default true,
+  created_at timestamptz not null default now(),
+  unique (subscription_day, subscription_time)
+);
+
+alter table public.subscription_slots enable row level security;
+drop policy if exists "public can read active subscription slots" on public.subscription_slots;
+drop policy if exists "customers read own subscription slots" on public.subscription_slots;
+drop policy if exists "customers manage own subscription slots" on public.subscription_slots;
+create policy "public can read active subscription slots" on public.subscription_slots for select to anon, authenticated using (active = true or user_id = auth.uid() or public.is_admin());
+create policy "customers read own subscription slots" on public.subscription_slots for select to authenticated using (user_id = auth.uid() or public.is_admin());
+create policy "customers manage own subscription slots" on public.subscription_slots for all to authenticated using (user_id = auth.uid() or public.is_admin()) with check (user_id = auth.uid() or public.is_admin());
 
 create or replace function public.choose_booking_payment(p_booking_id uuid, p_payment_token uuid, p_payment_choice text)
 returns boolean language plpgsql security definer set search_path = public as $$
