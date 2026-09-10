@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Check,
   Clock3,
+  CreditCard,
   DollarSign,
   LockKeyhole,
   Menu,
@@ -309,13 +310,8 @@ export default function AdminPage() {
       <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--green)] px-5 py-5 text-white lg:px-10">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between">
           <a href="/" className="text-sm font-bold text-white/80">Kontrol merkezi</a>
-          <button
-            aria-label="Menüyü aç"
-            className="rounded-lg border border-white/20 p-2 md:hidden"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <Menu size={20} />
-          </button>
+          <div className="hidden items-center gap-2 md:flex"><a href="/admin/odemeler" className="inline-flex items-center gap-2 rounded-full bg-[var(--lime)] px-4 py-2 text-xs font-extrabold text-[var(--green)]"><CreditCard size={14} /> Ödeme sistemi</a><a href="/admin/rezervasyonlar" className="rounded-full border border-white/25 px-4 py-2 text-xs font-extrabold text-white">Rezervasyon kayıtları</a></div>
+          <div className="flex items-center gap-2 md:hidden"><a href="/admin/odemeler" aria-label="Ödeme sistemi" className="rounded-lg border border-white/20 p-2"><CreditCard size={20} /></a><a href="/admin/rezervasyonlar" className="rounded-lg border border-white/20 px-2 py-2 text-xs font-bold">Kayıtlar</a><button aria-label="Menüyü aç" className="rounded-lg border border-white/20 p-2" onClick={() => setMenuOpen(!menuOpen)}><Menu size={20} /></button></div>
           <nav
             className={`${menuOpen ? "flex" : "hidden"} absolute left-4 right-4 top-20 z-10 flex-col gap-4 rounded-xl bg-white p-5 text-[var(--ink)] shadow-xl md:static md:flex md:flex-row md:items-center md:gap-6 md:bg-transparent md:p-0 md:text-white md:shadow-none`}
           >
