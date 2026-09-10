@@ -459,9 +459,9 @@ export default function Home() {
             </div>
             <div className="absolute -bottom-7 -left-5 flex items-center gap-3 rounded-2xl bg-white p-4 text-[var(--ink)] shadow-2xl sm:-left-10">
               <div className="flex -space-x-2">
-                <span className="h-9 w-9 rounded-full border-2 border-white bg-[url('https://i.pravatar.cc/80?img=12')] bg-cover" />
-                <span className="h-9 w-9 rounded-full border-2 border-white bg-[url('https://i.pravatar.cc/80?img=32')] bg-cover" />
-                <span className="h-9 w-9 rounded-full border-2 border-white bg-[url('https://i.pravatar.cc/80?img=13')] bg-cover" />
+                <span className="h-9 w-9 rounded-full border-2 border-white bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=12')" }} />
+                <span className="h-9 w-9 rounded-full border-2 border-white bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=32')" }} />
+                <span className="h-9 w-9 rounded-full border-2 border-white bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=13')" }} />
               </div>
               <div>
                 <p className="text-xs text-[var(--muted)]">Bu hafta sahada</p>
