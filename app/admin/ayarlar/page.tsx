@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { ArrowLeft, Image, Save, ShieldCheck, Upload } from "lucide-react";
+import { useEffect, useState } from "react";
 import { getSupabaseClient } from "../../../lib/supabase";
 import { defaultSiteImages, type SiteImages } from "../../../lib/siteSettings";
 
 export default function SiteSettingsPage() {
   const [images, setImages] = useState<SiteImages>(defaultSiteImages);
   const [authorized, setAuthorized] = useState(false);
+  const [imagesOpen, setImagesOpen] = useState(true);
   const [message, setMessage] = useState("Kontrol ediliyor...");
   const [saving, setSaving] = useState(false);
-  const [bank, setBank] = useState({ name: "", iban: "", holder: "" });
 
   useEffect(() => {
     const load = async () => {
@@ -19,10 +19,9 @@ export default function SiteSettingsPage() {
         const { data: assurance } = await client.auth.mfa.getAuthenticatorAssuranceLevel();
         if (assurance?.currentLevel !== "aal2") { setMessage("Bu sayfa için admin girişi ve 2FA gerekir."); return; }
         setAuthorized(true);
-        const { data, error } = await client.from("site_settings").select("hero_image, match_image, background_image, bank_name, iban, iban_holder").eq("id", "main").maybeSingle();
+        const { data, error } = await client.from("site_settings").select("hero_image, match_image, background_image").eq("id", "main").maybeSingle();
         if (error) throw error;
         if (data) setImages({ hero: data.hero_image || defaultSiteImages.hero, match: data.match_image || defaultSiteImages.match, background: data.background_image || defaultSiteImages.background });
-        if (data) setBank({ name: data.bank_name || "", iban: data.iban || "", holder: data.iban_holder || "" });
         setMessage("");
       } catch { setMessage("Ayarlar yüklenemedi. Supabase şemasını ve admin MFA girişini kontrol edin."); }
     };
@@ -46,12 +45,10 @@ export default function SiteSettingsPage() {
   const save = async () => {
     setSaving(true); setMessage("");
     try {
-      const { error } = await getSupabaseClient().from("site_settings").upsert({ id: "main", hero_image: images.hero, background_image: images.background, match_image: images.match, bank_name: bank.name, iban: bank.iban, iban_holder: bank.holder, updated_at: new Date().toISOString() });
+      const { error } = await getSupabaseClient().from("site_settings").upsert({ id: "main", hero_image: images.hero, background_image: images.background, match_image: images.match, updated_at: new Date().toISOString() });
       if (error) throw error;
       setMessage("Görseller kaydedildi.");
-    } catch (error) {
-      setMessage(error instanceof Error ? `Kayıt başarısız: ${error.message}` : "Kayıt başarısız.");
-    }
+    } catch (error) { setMessage(error instanceof Error ? `Kayıt başarısız: ${error.message}` : "Kayıt başarısız."); }
     setSaving(false);
   };
 
@@ -59,5 +56,5 @@ export default function SiteSettingsPage() {
 
   if (!authorized) return <main className="flex min-h-screen items-center justify-center bg-[var(--green)] px-5"><div className="max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl"><ShieldCheck className="mx-auto mb-5 text-[var(--green)]" size={36} /><h1 className="display text-2xl font-extrabold">Yetkili admin girişi gerekli</h1><p className="mt-3 text-sm leading-6 text-[var(--muted)]">Site ayarlarını görmek için önce admin hesabıyla giriş yapıp 2FA kodunu doğrula.</p><a href="/admin" className="mt-6 inline-flex rounded-full bg-[var(--green)] px-5 py-3 text-sm font-bold text-white">Admin girişine git</a><p className="mt-4 text-xs text-[var(--muted)]">{message}</p></div></main>;
 
-  return <main className="min-h-screen bg-[#f5f7f3] px-5 py-10 text-[var(--ink)] lg:px-10"><div className="mx-auto max-w-4xl"><a href="/admin" className="mb-10 inline-flex items-center gap-2 text-sm font-bold text-[var(--green)]"><ArrowLeft size={16} /> Admin paneline dön</a><div className="mb-8"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-[var(--green)]">Yönetim</p><h1 className="display text-4xl font-extrabold">Site ayarları</h1><p className="mt-2 text-sm text-[var(--muted)]">Galeriden görsel seçerek siteyi güncelle.</p></div><section className="rounded-2xl bg-white p-6 shadow-sm sm:p-8"><div className="mb-2 flex items-center gap-3"><Image className="text-[var(--green)]" /><h2 className="display text-2xl font-extrabold">Görsel galerisi</h2></div>{field("Ana giriş görseli", "hero", "Ana giriş önizleme")}{field("Grid arka plan görseli", "background", "Grid arka plan önizleme")}{field("Maç kayıtları görseli", "match", "Maç kayıtları önizleme")}<div className="mt-10 border-t border-[var(--line)] pt-8"><h2 className="display text-2xl font-extrabold">Ödeme bilgileri</h2><p className="mt-2 text-sm text-[var(--muted)]">Müşterilerin ödeme sayfasında göreceği IBAN bilgileri.</p><div className="mt-5 grid gap-4 sm:grid-cols-2"><input value={bank.name} onChange={(event) => setBank({ ...bank, name: event.target.value })} className="w-full rounded-xl border border-[var(--line)] px-4 py-3 text-sm outline-none focus:border-[var(--green)]" placeholder="Banka adı" /><input value={bank.holder} onChange={(event) => setBank({ ...bank, holder: event.target.value })} className="w-full rounded-xl border border-[var(--line)] px-4 py-3 text-sm outline-none focus:border-[var(--green)]" placeholder="Hesap sahibi" /></div><input value={bank.iban} onChange={(event) => setBank({ ...bank, iban: event.target.value })} className="mt-4 w-full rounded-xl border border-[var(--line)] px-4 py-3 text-sm outline-none focus:border-[var(--green)]" placeholder="TR00 0000 0000 0000 0000 0000 00" /></div><button type="button" disabled={saving} onClick={save} className="site-action-button mt-8"><Save size={16} /> {saving ? "Kaydediliyor..." : "Ayarları kaydet"}</button>{message && <p className="mt-4 rounded-xl bg-[#f5f7f3] p-3 text-sm font-semibold text-[var(--green)]">{message}</p>}</section></div></main>;
+  return <main className="min-h-screen bg-[#f5f7f3] px-5 py-10 text-[var(--ink)] lg:px-10"><div className="mx-auto max-w-4xl"><a href="/admin" className="mb-10 inline-flex items-center gap-2 text-sm font-bold text-[var(--green)]"><ArrowLeft size={16} /> Admin paneline dön</a><div className="mb-8"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-[var(--green)]">Yönetim</p><h1 className="display text-4xl font-extrabold">Site ayarları</h1><p className="mt-2 text-sm text-[var(--muted)]">Siteyi bölümler halinde düzenle.</p></div><div className="mb-5 grid gap-3 sm:grid-cols-2"><button type="button" onClick={() => setImagesOpen(!imagesOpen)} className={`flex items-center gap-3 rounded-2xl border p-5 text-left shadow-sm ${imagesOpen ? "border-[var(--green)] bg-[var(--green)] text-white" : "border-[var(--line)] bg-white"}`}><Image size={22} /><span><strong className="block">Görselleri düzenle</strong><small className="mt-1 block opacity-75">Ana sayfa, arka plan ve maç görselleri</small></span></button><a href="/admin/odemeler" className="flex items-center gap-3 rounded-2xl border border-[var(--line)] bg-white p-5 text-left shadow-sm"><Save size={22} className="text-[var(--green)]" /><span><strong className="block">Ödeme sistemine git</strong><small className="mt-1 block text-[var(--muted)]">IBAN ve ödeme bilgileri ayrı yönetilir</small></span></a></div>{imagesOpen && <section className="rounded-2xl bg-white p-6 shadow-sm sm:p-8"><div className="mb-2 flex items-center gap-3"><Image className="text-[var(--green)]" /><h2 className="display text-2xl font-extrabold">Görsel galerisi</h2></div>{field("Ana giriş görseli", "hero", "Ana giriş önizleme")}{field("Grid arka plan görseli", "background", "Grid arka plan önizleme")}{field("Maç kayıtları görseli", "match", "Maç kayıtları önizleme")}<button type="button" onClick={save} disabled={saving} className="mt-10 inline-flex items-center gap-2 rounded-full bg-[var(--green)] px-6 py-3 text-sm font-extrabold text-white"><Save size={17} /> {saving ? "Kaydediliyor..." : "Görselleri kaydet"}</button>{message && <p className="mt-4 text-sm font-semibold text-[var(--green)]">{message}</p>}</section>}</div></main>;
 }
