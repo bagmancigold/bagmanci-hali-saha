@@ -101,10 +101,10 @@ button { appearance: none; }
 .match-card strong, .match-card small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .match-card strong { font-size: 13px; }
 .match-card small { margin-top: 5px; color: var(--muted); font-size: 11px; }
-.reservation-grid { display: grid; grid-template-columns: 112px repeat(17, minmax(68px, 1fr)); }
-.reservation-corner, .reservation-hour, .reservation-day, .reservation-cell { min-height: 72px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.reservation-grid { display: grid; grid-template-columns: 112px repeat(15, minmax(68px, 1fr)); }
+.reservation-corner, .reservation-hour, .reservation-day, .reservation-cell { min-height: 72px; border-right: 1px solid #d5ddd4; border-bottom: 1px solid #d5ddd4; }
 .reservation-corner { display: flex; align-items: center; padding: 10px; color: var(--muted); font-size: 11px; font-weight: 800; }
-.reservation-hour { display: flex; align-items: center; justify-content: center; background: #f5f7f3; color: var(--muted); font-size: 11px; font-weight: 800; }
+.reservation-hour { display: flex; align-items: center; justify-content: center; background: #f5f7f3; color: var(--muted); font-size: 11px; font-weight: 800; box-shadow: inset -1px 0 0 rgb(255 255 255 / 45%); }
 .reservation-hour-current { background: var(--lime); color: var(--green); box-shadow: inset 0 -3px 0 var(--green); }
 .reservation-day { display: flex; flex-direction: column; justify-content: center; gap: 4px; background: white; padding: 10px; color: var(--green); font-size: 12px; }
 .reservation-day-current { background: #eaf5d1; box-shadow: inset 4px 0 0 var(--green); }
@@ -119,7 +119,7 @@ button { appearance: none; }
 .reservation-cell b { font-size: 10px; }
 .reservation-cell em { color: #8a5a00; font-size: 8px; font-style: normal; font-weight: 800; }
 @media (max-width: 640px) {
-  .reservation-grid { grid-template-columns: 86px repeat(17, 64px); }
+  .reservation-grid { grid-template-columns: 86px repeat(15, 64px); }
   .reservation-corner, .reservation-hour, .reservation-day, .reservation-cell { min-height: 66px; }
   .reservation-day { padding: 7px; font-size: 11px; }
   .reservation-cell { padding: 4px; }

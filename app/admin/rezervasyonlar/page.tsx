@@ -5,7 +5,10 @@ import { ArrowLeft, ChevronLeft, ChevronRight, RefreshCw, ShieldCheck } from "lu
 import { getSupabaseClient } from "../../../lib/supabase";
 
 type Booking = { id: string; customer_name: string; phone: string; booking_date: string; booking_time: string; duration_hours: number; total_amount: number; payment_status: string };
-const hours = Array.from({ length: 17 }, (_, index) => `${String((index + 9) % 24).padStart(2, "0")}:00`);
+const hours = Array.from({ length: 15 }, (_, index) => {
+  const start = (index + 11) % 24;
+  return `${String(start).padStart(2, "0")}-${String((start + 1) % 24).padStart(2, "0")}`;
+});
 const days = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
 const statusLabels: Record<string, string> = { paid: "Tamamı", approved: "Tamamı", deposit: "Kapora", proof_submitted: "Kapora", unpaid: "Ödenmedi", pending: "Ödenmedi", rejected: "Reddedildi" };
 const mondayOf = (date: Date) => { const value = new Date(date); value.setHours(12, 0, 0, 0); value.setDate(value.getDate() - ((value.getDay() + 6) % 7)); return value; };
@@ -40,7 +43,7 @@ export default function AdminBookingsPage() {
     return current >= start && current < start + duration;
   });
   const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  const currentHour = `${String(now.getHours()).padStart(2, "0")}:00`;
+  const currentHour = `${String(now.getHours()).padStart(2, "0")}-${String((now.getHours() + 1) % 24).padStart(2, "0")}`;
   const clock = now.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
   if (!authorized) return <main className="flex min-h-screen items-center justify-center bg-[var(--green)] px-5"><div className="max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl"><ShieldCheck className="mx-auto mb-5 text-[var(--green)]" size={36} /><h1 className="display text-2xl font-extrabold">Yetkili admin girişi gerekli</h1><a href="/admin" className="mt-6 inline-flex rounded-full bg-[var(--green)] px-5 py-3 text-sm font-bold text-white">Admin girişine git</a><p className="mt-4 text-xs text-[var(--muted)]">{message}</p></div></main>;
