@@ -398,15 +398,16 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {slots.map((slot) => {
                   const isBooked = booked.includes(`${selectedDay}-${slot}`);
+                  const exceedsClosing = selectedPackage.duration === 1.5 && slot === "01:00";
                   return (
                     <button
                       key={slot}
-                      disabled={isBooked}
+                      disabled={isBooked || exceedsClosing}
                       onClick={() => {
                         setSelectedSlot(slot);
                         setNotice("");
                       }}
-                      className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${isBooked ? "cursor-not-allowed border-transparent bg-[#e8ece7] text-[var(--muted)]" : selectedSlot === slot ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-[var(--line)] hover:border-[var(--green)]"}`}
+                      className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${isBooked || exceedsClosing ? "cursor-not-allowed border-transparent bg-[#e8ece7] text-[var(--muted)]" : selectedSlot === slot ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-[var(--line)] hover:border-[var(--green)]"}`}
                     >
                       {slot}
                     </button>
