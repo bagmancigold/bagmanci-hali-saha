@@ -176,9 +176,12 @@ export default function Home() {
     }
     setNotice("Maç kaydı oluşturuluyor...");
     try {
-      const { data, error } = await getSupabaseClient()
+      const client = getSupabaseClient();
+      const { data: authData } = await client.auth.getUser();
+      const { data, error } = await client
         .from("booking_requests")
         .insert({
+          user_id: authData.user?.id || null,
           customer_name: form.name.trim(),
           phone: form.phone.replace(/\s/g, ""),
           booking_date: selectedDay,

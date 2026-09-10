@@ -27,6 +27,60 @@ button { appearance: none; }
 .site-header { width: 100vw; position: fixed !important; inset-inline: 0; }
 .header-menu-button { position: absolute; left: 20px; top: 14px; }
 .header-login-position { position: absolute; right: 20px; top: 14px; min-width: 132px; }
+.header-account-position { position: absolute; right: 20px; top: 14px; }
+.header-account-button { display: inline-flex; min-height: 48px; align-items: center; gap: 8px; border: 0; border-radius: 999px; background: var(--lime); padding: 0 16px; color: var(--green); font-size: 14px; font-weight: 900; }
+.header-account-menu { position: absolute; right: 0; top: 56px; width: 250px; border: 1px solid var(--line); border-radius: 18px; background: white; padding: 16px; color: var(--ink); box-shadow: 0 18px 40px rgb(23 56 42 / 20%); }
+.header-account-menu p { color: var(--muted); font-size: 11px; }
+.header-account-menu strong { display: block; margin: 2px 0 13px; color: var(--green); font-size: 16px; text-transform: uppercase; }
+.header-account-menu a, .header-account-menu button { display: flex; width: 100%; align-items: center; gap: 8px; border: 0; border-top: 1px solid var(--line); background: transparent; padding: 12px 0 0; margin-top: 10px; color: var(--ink); font-size: 13px; font-weight: 800; text-decoration: none; text-align: left; }
+.header-account-menu a:hover { color: var(--green); }
+.header-account-menu button { color: #a32727; }
+.account-page { background: radial-gradient(circle at 12% 10%, rgb(217 243 106 / 18%), transparent 28%), var(--cream); }
+.account-back { display: inline-flex; align-items: center; gap: 8px; color: var(--green); font-size: 13px; font-weight: 800; text-decoration: none; }
+.account-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin: 28px 0 24px; }
+.account-eyebrow { color: var(--green); font-size: 11px; font-weight: 900; letter-spacing: .18em; }
+.account-heading h1 { margin-top: 8px; font-family: 'Manrope', sans-serif; font-size: clamp(2rem, 5vw, 3.7rem); font-weight: 900; letter-spacing: -.04em; line-height: .98; }
+.account-heading p { margin-top: 10px; color: var(--muted); font-size: 15px; }
+.account-signout { display: inline-flex; flex: none; align-items: center; gap: 8px; border: 1px solid #efcaca; border-radius: 999px; background: white; padding: 11px 15px; color: #a32727; font-size: 12px; font-weight: 900; }
+.account-layout { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.account-card { border: 1px solid var(--line); border-radius: 22px; background: white; padding: 24px; box-shadow: 0 12px 30px rgb(36 83 61 / 6%); }
+.account-card-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.account-icon { display: inline-flex; height: 42px; width: 42px; align-items: center; justify-content: center; border-radius: 14px; background: var(--lime); color: var(--green); }
+.account-card h2 { font-family: 'Manrope', sans-serif; font-size: 18px; font-weight: 900; }
+.account-card-heading p { margin-top: 2px; color: var(--muted); font-size: 12px; }
+.account-card label { display: block; margin-top: 16px; color: var(--ink); font-size: 12px; font-weight: 900; }
+.account-card input, .account-card select { display: block; width: 100%; min-height: 50px; margin-top: 7px; border: 1px solid var(--line); border-radius: 13px; background: white; padding: 0 14px; color: var(--ink); outline: none; }
+.account-card input:focus, .account-card select:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgb(36 83 61 / 10%); }
+.account-card input:disabled { background: #f2f5f0; color: var(--muted); }
+.account-card small { display: flex; align-items: center; gap: 5px; margin-top: 7px; color: var(--muted); font-size: 10px; font-weight: 600; }
+.account-membership { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 18px; border: 1px solid var(--line); border-radius: 14px; background: #f5f7f3; padding: 14px; color: var(--muted); }
+.account-membership.active { border-color: #d1a52a; background: #fff7d6; color: #8a650d; }
+.account-membership span, .account-membership strong { display: block; }
+.account-membership span { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+.account-membership strong { margin-top: 4px; font-size: 13px; }
+.account-save { display: inline-flex; width: 100%; min-height: 52px; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; border: 0; border-radius: 14px; background: var(--green); color: white; font-size: 13px; font-weight: 900; }
+.account-save:disabled { opacity: .55; }
+.account-message { margin-top: 12px; color: #a32727; font-size: 12px; font-weight: 800; }
+.account-message.success { color: var(--green); }
+.account-links { display: flex; gap: 10px; margin-top: 16px; }
+.account-links a { border-radius: 999px; background: var(--green); padding: 11px 15px; color: white; font-size: 12px; font-weight: 800; text-decoration: none; }
+.account-bookings { margin-top: 16px; }
+.account-booking-list { display: grid; gap: 8px; }
+.account-booking-row { display: grid; grid-template-columns: 90px 1fr auto; align-items: center; gap: 12px; border-top: 1px solid var(--line); padding-top: 12px; }
+.account-booking-row div:first-child { display: grid; gap: 3px; color: var(--green); }
+.account-booking-row div:first-child span, .account-booking-row small { color: var(--muted); font-size: 11px; }
+.account-booking-row div:nth-child(2) { display: grid; gap: 3px; }
+.account-empty { color: var(--muted); font-size: 13px; }
+@media (max-width: 640px) {
+  .header-account-position { right: 20px; top: 16px; }
+  .header-account-button { min-height: 44px; padding: 0 12px; font-size: 12px; }
+  .header-account-button span { display: none; }
+  .account-heading { align-items: start; flex-direction: column; }
+  .account-layout { grid-template-columns: 1fr; }
+  .account-card { padding: 19px; }
+  .account-heading h1 { font-size: 2.4rem; }
+  .account-booking-row { grid-template-columns: 64px 1fr auto; font-size: 12px; }
+}
 @media (min-width: 1024px) {
   .header-menu-button { left: 40px; }
   .header-login-position { right: 40px; }

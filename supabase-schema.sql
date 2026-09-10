@@ -4,10 +4,14 @@ create table if not exists public.profiles (
   full_name text not null default '',
   phone text not null default '',
   subscriber boolean not null default false,
+  subscription_package text not null default '',
+  preferred_subscription_time text not null default '',
   created_at timestamptz not null default now()
 );
 
 alter table public.profiles add column if not exists username text not null default '';
+alter table public.profiles add column if not exists subscription_package text not null default '';
+alter table public.profiles add column if not exists preferred_subscription_time text not null default '';
 create unique index if not exists profiles_username_unique on public.profiles (lower(username)) where username <> '';
 
 create table if not exists public.site_settings (
@@ -25,6 +29,7 @@ alter table public.site_settings add column if not exists iban_holder text not n
 
 create table if not exists public.booking_requests (
   id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete set null,
   payment_token uuid not null default gen_random_uuid(),
   customer_name text not null,
   phone text not null,
@@ -43,6 +48,7 @@ create table if not exists public.booking_requests (
 );
 
 alter table public.booking_requests add column if not exists paid_amount numeric(10,2) not null default 0;
+alter table public.booking_requests add column if not exists user_id uuid references auth.users(id) on delete set null;
 alter table public.booking_requests add column if not exists subscriber boolean not null default false;
 alter table public.booking_requests add column if not exists duration_hours numeric(3,1) not null default 1;
 alter table public.booking_requests drop constraint if exists booking_requests_payment_status_check;
@@ -97,6 +103,8 @@ alter table public.booking_requests enable row level security;
 drop policy if exists "public can create booking requests" on public.booking_requests;
 drop policy if exists "admins manage booking requests" on public.booking_requests;
 create policy "public can create booking requests" on public.booking_requests for insert to anon, authenticated with check (true);
+drop policy if exists "customers read own booking requests" on public.booking_requests;
+create policy "customers read own booking requests" on public.booking_requests for select to authenticated using (user_id = auth.uid() or public.is_admin());
 create policy "admins manage booking requests" on public.booking_requests for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 create or replace function public.choose_booking_payment(p_booking_id uuid, p_payment_token uuid, p_payment_choice text)

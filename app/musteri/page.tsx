@@ -50,8 +50,7 @@ export default function CustomerPage() {
         const { error } = await client.auth.signInWithPassword({ email: form.email.trim(), password: form.password });
         if (error) throw error;
       }
-      await loadProfile();
-      setMessage("Giriş başarılı.");
+      window.location.href = "/hesabim";
     } catch (error) { setMessage(error instanceof Error ? error.message : "İşlem başarısız oldu."); }
     finally { setLoading(false); }
   };
@@ -59,7 +58,7 @@ export default function CustomerPage() {
   const socialLogin = async (provider: "google" | "facebook") => {
     setLoading(true); setMessage("");
     try {
-      const { error } = await getSupabaseClient().auth.signInWithOAuth({ provider, options: { redirectTo: `${window.location.origin}/musteri` } });
+      const { error } = await getSupabaseClient().auth.signInWithOAuth({ provider, options: { redirectTo: `${window.location.origin}/hesabim` } });
       if (error) throw error;
     } catch (error) { setMessage(error instanceof Error ? error.message : "Sosyal giriş başlatılamadı."); setLoading(false); }
   };
