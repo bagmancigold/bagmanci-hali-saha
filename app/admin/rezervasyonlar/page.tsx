@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  ArrowLeft,
   Plus,
   ChevronLeft,
   ChevronRight,
@@ -175,9 +174,13 @@ export default function AdminBookingsPage() {
     (total, booking) => total + Number(booking.total_amount || 0),
     0,
   );
-  const cumulativeRevenue = bookings
-    .filter((booking) => booking.booking_date <= summaryDate)
-    .reduce((total, booking) => total + Number(booking.total_amount || 0), 0);
+  const pendingBookings = bookings.filter((booking) =>
+    ["pending", "proof_submitted", "deposit", "unpaid"].includes(booking.payment_status),
+  ).length;
+  const weeklyRevenue = bookings.reduce(
+    (total, booking) => total + Number(booking.total_amount || 0),
+    0,
+  );
   const dayTotal = (date: string) =>
     bookings
       .filter((booking) => booking.booking_date === date)
@@ -223,13 +226,7 @@ export default function AdminBookingsPage() {
   return (
     <main className="reservation-page min-h-screen bg-[#f5f7f3] px-3 py-6 text-[var(--ink)] sm:px-5 lg:px-8">
       <div className="mx-auto max-w-[1600px]">
-        <div className="mb-5 flex items-center justify-between">
-          <a
-            href="/admin"
-            className="inline-flex items-center gap-2 text-xs font-bold text-[var(--green)]"
-          >
-            <ArrowLeft size={15} /> Admin paneline dön
-          </a>
+        <div className="mb-5 flex items-center justify-end">
           <div className="flex items-center gap-2">
             <strong className="reservation-clock">{clock}</strong>
             <div className="flex gap-1.5">
@@ -275,7 +272,27 @@ export default function AdminBookingsPage() {
           </p>
         </div>
         <button type="button" className="manual-booking-button mb-4" onClick={() => openManual()}><Plus size={17} /> Manuel Maç Ekle</button>
-        <div className="reservation-summary mb-4 grid gap-3 sm:grid-cols-[1.35fr_.8fr_.8fr]">
+        <div className="reservation-summary mb-4 grid w-full grid-cols-2 gap-3">
+          <div className="reservation-summary-card">
+            <span>GÜNÜN HASILATI</span>
+            <strong>₺{dailyRevenue.toLocaleString("tr-TR")}</strong>
+            <small>{dateText(new Date(`${summaryDate}T12:00:00`))}</small>
+          </div>
+          <div className="reservation-summary-card">
+            <span>TOPLAM HASILAT</span>
+            <strong>₺{weeklyRevenue.toLocaleString("tr-TR")}</strong>
+            <small>Seçilen haftanın toplamı</small>
+          </div>
+          <div className="reservation-summary-card">
+            <span>AKTİF ABONE</span>
+            <strong>{subscriptionSlots.length}</strong>
+            <small>Sistemdeki aktif sabit saat</small>
+          </div>
+          <div className="reservation-summary-card">
+            <span>BEKLEYEN KAYIT</span>
+            <strong>{pendingBookings}</strong>
+            <small>Onay veya kapora bekleyen</small>
+          </div>
           <div className="reservation-summary-card reservation-match-split">
             <div>
               <span>GÜNLÜK MAÇ</span>
@@ -291,14 +308,9 @@ export default function AdminBookingsPage() {
             </div>
           </div>
           <div className="reservation-summary-card">
-            <span>GÜNÜN HASILATI</span>
-            <strong>₺{dailyRevenue.toLocaleString("tr-TR")}</strong>
-            <small>{dateText(new Date(`${summaryDate}T12:00:00`))}</small>
-          </div>
-          <div className="reservation-summary-card">
-            <span>TOPLAM HASILAT</span>
-            <strong>₺{cumulativeRevenue.toLocaleString("tr-TR")}</strong>
-            <small>Hafta başlangıcından bugüne</small>
+            <span>TOPLAM MAÇ</span>
+            <strong>{bookings.length}</strong>
+            <small>Seçilen haftadaki toplam</small>
           </div>
         </div>
         {message && (
@@ -385,6 +397,17 @@ export default function AdminBookingsPage() {
           Canlı saat sarı renkle işaretlenir. Dolu saatlerde takım kaptanı,
           telefon, ücret ve ödeme durumu görünür.
         </p>
+        <section className="weekly-field-summary">
+          <div className="weekly-field-summary-heading">
+            <span>HAFTALIK SAHA ÖZETİ</span>
+            <strong>
+              {dateText(weekStart)} - {dateText(new Date(weekStart.getTime() + 6 * 86400000))}
+            </strong>
+          </div>
+          <div><small>Toplam maç</small><b>{bookings.length}</b></div>
+          <div><small>Toplam hasılat</small><b>₺{weeklyRevenue.toLocaleString("tr-TR")}</b></div>
+          <div><small>Aktif abone</small><b>{subscriptionSlots.length}</b></div>
+        </section>
         {manualOpen && <div className="admin-modal-backdrop" onClick={() => setManualOpen(false)}><div className="admin-modal" onClick={(event) => event.stopPropagation()}><div className="admin-modal-heading"><div><p>YENİ KAYIT</p><h2>Manuel Rezervasyon Ekle</h2></div><button type="button" onClick={() => setManualOpen(false)}>×</button></div><div className="admin-modal-grid"><label>Gün<input type="date" value={manualBooking.booking_date} onChange={(event) => setManualBooking({ ...manualBooking, booking_date: event.target.value })} /></label><label>Saat<input type="time" value={manualBooking.booking_time} onChange={(event) => setManualBooking({ ...manualBooking, booking_time: event.target.value })} /></label><label className="admin-modal-wide">Takım Kaptanı / Müşteri<input value={manualBooking.customer_name} onChange={(event) => setManualBooking({ ...manualBooking, customer_name: event.target.value })} /></label><label>Telefon<input value={manualBooking.phone} onChange={(event) => setManualBooking({ ...manualBooking, phone: event.target.value.replace(/\D/g, "").slice(0, 11) })} placeholder="05xxxxxxxxx" /></label><label>Ücret<input type="number" value={manualBooking.total_amount} onChange={(event) => setManualBooking({ ...manualBooking, total_amount: event.target.value })} /></label><label>Ödeme Durumu<select value={manualBooking.payment_status} onChange={(event) => setManualBooking({ ...manualBooking, payment_status: event.target.value })}><option value="paid">Ödendi</option><option value="deposit">Kapora Alındı</option><option value="unpaid">Ödenmedi / Maç Sonu</option></select></label><label className="admin-modal-wide">Not / Açıklama<textarea value={manualBooking.notes} onChange={(event) => setManualBooking({ ...manualBooking, notes: event.target.value })} /></label></div><button type="button" className="admin-modal-save" onClick={saveManual} disabled={savingManual}>{savingManual ? "Kaydediliyor..." : "Kaydet"}</button></div></div>}
         {selectedSubscription && <div className="admin-modal-backdrop" onClick={() => setSelectedSubscription(null)}><div className="admin-modal subscription-detail-modal" onClick={(event) => event.stopPropagation()}><div className="admin-modal-heading"><div><p>GOLD ABONE</p><h2>{selectedSubscription.profile?.full_name || "Abone profili"}</h2></div><button type="button" onClick={() => setSelectedSubscription(null)}>×</button></div><div className="subscription-detail-list"><p><span>E-posta</span><strong>{selectedSubscription.profile?.email || "Kayıtlı e-posta yok"}</strong></p><p><span>Telefon</span><strong>{selectedSubscription.profile?.phone || "Telefon yok"}</strong></p><p><span>Kayıt tarihi</span><strong>{selectedSubscription.profile?.created_at ? new Intl.DateTimeFormat("tr-TR").format(new Date(selectedSubscription.profile.created_at)) : "-"}</strong></p><p><span>Toplam oynadığı hafta</span><strong>{selectedSubscription.completedWeeks || 0} hafta</strong></p></div></div></div>}
       </div>
