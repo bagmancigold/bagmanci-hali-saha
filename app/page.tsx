@@ -514,13 +514,13 @@ export default function Home() {
                   return (
                     <button
                       key={slot}
-                      disabled={isBooked || (isSubscriptionLocked && !isOwnSubscription) || exceedsClosing}
+                      disabled={(isBooked && !isOwnSubscription) || (isSubscriptionLocked && !isOwnSubscription) || exceedsClosing}
                       onClick={() => {
                         setSelectedSlot(slot);
                         if (isOwnSubscription) setForm((current) => ({ ...current, name: profileDefaults.name, phone: profileDefaults.phone, subscriber: true }));
                         setNotice("");
                       }}
-                      className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${(isBooked || (isSubscriptionLocked && !isOwnSubscription) || exceedsClosing) ? "cursor-not-allowed border-transparent bg-[#e8ece7] text-[var(--muted)] opacity-50" : selectedSlot === slot ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-[var(--line)] hover:border-[var(--green)]"}`}
+                      className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${((isBooked && !isOwnSubscription) || (isSubscriptionLocked && !isOwnSubscription) || exceedsClosing) ? "cursor-not-allowed border-transparent bg-[#e8ece7] text-[var(--muted)] opacity-50" : selectedSlot === slot ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-[var(--line)] hover:border-[var(--green)]"}`}
                     >
                       {isSubscriptionLocked && !isOwnSubscription ? (
                         <>
