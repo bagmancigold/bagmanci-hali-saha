@@ -611,8 +611,8 @@ export default function Home() {
               <span className="text-[var(--green)]">maça başla.</span>
             </h2>
           </div>
-          <div className="grid overflow-hidden rounded-[28px] border border-[var(--line)] lg:grid-cols-[1.4fr_.8fr]">
-            <div className="p-5 sm:p-8">
+          <div className="grid min-w-0 overflow-visible rounded-[28px] border border-[var(--line)] lg:grid-cols-[1.4fr_.8fr]">
+            <div className="min-w-0 p-5 sm:p-8">
               <div className="mb-7 flex items-center justify-between">
                 <div>
                   <p className="text-sm text-[var(--muted)]">{weekTitle}</p>
@@ -650,7 +650,7 @@ export default function Home() {
                       setSelectedSlot(null);
                       setNotice("");
                     }}
-                    className={`rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "cursor-not-allowed border-transparent bg-[#f1f3ef] text-[var(--muted)] opacity-45" : selectedDay === item.date ? "border-[var(--green)] bg-[var(--green)] text-white" : "border-[var(--line)] hover:border-[var(--green)]"}`}
+                    className={`min-w-[68px] flex-shrink-0 rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "cursor-not-allowed border-transparent bg-[#f1f3ef] text-[var(--muted)] opacity-45" : selectedDay === item.date ? "border-[var(--green)] bg-[var(--green)] text-white" : "border-[var(--line)] hover:border-[var(--green)]"}`}
                   >
                     <span className="mt-1 block text-xs font-semibold opacity-60">
                       {item.day}
@@ -674,7 +674,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="booking-form-card p-6 text-white sm:p-8">
+            <div className="booking-form-card mx-0 box-border w-full min-w-0 rounded-2xl p-4 text-white sm:rounded-none sm:p-8">
               <div className="mb-8 flex items-center gap-3">
                 <CalendarDays className="text-[var(--lime)]" />
                 <div>

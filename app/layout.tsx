@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="tr">
-      <body>{children}</body>
+      <body className="w-full max-w-[100vw] overflow-x-hidden">{children}</body>
     </html>
   );
 }

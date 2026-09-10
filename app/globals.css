@@ -137,18 +137,18 @@ button { appearance: none; }
 
 .header-actions { display: flex; align-items: center; gap: 8px; }
 .header-actions .header-reservation-button, .header-actions .header-match-button { position: static; display: inline-flex; min-height: 42px; align-items: center; justify-content: center; padding: 0 13px; white-space: nowrap; }
-.schedule-days { display: flex; flex-wrap: nowrap; gap: 8px; min-width: 0; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-x; }
-.schedule-days > button { min-width: 76px; flex: 1 0 76px; }
-.schedule-row-scroll { display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, minmax(64px, auto)); grid-auto-columns: minmax(116px, 1fr); flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding-bottom: 10px; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-x; }
+.schedule-days { display: flex; width: 100%; flex-wrap: nowrap; gap: 8px; min-width: 0; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-x; }
+.schedule-days > button { min-width: 68px; flex-shrink: 0; }
+.schedule-row-scroll { display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, minmax(64px, auto)); grid-auto-columns: 110px; width: 100%; min-width: 0; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding-bottom: 10px; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-x; }
 .schedule-row-scroll .schedule-slot { min-width: 0; width: auto; }
 .touch-pan-x { touch-action: pan-x; overscroll-behavior-x: contain; }
 .scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }
-.booking-form-card, .payment-page > div { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; }
+.booking-form-card, .payment-page > div { box-sizing: border-box; width: 100%; max-width: 100vw; min-width: 0; margin-left: 0; margin-right: 0; }
 @media (max-width: 640px) {
-  .booking-form-card { max-width: 28rem; margin-inline: auto; padding-inline: 1rem !important; }
+  .booking-form-card { width: 100%; max-width: 100%; margin: 0; padding: 1rem !important; }
   .payment-page { overflow-x: hidden; }
-  .payment-page > div { max-width: 28rem; margin-inline: auto; padding-inline: 1rem; }
+  .payment-page > div { width: 100%; max-width: 100%; margin: 0 auto; padding-inline: 1rem; }
 }
 
 @media (min-width: 641px) {
