@@ -133,14 +133,16 @@ export default function AccountPage() {
     setMessage("");
     const { data } = await getSupabaseClient().auth.getUser();
     if (!data.user) return;
-    if (!profile.subscriber) {
-      const { error } = await getSupabaseClient().from("profiles").upsert({
-        id: data.user.id,
-        email: data.user.email || "",
-        full_name: fullName,
-        phone: profile.phone.trim(),
-        subscriber: false,
-      });
+    if (!profile.subscriber || !subscription?.active) {
+      const { error } = await getSupabaseClient()
+        .from("profiles")
+        .upsert({
+          id: data.user.id,
+          email: data.user.email || "",
+          full_name: fullName,
+          phone: profile.phone.trim(),
+          subscriber: false,
+        });
       setSaving(false);
       setMessage(error ? error.message : "Başarıyla güncellendi");
       return;
@@ -183,14 +185,12 @@ export default function AccountPage() {
           .from("subscription_slots")
           .update({ active: true })
           .eq("id", previousSlot.id)
-      : client
-          .from("subscription_slots")
-          .insert({
-            user_id: data.user.id,
-            subscription_day: profile.preferred_subscription_day,
-            subscription_time: profile.preferred_subscription_time,
-            active: true,
-          });
+      : client.from("subscription_slots").insert({
+          user_id: data.user.id,
+          subscription_day: profile.preferred_subscription_day,
+          subscription_time: profile.preferred_subscription_time,
+          active: true,
+        });
     const { data: savedSlot, error: slotError } = await slotQuery
       .select(
         "id, subscription_day, subscription_time, field_name, remaining_weeks, active",
@@ -250,6 +250,7 @@ export default function AccountPage() {
   };
 
   const isGold = Boolean(profile.subscriber && subscription?.active);
+  const canManageSubscription = isGold;
 
   if (loading)
     return (
@@ -330,7 +331,7 @@ export default function AccountPage() {
               <label>
                 Abonelik Günü
                 <select
-                  disabled={!profile.subscriber}
+                  disabled={!canManageSubscription}
                   value={profile.preferred_subscription_day}
                   onChange={(event) =>
                     updateField(
@@ -350,7 +351,7 @@ export default function AccountPage() {
               <label>
                 Abonelik Saati
                 <select
-                  disabled={!profile.subscriber}
+                  disabled={!canManageSubscription}
                   value={profile.preferred_subscription_time}
                   onChange={(event) =>
                     updateField(
@@ -368,9 +369,10 @@ export default function AccountPage() {
                 </select>
               </label>
             </div>
-            {!profile.subscriber && (
+            {!canManageSubscription && (
               <p className="account-membership-note">
-                Abonelik günü ve saati yalnızca aktif aboneler tarafından düzenlenebilir.
+                Abonelik günü ve saati yalnızca aktif aboneler tarafından
+                düzenlenebilir.
               </p>
             )}
             <button
