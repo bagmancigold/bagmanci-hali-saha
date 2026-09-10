@@ -1,23 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, Instagram, MapPin, Phone, Play, ShieldCheck, Trophy, Users } from "lucide-react";
 import SiteHeader from "./components/SiteHeader";
 import SiteImageSync from "./components/SiteImageSync";
 import MatchArchive from "./components/MatchArchive";
 import { getSupabaseClient } from "../lib/supabase";
 
-const days = [
-  { day: "Pzt", date: "12", full: "12 Haziran" }, { day: "Sal", date: "13", full: "13 Haziran" },
-  { day: "Çar", date: "14", full: "14 Haziran" }, { day: "Per", date: "15", full: "15 Haziran" },
-  { day: "Cum", date: "16", full: "16 Haziran" }, { day: "Cmt", date: "17", full: "17 Haziran" },
-  { day: "Paz", date: "18", full: "18 Haziran" }
-];
-const slots = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00"];
+const getWeekDays = (offset: number) => {
+  const start = new Date();
+  start.setHours(12, 0, 0, 0);
+  start.setDate(start.getDate() + offset * 7);
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(start);
+    date.setDate(start.getDate() + index);
+    return { day: new Intl.DateTimeFormat("tr-TR", { weekday: "short" }).format(date), date: date.toISOString().slice(0, 10), full: new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "long" }).format(date) };
+  });
+};
+const slots = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00", "23:00", "00:00", "01:00"];
 const packages = [
-  { title: "Gündüz Tarifesi", price: 1200, note: "12:00 - 18:00 arası", detail: "1 saat saha kullanımı" },
-  { title: "Gece Tarifesi", price: 1800, note: "18:00 sonrası", detail: "1 saat saha kullanımı" },
-  { title: "Maç Kaydı", price: 0, note: "Abonelere ücretsiz", detail: "Maçınızı tekrar izleyin" }
+  { title: "Gündüz Tarifesi", price: 1200, note: "12:00 - 18:00 arası", detail: "1 saat saha kullanımı", duration: 1 },
+  { title: "Gece Tarifesi", price: 1800, note: "18:00 - 02:00 arası", detail: "1 saat saha kullanımı", duration: 1 },
+  { title: "90 Dakika Maç", price: 2700, note: "18:00 - 02:00 arası", detail: "1,5 saat saha kullanımı", duration: 1.5 },
+  { title: "Maç Kaydı", price: 0, note: "Abonelere ücretsiz", detail: "Maçınızı tekrar izleyin", duration: 1 }
 ];
 const mapUrl = "https://www.google.com/maps/search/?api=1&query=Bagmanci+Hali+Saha+Sanliurfa";
 
@@ -26,16 +31,37 @@ function Logo() {
 }
 
 export default function Home() {
-  const [selectedDay, setSelectedDay] = useState("12");
+  const [weekOffset, setWeekOffset] = useState(0);
+  const days = getWeekDays(weekOffset);
+  const [selectedDay, setSelectedDay] = useState(days[0].date);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedPackage, setSelectedPackage] = useState(packages[0]);
-  const [booked, setBooked] = useState(["12-18:00", "12-20:00", "13-19:00", "14-17:00", "14-21:00", "15-19:00", "16-20:00", "16-21:00", "17-18:00", "18-20:00"]);
+  const [booked, setBooked] = useState<string[]>([]);
   const [form, setForm] = useState({ name: "", phone: "", subscriber: false });
+  const [subscriberVerified, setSubscriberVerified] = useState(false);
   const [notice, setNotice] = useState("");
   const [videoPlaying, setVideoPlaying] = useState(false);
-  const [weekOffset, setWeekOffset] = useState(0);
-  const selectedLabel = days.find((day) => day.date === selectedDay)?.full ?? "12 Haziran";
-  const price = form.subscriber && selectedPackage.price ? selectedPackage.price * 0.9 : selectedPackage.price;
+  const selectedLabel = days.find((day) => day.date === selectedDay)?.full ?? selectedDay;
+  const price = subscriberVerified && selectedPackage.price ? selectedPackage.price * 0.9 : selectedPackage.price;
+
+  useEffect(() => {
+    const loadBookings = async () => {
+      const start = days[0].date;
+      const end = days[days.length - 1].date;
+      const { data } = await getSupabaseClient().from("booking_requests").select("booking_date, booking_time").gte("booking_date", start).lte("booking_date", end).neq("payment_status", "rejected");
+      setBooked((data || []).map((item) => `${item.booking_date}-${item.booking_time}`));
+    };
+    loadBookings();
+  }, [weekOffset]);
+
+  useEffect(() => {
+    getSupabaseClient().auth.getUser().then(async ({ data }) => {
+      if (!data.user) return;
+      const { data: profile } = await getSupabaseClient().from("profiles").select("subscriber").eq("id", data.user.id).maybeSingle();
+      setSubscriberVerified(Boolean(profile?.subscriber));
+      setForm((current) => ({ ...current, subscriber: Boolean(profile?.subscriber) }));
+    });
+  }, []);
 
   const choosePackage = (pack: typeof packages[number]) => {
     setSelectedPackage(pack);
@@ -43,10 +69,10 @@ export default function Home() {
     document.getElementById("rezervasyon")?.scrollIntoView({ behavior: "smooth" });
   };
   const submitBooking = async () => {
-    if (!selectedSlot || !form.name || !form.phone) { setNotice("Lütfen saat, ad soyad ve telefon alanlarını doldurun."); return; }
+    if (!selectedSlot || !form.name || !/^0\d{10}$/.test(form.phone.replace(/\s/g, ""))) { setNotice("Lütfen saat, ad soyad ve 11 haneli telefon numarasını girin."); return; }
     setNotice("Maç kaydı oluşturuluyor...");
     try {
-      const { data, error } = await getSupabaseClient().from("booking_requests").insert({ customer_name: form.name.trim(), phone: form.phone.trim(), booking_date: `2024-06-${selectedDay.padStart(2, "0")}`, booking_time: selectedSlot, package_name: selectedPackage.title, total_amount: price, deposit_amount: 600, payment_choice: "deposit", payment_status: "pending" }).select("id, payment_token").single();
+      const { data, error } = await getSupabaseClient().from("booking_requests").insert({ customer_name: form.name.trim(), phone: form.phone.replace(/\s/g, ""), booking_date: selectedDay, booking_time: selectedSlot, duration_hours: selectedPackage.duration, package_name: selectedPackage.title, total_amount: price, deposit_amount: 600, payment_choice: "deposit", payment_status: "pending" }).select("id, payment_token").single();
       if (error) throw error;
       setBooked((current) => [...current, `${selectedDay}-${selectedSlot}`]);
       setSelectedSlot(null); setForm({ name: "", phone: "", subscriber: false });

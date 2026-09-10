@@ -30,6 +30,7 @@ create table if not exists public.booking_requests (
   phone text not null,
   booking_date date not null,
   booking_time text not null,
+  duration_hours numeric(3,1) not null default 1,
   package_name text not null,
   total_amount numeric(10,2) not null default 0,
   deposit_amount numeric(10,2) not null default 600,
@@ -41,6 +42,9 @@ create table if not exists public.booking_requests (
 );
 
 alter table public.booking_requests add column if not exists paid_amount numeric(10,2) not null default 0;
+alter table public.booking_requests add column if not exists duration_hours numeric(3,1) not null default 1;
+alter table public.booking_requests drop constraint if exists booking_requests_phone_format;
+alter table public.booking_requests add constraint booking_requests_phone_format check (phone ~ '^0[0-9]{10}$') not valid;
 
 create table if not exists public.subscription_requests (
   id uuid primary key default gen_random_uuid(),

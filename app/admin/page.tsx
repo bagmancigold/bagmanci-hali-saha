@@ -4,11 +4,8 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, CalendarDays, Check, Clock3, DollarSign, LockKeyhole, Menu, Phone, Settings, ShieldCheck, Trophy, Users, X } from "lucide-react";
 import { getSupabaseClient } from "../../lib/supabase";
 
-const initialBookings = [
-  { time: "18:00", name: "Mehmet Kaya", phone: "0545 123 45 67", package: "Gece Tarifesi", status: "Onaylandı" },
-  { time: "19:00", name: "Ahmet Yılmaz", phone: "0414 222 33 44", package: "Gece Tarifesi", status: "Bekliyor" },
-  { time: "20:00", name: "Bağmancı FC", phone: "0545 333 22 11", package: "Maç Kaydı", status: "Onaylandı" }
-];
+type AdminBooking = { time: string; name: string; phone: string; package: string; status: string };
+const initialBookings: AdminBooking[] = [];
 
 export default function AdminPage() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -56,6 +53,16 @@ export default function AdminPage() {
       listener.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!loggedIn) return;
+    const loadRealBookings = async () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const { data } = await getSupabaseClient().from("booking_requests").select("booking_time, customer_name, phone, package_name, payment_status").eq("booking_date", today).order("booking_time");
+      setBookings((data || []).map((item) => ({ time: item.booking_time, name: item.customer_name, phone: item.phone, package: item.package_name, status: item.payment_status })));
+    };
+    loadRealBookings();
+  }, [loggedIn]);
 
   const handleLogin = async () => {
     if (!loginForm.username || !loginForm.password) {
