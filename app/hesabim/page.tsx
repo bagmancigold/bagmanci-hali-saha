@@ -195,6 +195,7 @@ export default function AccountPage() {
     }
     const { error } = await client.from("profiles").upsert({
       id: data.user.id,
+      email: data.user.email || "",
       full_name: fullName,
       phone: profile.phone.trim(),
       subscriber: true,

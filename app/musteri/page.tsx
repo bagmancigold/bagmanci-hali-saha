@@ -44,7 +44,7 @@ export default function CustomerPage() {
         if (error) throw error;
         if (!data.user) throw new Error("Üyelik oluşturulamadı.");
         if (!data.session) { setMode("login"); setMessage("Üyeliğin oluşturuldu. E-postandaki doğrulama bağlantısından sonra giriş yap."); return; }
-        const { error: profileError } = await client.from("profiles").upsert({ id: data.user.id, username: form.username.trim(), full_name: form.fullName.trim(), phone: form.phone.trim(), subscriber: form.subscriber });
+        const { error: profileError } = await client.from("profiles").upsert({ id: data.user.id, email: data.user.email || form.email.trim(), username: form.username.trim(), full_name: form.fullName.trim(), phone: form.phone.trim(), subscriber: form.subscriber });
         if (profileError) throw profileError;
       } else {
         const { error } = await client.auth.signInWithPassword({ email: form.email.trim(), password: form.password });

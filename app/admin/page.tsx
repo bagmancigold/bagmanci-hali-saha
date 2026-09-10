@@ -474,7 +474,7 @@ export default function AdminPage() {
               <p>0414 247 51 51</p>
               <p>Gündüz: 1200 TL</p>
               <p>Gece: 1800 TL</p>
-              <p>Abone indirimi: %10</p>
+              <p>Abone fiyatı: ilk haftadan sonra 1.700 TL</p>
             </div>
           </div>
         </section>

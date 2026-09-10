@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
+  Plus,
   ChevronLeft,
   ChevronRight,
   RefreshCw,
@@ -22,10 +23,15 @@ type Booking = {
   subscriber: boolean;
 };
 type SubscriptionSlot = {
+  id?: string;
+  user_id: string;
   subscription_day: string;
   subscription_time: string;
   active: boolean;
+  profile?: { email: string; full_name: string; phone: string; created_at: string } | null;
+  completedWeeks?: number;
 };
+type ManualBooking = { booking_date: string; booking_time: string; customer_name: string; phone: string; total_amount: string; payment_status: string; notes: string };
 const hours = Array.from({ length: 15 }, (_, index) => {
   const start = (index + 11) % 24;
   return `${String(start).padStart(2, "0")}.00-${String((start + 1) % 24).padStart(2, "0")}.00`;
@@ -67,6 +73,10 @@ export default function AdminBookingsPage() {
   const [subscriptionSlots, setSubscriptionSlots] = useState<
     SubscriptionSlot[]
   >([]);
+  const [manualOpen, setManualOpen] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState<SubscriptionSlot | null>(null);
+  const [manualBooking, setManualBooking] = useState<ManualBooking>({ booking_date: "", booking_time: "", customer_name: "", phone: "", total_amount: "1800", payment_status: "unpaid", notes: "" });
+  const [savingManual, setSavingManual] = useState(false);
   const [message, setMessage] = useState("Kontrol ediliyor...");
   const [now, setNow] = useState(() => new Date());
   const weekStart = useMemo(() => {
@@ -107,9 +117,14 @@ export default function AdminBookingsPage() {
       setBookings(data || []);
       const { data: slots } = await client
         .from("subscription_slots")
-        .select("subscription_day, subscription_time, active")
+        .select("id, user_id, subscription_day, subscription_time, active")
         .eq("active", true);
-      setSubscriptionSlots(slots || []);
+      const detailedSlots = await Promise.all((slots || []).map(async (slot) => {
+        const { data: profile } = await client.from("profiles").select("email, full_name, phone, created_at").eq("id", slot.user_id).maybeSingle();
+        const { count } = await client.from("booking_requests").select("id", { count: "exact", head: true }).eq("user_id", slot.user_id).in("payment_status", ["paid", "approved"]);
+        return { ...slot, profile, completedWeeks: count || 0 };
+      }));
+      setSubscriptionSlots(detailedSlots);
       setMessage("");
     }
   };
@@ -172,6 +187,19 @@ export default function AdminBookingsPage() {
     minute: "2-digit",
     second: "2-digit",
   });
+  const openManual = (date = dates[0], hour = "18:00") => {
+    setManualBooking({ booking_date: date, booking_time: hour, customer_name: "", phone: "", total_amount: Number(hour.slice(0, 2)) >= 18 || Number(hour.slice(0, 2)) < 2 ? "1800" : "1200", payment_status: "unpaid", notes: "" });
+    setManualOpen(true);
+  };
+  const saveManual = async () => {
+    if (!manualBooking.customer_name.trim() || !/^0\d{10}$/.test(manualBooking.phone.replace(/\s/g, ""))) { setMessage("Ad soyad ve 11 haneli telefon zorunlu."); return; }
+    setSavingManual(true);
+    const { data, error } = await getSupabaseClient().from("booking_requests").insert({ customer_name: manualBooking.customer_name.trim(), phone: manualBooking.phone.replace(/\s/g, ""), booking_date: manualBooking.booking_date, booking_time: manualBooking.booking_time, duration_hours: 1, package_name: "Manuel Rezervasyon", total_amount: Number(manualBooking.total_amount), deposit_amount: 0, payment_choice: "full", payment_status: manualBooking.payment_status, notes: manualBooking.notes }).select("id, customer_name, phone, booking_date, booking_time, duration_hours, total_amount, payment_status, subscriber").single();
+    setSavingManual(false);
+    if (error) { setMessage(error.message); return; }
+    setBookings((current) => [...current, data]);
+    setManualOpen(false);
+  };
 
   if (!authorized)
     return (
@@ -246,6 +274,7 @@ export default function AdminBookingsPage() {
             {dateText(new Date(weekStart.getTime() + 6 * 86400000))}
           </p>
         </div>
+        <button type="button" className="manual-booking-button mb-4" onClick={() => openManual()}><Plus size={17} /> Manuel Maç Ekle</button>
         <div className="reservation-summary mb-4 grid gap-3 sm:grid-cols-[1.35fr_.8fr_.8fr]">
           <div className="reservation-summary-card reservation-match-split">
             <div>
@@ -304,10 +333,21 @@ export default function AdminBookingsPage() {
                 {hours.map((hour) => {
                   const booking = bookingAt(date, hour);
                   const subscription = subscriptionAt(date, hour);
+                  const subscriptionInfo = subscriptionSlots.find((slot) => {
+                    const weekday = new Intl.DateTimeFormat("tr-TR", { weekday: "long" }).format(new Date(`${date}T12:00:00`));
+                    return slot.active && slot.subscription_day === weekday && slot.subscription_time.startsWith(hour.slice(0, 5).replace(".", ":"));
+                  });
                   const current = date === localDate && hour === currentHour;
                   return (
                     <div
                       key={`${date}-${hour}`}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        const locked = subscriptionSlots.find((slot) => subscriptionAt(date, hour) && slot.subscription_day === new Intl.DateTimeFormat("tr-TR", { weekday: "long" }).format(new Date(`${date}T12:00:00`)) && slot.subscription_time.startsWith(hour.slice(0, 5).replace(".", ":")));
+                        if (locked) setSelectedSubscription(locked);
+                        else if (!booking) openManual(date, hour.slice(0, 5).replace(".", ":"));
+                      }}
                       className={`reservation-cell ${current ? "reservation-cell-current" : ""} ${booking ? "reservation-cell-booked" : ""} ${booking?.subscriber ? "reservation-cell-subscriber" : ""} ${subscription && !booking ? "reservation-cell-subscription-locked" : ""}`}
                     >
                       {booking && (
@@ -325,8 +365,10 @@ export default function AdminBookingsPage() {
                       )}
                       {subscription && !booking && (
                         <>
-                          <strong>KİLİTLİ</strong>
-                          <em>DOLU (ABONELİK)</em>
+                          <strong>{subscriptionInfo?.profile?.full_name || "KİLİTLİ"}</strong>
+                          <span>{subscriptionInfo?.profile?.phone || "Abonelik slotu"}</span>
+                          <b>₺1.700</b>
+                          <em>ABONE</em>
                         </>
                       )}
                     </div>
@@ -343,6 +385,8 @@ export default function AdminBookingsPage() {
           Canlı saat sarı renkle işaretlenir. Dolu saatlerde takım kaptanı,
           telefon, ücret ve ödeme durumu görünür.
         </p>
+        {manualOpen && <div className="admin-modal-backdrop" onClick={() => setManualOpen(false)}><div className="admin-modal" onClick={(event) => event.stopPropagation()}><div className="admin-modal-heading"><div><p>YENİ KAYIT</p><h2>Manuel Rezervasyon Ekle</h2></div><button type="button" onClick={() => setManualOpen(false)}>×</button></div><div className="admin-modal-grid"><label>Gün<input type="date" value={manualBooking.booking_date} onChange={(event) => setManualBooking({ ...manualBooking, booking_date: event.target.value })} /></label><label>Saat<input type="time" value={manualBooking.booking_time} onChange={(event) => setManualBooking({ ...manualBooking, booking_time: event.target.value })} /></label><label className="admin-modal-wide">Takım Kaptanı / Müşteri<input value={manualBooking.customer_name} onChange={(event) => setManualBooking({ ...manualBooking, customer_name: event.target.value })} /></label><label>Telefon<input value={manualBooking.phone} onChange={(event) => setManualBooking({ ...manualBooking, phone: event.target.value.replace(/\D/g, "").slice(0, 11) })} placeholder="05xxxxxxxxx" /></label><label>Ücret<input type="number" value={manualBooking.total_amount} onChange={(event) => setManualBooking({ ...manualBooking, total_amount: event.target.value })} /></label><label>Ödeme Durumu<select value={manualBooking.payment_status} onChange={(event) => setManualBooking({ ...manualBooking, payment_status: event.target.value })}><option value="paid">Ödendi</option><option value="deposit">Kapora Alındı</option><option value="unpaid">Ödenmedi / Maç Sonu</option></select></label><label className="admin-modal-wide">Not / Açıklama<textarea value={manualBooking.notes} onChange={(event) => setManualBooking({ ...manualBooking, notes: event.target.value })} /></label></div><button type="button" className="admin-modal-save" onClick={saveManual} disabled={savingManual}>{savingManual ? "Kaydediliyor..." : "Kaydet"}</button></div></div>}
+        {selectedSubscription && <div className="admin-modal-backdrop" onClick={() => setSelectedSubscription(null)}><div className="admin-modal subscription-detail-modal" onClick={(event) => event.stopPropagation()}><div className="admin-modal-heading"><div><p>GOLD ABONE</p><h2>{selectedSubscription.profile?.full_name || "Abone profili"}</h2></div><button type="button" onClick={() => setSelectedSubscription(null)}>×</button></div><div className="subscription-detail-list"><p><span>E-posta</span><strong>{selectedSubscription.profile?.email || "Kayıtlı e-posta yok"}</strong></p><p><span>Telefon</span><strong>{selectedSubscription.profile?.phone || "Telefon yok"}</strong></p><p><span>Kayıt tarihi</span><strong>{selectedSubscription.profile?.created_at ? new Intl.DateTimeFormat("tr-TR").format(new Date(selectedSubscription.profile.created_at)) : "-"}</strong></p><p><span>Toplam oynadığı hafta</span><strong>{selectedSubscription.completedWeeks || 0} hafta</strong></p></div></div></div>}
       </div>
     </main>
   );

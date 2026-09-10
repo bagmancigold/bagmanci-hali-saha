@@ -192,6 +192,26 @@ button { appearance: none; }
 .reservation-cell-subscriber { background: #fff7d6; border-color: #b88716; box-shadow: inset 0 0 0 2px #e1b83f; }
 .reservation-cell-subscription-locked { background: #dfe3df; border-color: #919b92; color: #667069; opacity: .72; }
 .reservation-cell-subscription-locked strong, .reservation-cell-subscription-locked em { color: #667069; }
+.manual-booking-button { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--green); border-radius: 999px; background: var(--green); padding: 11px 16px; color: white; font-size: 12px; font-weight: 900; }
+.admin-modal-backdrop { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center; overflow-y: auto; background: rgb(15 27 21 / 58%); padding: 20px; }
+.admin-modal { width: min(620px, 100%); border: 1px solid var(--line); border-radius: 22px; background: white; padding: 24px; box-shadow: 0 24px 70px rgb(0 0 0 / 28%); }
+.admin-modal-heading { display: flex; align-items: start; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.admin-modal-heading p { color: var(--green); font-size: 10px; font-weight: 900; letter-spacing: .14em; }
+.admin-modal-heading h2 { margin-top: 4px; font-family: 'Manrope', sans-serif; font-size: 24px; font-weight: 900; }
+.admin-modal-heading > button { border: 0; background: transparent; color: var(--muted); font-size: 26px; line-height: 1; }
+.admin-modal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+.admin-modal-grid label { color: var(--ink); font-size: 12px; font-weight: 900; }
+.admin-modal-grid input, .admin-modal-grid select, .admin-modal-grid textarea { display: block; width: 100%; margin-top: 6px; border: 1px solid var(--line); border-radius: 11px; background: white; padding: 11px 12px; color: var(--ink); outline: none; }
+.admin-modal-grid textarea { min-height: 80px; resize: vertical; }
+.admin-modal-wide { grid-column: 1 / -1; }
+.admin-modal-save { display: inline-flex; width: 100%; min-height: 48px; align-items: center; justify-content: center; margin-top: 18px; border: 0; border-radius: 12px; background: var(--green); color: white; font-size: 13px; font-weight: 900; }
+.admin-modal-save:disabled { opacity: .55; }
+.subscription-detail-modal { border-color: #d4af37; }
+.subscription-detail-list { display: grid; gap: 10px; }
+.subscription-detail-list p { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding-bottom: 10px; font-size: 12px; }
+.subscription-detail-list span { color: var(--muted); }
+.subscription-detail-list strong { text-align: right; }
+@media (max-width: 640px) { .admin-modal-grid { grid-template-columns: 1fr; } .admin-modal-wide { grid-column: auto; } .subscription-detail-list p { display: grid; gap: 4px; } .subscription-detail-list strong { text-align: left; } }
 .reservation-cell-current { background: #fff4b8; box-shadow: inset 0 0 0 2px #c59b00; }
 .reservation-clock { min-width: 88px; border-radius: 999px; background: var(--green); padding: 8px 12px; color: white; font-size: 13px; letter-spacing: .08em; text-align: center; }
 .reservation-cell strong, .reservation-cell span, .reservation-cell b, .reservation-cell em { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

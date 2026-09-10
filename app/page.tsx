@@ -94,6 +94,7 @@ const fullDays = [
   "Pazar",
 ];
 type SubscriptionSlot = {
+  user_id: string;
   subscription_day: string;
   subscription_time: string;
   active: boolean;
@@ -132,6 +133,9 @@ export default function Home() {
   >([]);
   const [form, setForm] = useState({ name: "", phone: "", subscriber: false });
   const [subscriberVerified, setSubscriberVerified] = useState(false);
+  const [discountEligible, setDiscountEligible] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [profileDefaults, setProfileDefaults] = useState({ name: "", phone: "" });
   const [notice, setNotice] = useState("");
   const [videoPlaying, setVideoPlaying] = useState(false);
   const selectedLabel =
@@ -146,10 +150,9 @@ export default function Home() {
     selectedPackage.title === "Maç Kaydı"
       ? selectedPackage.title
       : `${isNightSlot ? "Gece" : "Gündüz"} Tarifesi`;
-  const price =
-    subscriberVerified && tariffPrice
-      ? tariffPrice * selectedDuration * 0.9
-      : tariffPrice * selectedDuration;
+  const price = discountEligible && tariffPrice
+    ? 1700 * selectedDuration
+    : tariffPrice * selectedDuration;
 
   useEffect(() => {
     const currentDay = days.find(
@@ -175,7 +178,7 @@ export default function Home() {
       );
       const { data: lockedSlots } = await getSupabaseClient()
         .from("subscription_slots")
-        .select("subscription_day, subscription_time, active")
+        .select("user_id, subscription_day, subscription_time, active")
         .eq("active", true);
       setSubscriptionSlots(lockedSlots || []);
     };
@@ -187,10 +190,11 @@ export default function Home() {
       .auth.getUser()
       .then(async ({ data }) => {
         if (!data.user) return;
+        setCurrentUserId(data.user.id);
         const { data: profile } = await getSupabaseClient()
           .from("profiles")
           .select(
-            "subscriber, preferred_subscription_day, preferred_subscription_time",
+            "subscriber, preferred_subscription_day, preferred_subscription_time, full_name, phone",
           )
           .eq("id", data.user.id)
           .maybeSingle();
@@ -201,6 +205,13 @@ export default function Home() {
                 profile?.preferred_subscription_time),
           ),
         );
+        setProfileDefaults({ name: profile?.full_name || data.user.user_metadata?.full_name || "", phone: profile?.phone || "" });
+        const { count } = await getSupabaseClient()
+          .from("booking_requests")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", data.user.id)
+          .in("payment_status", ["paid", "approved"]);
+        setDiscountEligible(Boolean(profile?.subscriber && (count || 0) >= 1));
         setForm((current) => ({
           ...current,
           subscriber: Boolean(profile?.subscriber),
@@ -269,10 +280,14 @@ export default function Home() {
   const subscriptionLocked = (slot: string) =>
     subscriptionSlots.some(
       (item) =>
+        item.user_id !== currentUserId &&
         item.subscription_day === selectedWeekday &&
         item.subscription_time.startsWith(slot) &&
         item.active,
     );
+  const ownSubscriptionSlot = (slot: string) => subscriptionSlots.some(
+    (item) => item.user_id === currentUserId && item.subscription_day === selectedWeekday && item.subscription_time.startsWith(slot) && item.active,
+  );
 
   return (
     <main id="top" className={subscriberVerified ? "gold-theme" : ""}>
@@ -344,8 +359,8 @@ export default function Home() {
               </h2>
             </div>
             <p className="max-w-[290px] text-sm leading-6 text-[var(--muted)]">
-              Gündüz 1200 TL, gece 1800 TL. Abonelerimize her kiralamada %10
-              indirim.
+              Gündüz 1200 TL, gece 1800 TL. Tamamlanmış ilk haftadan sonra
+              aktif abonelere sabit 1.700 TL fiyat uygulanır.
             </p>
           </div>
           <div className="grid gap-4 md:grid-cols-3">
@@ -491,21 +506,21 @@ export default function Home() {
                     );
                   });
                   const isSubscriptionLocked = subscriptionLocked(slot);
+                  const isOwnSubscription = ownSubscriptionSlot(slot);
                   const exceedsClosing =
                     selectedDuration > 1 && slot === "01:00";
                   return (
                     <button
                       key={slot}
-                      disabled={
-                        isBooked || isSubscriptionLocked || exceedsClosing
-                      }
+                      disabled={isBooked || (isSubscriptionLocked && !isOwnSubscription) || exceedsClosing}
                       onClick={() => {
                         setSelectedSlot(slot);
+                        if (isOwnSubscription) setForm((current) => ({ ...current, name: profileDefaults.name, phone: profileDefaults.phone, subscriber: true }));
                         setNotice("");
                       }}
-                      className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${isBooked || isSubscriptionLocked || exceedsClosing ? "cursor-not-allowed border-transparent bg-[#e8ece7] text-[var(--muted)] opacity-50" : selectedSlot === slot ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-[var(--line)] hover:border-[var(--green)]"}`}
+                      className={`rounded-xl border px-3 py-3 text-sm font-bold transition ${(isBooked || (isSubscriptionLocked && !isOwnSubscription) || exceedsClosing) ? "cursor-not-allowed border-transparent bg-[#e8ece7] text-[var(--muted)] opacity-50" : selectedSlot === slot ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-[var(--line)] hover:border-[var(--green)]"}`}
                     >
-                      {isSubscriptionLocked ? (
+                      {isSubscriptionLocked && !isOwnSubscription ? (
                         <>
                           <span>{slot}</span>
                           <small className="block text-[10px] font-black uppercase">
@@ -573,18 +588,7 @@ export default function Home() {
                   placeholder="05xx xxx xx xx"
                 />
               </label>
-              <label className="mb-6 flex cursor-pointer items-center gap-3 text-sm text-white/80">
-                <input
-                  type="checkbox"
-                  checked={form.subscriber}
-                  disabled={!subscriberVerified}
-                  onChange={() => setForm({ ...form, subscriber: true })}
-                  className="h-4 w-4 accent-[var(--lime)]"
-                />{" "}
-                {subscriberVerified
-                  ? "Aktif aboneliğe %10 indirim uygula"
-                  : "%10 indirim için müşteri hesabından abone ol"}
-              </label>
+              {discountEligible && <div className="mb-6 inline-flex rounded-full border border-[#d4af37] bg-[#fff7d6] px-4 py-2 text-xs font-black text-[#8a650d]">★ Aktif Bağmancı Abone Fiyatı: 1.700 TL</div>}
               <div className="mb-5 flex items-center justify-between border-t border-white/15 pt-5">
                 <span className="text-sm text-white/60">Ödenecek tutar</span>
                 <strong className="text-xl">
@@ -745,7 +749,7 @@ export default function Home() {
               <Users className="mb-3 text-[var(--lime)]" size={20} />
               <p className="font-bold">Abone avantajı</p>
               <p className="mt-1 text-sm text-white/60">
-                Tüm kiralamalara %10 indirim
+                İlk tamamlanmış haftadan sonra 1.700 TL abone fiyatı
               </p>
             </div>
           </div>

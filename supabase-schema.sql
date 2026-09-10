@@ -1,6 +1,7 @@
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   username text not null default '',
+  email text not null default '',
   full_name text not null default '',
   phone text not null default '',
   subscriber boolean not null default false,
@@ -11,6 +12,7 @@ create table if not exists public.profiles (
 );
 
 alter table public.profiles add column if not exists username text not null default '';
+alter table public.profiles add column if not exists email text not null default '';
 alter table public.profiles add column if not exists subscription_package text not null default '';
 alter table public.profiles add column if not exists preferred_subscription_day text not null default '';
 alter table public.profiles add column if not exists preferred_subscription_time text not null default '';
