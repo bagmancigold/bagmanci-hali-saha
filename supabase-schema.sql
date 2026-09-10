@@ -36,13 +36,15 @@ create table if not exists public.booking_requests (
   deposit_amount numeric(10,2) not null default 600,
   paid_amount numeric(10,2) not null default 0,
   payment_choice text not null default 'deposit' check (payment_choice in ('deposit', 'full')),
-  payment_status text not null default 'pending' check (payment_status in ('pending', 'proof_submitted', 'paid', 'approved', 'rejected')),
+  payment_status text not null default 'unpaid' check (payment_status in ('unpaid', 'deposit', 'paid', 'pending', 'proof_submitted', 'approved', 'rejected')),
   notes text not null default '',
   created_at timestamptz not null default now()
 );
 
 alter table public.booking_requests add column if not exists paid_amount numeric(10,2) not null default 0;
 alter table public.booking_requests add column if not exists duration_hours numeric(3,1) not null default 1;
+alter table public.booking_requests drop constraint if exists booking_requests_payment_status_check;
+alter table public.booking_requests add constraint booking_requests_payment_status_check check (payment_status in ('unpaid', 'deposit', 'paid', 'pending', 'proof_submitted', 'approved', 'rejected')) not valid;
 alter table public.booking_requests drop constraint if exists booking_requests_phone_format;
 alter table public.booking_requests add constraint booking_requests_phone_format check (phone ~ '^0[0-9]{10}$') not valid;
 
@@ -56,6 +58,15 @@ create table if not exists public.subscription_requests (
   status text not null default 'pending' check (status in ('pending', 'paid', 'approved', 'rejected')),
   created_at timestamptz not null default now()
 );
+
+create table if not exists public.operating_expenses (
+  id uuid primary key default gen_random_uuid(),
+  expense_date date not null default current_date,
+  description text not null,
+  amount numeric(10,2) not null default 0,
+  created_at timestamptz not null default now()
+);
+alter table public.operating_expenses enable row level security;
 alter table public.subscription_requests enable row level security;
 
 create or replace function public.is_admin()
@@ -71,6 +82,9 @@ as $$
     false
   );
 $$;
+
+drop policy if exists "admins manage operating expenses" on public.operating_expenses;
+create policy "admins manage operating expenses" on public.operating_expenses for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 drop policy if exists "public can create subscription requests" on public.subscription_requests;
 drop policy if exists "admins manage subscription requests" on public.subscription_requests;

@@ -108,7 +108,7 @@ export default function Home() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedPackage, setSelectedPackage] = useState(packages[0]);
   const [selectedDuration, setSelectedDuration] = useState(1);
-  const [booked, setBooked] = useState<string[]>([]);
+  const [booked, setBooked] = useState<{ date: string; time: string; duration: number }[]>([]);
   const [form, setForm] = useState({ name: "", phone: "", subscriber: false });
   const [subscriberVerified, setSubscriberVerified] = useState(false);
   const [notice, setNotice] = useState("");
@@ -128,13 +128,11 @@ export default function Home() {
       const end = days[days.length - 1].date;
       const { data } = await getSupabaseClient()
         .from("booking_requests")
-        .select("booking_date, booking_time")
+        .select("booking_date, booking_time, duration_hours")
         .gte("booking_date", start)
         .lte("booking_date", end)
         .neq("payment_status", "rejected");
-      setBooked(
-        (data || []).map((item) => `${item.booking_date}-${item.booking_time}`),
-      );
+      setBooked((data || []).map((item) => ({ date: item.booking_date, time: item.booking_time, duration: Number(item.duration_hours || 1) })));
     };
     loadBookings();
   }, [weekOffset]);
@@ -192,7 +190,7 @@ export default function Home() {
         .select("id, payment_token")
         .single();
       if (error) throw error;
-      setBooked((current) => [...current, `${selectedDay}-${selectedSlot}`]);
+      setBooked((current) => [...current, { date: selectedDay, time: selectedSlot, duration: selectedDuration }]);
       setSelectedSlot(null);
       setForm({ name: "", phone: "", subscriber: false });
       window.location.href = `/odeme?booking=${data.id}&token=${data.payment_token}`;
@@ -399,7 +397,12 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {slots.map((slot) => {
-                  const isBooked = booked.includes(`${selectedDay}-${slot}`);
+                  const slotHour = Number(slot.slice(0, 2));
+                  const isBooked = booked.some((booking) => {
+                    if (booking.date !== selectedDay) return false;
+                    const startHour = Number(booking.time.slice(0, 2));
+                    return slotHour >= startHour && slotHour < startHour + booking.duration;
+                  });
                   const exceedsClosing = selectedDuration > 1 && slot === "01:00";
                   return (
                     <button
