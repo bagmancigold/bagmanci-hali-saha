@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { getSupabaseClient } from "../../lib/supabase";
+import AdminBookingsPage from "./rezervasyonlar/page";
 
 type AdminBooking = {
   time: string;
@@ -307,23 +308,19 @@ export default function AdminPage() {
 
   return (
     <main className="admin-dashboard min-h-screen bg-[#f5f7f3] text-[var(--ink)]">
-      <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--green)] px-5 py-5 text-white lg:px-10">
+      <header className="admin-luxury-header sticky top-0 z-40 px-5 py-5 text-white lg:px-10">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between">
-          <a href="/" className="text-sm font-extrabold tracking-[.12em] text-white">BAĞMANCI KONTROL MERKEZİ</a>
-          <div className="hidden items-center gap-2 md:flex"><a href="/admin/odemeler" className="inline-flex items-center gap-2 rounded-full bg-[var(--lime)] px-4 py-2 text-xs font-extrabold text-[var(--green)]"><CreditCard size={14} /> Ödeme</a><a href="/admin/rezervasyonlar" className="rounded-full border border-white/25 px-4 py-2 text-xs font-extrabold text-white">Rezervasyonlar</a></div>
-          <div className="flex items-center gap-2 md:hidden"><a href="/admin/odemeler" aria-label="Ödeme" className="rounded-lg border border-white/20 px-2 py-2 text-xs font-bold">Ödeme</a><a href="/admin/rezervasyonlar" className="rounded-lg border border-white/20 px-2 py-2 text-xs font-bold">Rezervasyonlar</a><button aria-label="Menüyü aç" className="rounded-lg border border-white/20 p-2" onClick={() => setMenuOpen(!menuOpen)}><Menu size={20} /></button></div>
+          <a href="/" className="admin-luxury-brand"><span><Trophy size={18} /></span> BAĞMANCI <b>ADMIN</b></a>
+          <div className="hidden items-center gap-2 md:flex"><a href="/admin/odemeler" className="admin-vip-pill"><CreditCard size={14} /> Ödeme</a><a href="/admin/arsiv" className="admin-vip-pill">Arşiv</a></div>
+          <div className="flex items-center gap-2 md:hidden"><a href="/admin/odemeler" aria-label="Ödeme" className="admin-vip-pill">Ödeme</a><a href="/admin/arsiv" className="admin-vip-pill">Arşiv</a><button aria-label="Menüyü aç" className="admin-menu-button" onClick={() => setMenuOpen(!menuOpen)}><Menu size={20} /></button></div>
           <nav
             className={`${menuOpen ? "flex" : "hidden"} absolute left-4 right-4 top-20 z-10 flex-col gap-4 rounded-xl bg-white p-5 text-[var(--ink)] shadow-xl md:static md:flex md:flex-row md:items-center md:gap-6 md:bg-transparent md:p-0 md:text-white md:shadow-none`}
           >
             <a href="/" className="flex items-center gap-2 text-sm">
               <ArrowLeft size={16} /> Siteye dön
             </a>
-            <a href="#rezervasyonlar" className="text-sm">
-              Rezervasyonlar
-            </a>
-            <a href="#ayarlar" className="text-sm">
-              Ayarlar
-            </a>
+            <a href="/admin/arsiv" className="text-sm">Arşiv</a>
+            <a href="/admin/ayarlar" className="text-sm">Ayarlar</a>
             <a href="/admin/odemeler" className="text-sm font-bold">
               Ödeme sistemi
             </a>
@@ -340,20 +337,14 @@ export default function AdminPage() {
         <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-[var(--green)]">
-              BAĞMANCI KONTROL MERKEZİ
+              ADMIN PANELİ
             </p>
             <h1 className="display text-4xl font-extrabold sm:text-5xl">
               Bugünün saha özeti
             </h1>
             <p className="mt-3 text-[var(--muted)]">
-              Rezervasyonlarını ve saha durumunu tek yerden yönet.
+              Haftalık rezervasyonları, ödemeleri ve abonelikleri tek ekrandan yönet.
             </p>
-          </div>
-          <div
-            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold ${fieldOpen ? "bg-[#e5f5bf] text-[var(--green)]" : "bg-red-100 text-red-700"}`}
-          >
-            <span className="h-2 w-2 rounded-full bg-current" /> Saha{" "}
-            {fieldOpen ? "açık" : "kapalı"}
           </div>
         </div>
         <div className="admin-stats-grid mb-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
@@ -383,6 +374,7 @@ export default function AdminPage() {
             </strong>
           </div>
         </div>
+        <AdminBookingsPage />
         <section
           id="rezervasyonlar"
           className="overflow-hidden rounded-2xl bg-white shadow-sm"
