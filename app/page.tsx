@@ -24,13 +24,15 @@ import { getSupabaseClient } from "../lib/supabase";
 const getWeekDays = (offset: number) => {
   const start = new Date();
   start.setHours(12, 0, 0, 0);
-  start.setDate(start.getDate() + offset * 7);
+  start.setDate(start.getDate() - ((start.getDay() + 6) % 7) + offset * 7);
   return Array.from({ length: 7 }, (_, index) => {
     const date = new Date(start);
     date.setDate(start.getDate() + index);
     return {
       day: new Intl.DateTimeFormat("tr-TR", { weekday: "short" }).format(date),
       date: date.toISOString().slice(0, 10),
+      year: date.getFullYear(),
+      dayNumber: date.getDate(),
       full: new Intl.DateTimeFormat("tr-TR", {
         day: "numeric",
         month: "long",
@@ -73,13 +75,6 @@ const packages = [
     duration: 1,
   },
   {
-    title: "90 Dakika Maç",
-    price: 2700,
-    note: "18:00 - 02:00 arası",
-    detail: "1,5 saat saha kullanımı",
-    duration: 1.5,
-  },
-  {
     title: "Maç Kaydı",
     price: 0,
     note: "Abonelere ücretsiz",
@@ -109,9 +104,10 @@ function Logo() {
 export default function Home() {
   const [weekOffset, setWeekOffset] = useState(0);
   const days = getWeekDays(weekOffset);
-  const [selectedDay, setSelectedDay] = useState(days[0].date);
+  const [selectedDay, setSelectedDay] = useState(new Date().toISOString().slice(0, 10));
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedPackage, setSelectedPackage] = useState(packages[0]);
+  const [selectedDuration, setSelectedDuration] = useState(1);
   const [booked, setBooked] = useState<string[]>([]);
   const [form, setForm] = useState({ name: "", phone: "", subscriber: false });
   const [subscriberVerified, setSubscriberVerified] = useState(false);
@@ -121,10 +117,12 @@ export default function Home() {
     days.find((day) => day.date === selectedDay)?.full ?? selectedDay;
   const price =
     subscriberVerified && selectedPackage.price
-      ? selectedPackage.price * 0.9
-      : selectedPackage.price;
+      ? selectedPackage.price * selectedDuration * 0.9
+      : selectedPackage.price * selectedDuration;
 
   useEffect(() => {
+    const currentDay = days.find((day) => day.date >= new Date().toISOString().slice(0, 10));
+    if (!days.some((day) => day.date === selectedDay)) setSelectedDay(currentDay?.date || days[0].date);
     const loadBookings = async () => {
       const start = days[0].date;
       const end = days[days.length - 1].date;
@@ -184,7 +182,7 @@ export default function Home() {
           phone: form.phone.replace(/\s/g, ""),
           booking_date: selectedDay,
           booking_time: selectedSlot,
-          duration_hours: selectedPackage.duration,
+          duration_hours: selectedDuration,
           package_name: selectedPackage.title,
           total_amount: price,
           deposit_amount: 600,
@@ -354,7 +352,7 @@ export default function Home() {
               <div className="mb-7 flex items-center justify-between">
                 <div>
                   <p className="text-sm text-[var(--muted)]">
-                    {days[0].full} - {days[days.length - 1].full} · Hafta {weekOffset + 1}
+                    {days[0].year} · {Math.ceil((new Date(`${days[0].date}T12:00:00`).getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / 604800000)}. hafta
                   </p>
                   <p className="display text-xl font-extrabold">Müsaitlikler</p>
                 </div>
@@ -379,18 +377,22 @@ export default function Home() {
                 {days.map((item) => (
                   <button
                     key={item.date}
+                    disabled={weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10)}
                     onClick={() => {
                       setSelectedDay(item.date);
                       setSelectedSlot(null);
                       setNotice("");
                     }}
-                    className={`rounded-2xl border p-3 text-center transition ${selectedDay === item.date ? "border-[var(--green)] bg-[var(--green)] text-white" : "border-[var(--line)] hover:border-[var(--green)]"}`}
+                    className={`rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "cursor-not-allowed border-transparent bg-[#f1f3ef] text-[var(--muted)] opacity-45" : selectedDay === item.date ? "border-[var(--green)] bg-[var(--green)] text-white" : "border-[var(--line)] hover:border-[var(--green)]"}`}
                   >
-                    <span className="block text-xs font-semibold opacity-60">
+                    <span className="block text-xs font-extrabold opacity-70">
+                      {item.year}
+                    </span>
+                    <span className="mt-1 block text-xs font-semibold opacity-60">
                       {item.day}
                     </span>
-                    <span className="display mt-2 block text-lg font-extrabold">
-                      {item.date}
+                    <span className="mt-1 block text-lg font-extrabold">
+                      {item.dayNumber}
                     </span>
                   </button>
                 ))}
@@ -398,7 +400,7 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {slots.map((slot) => {
                   const isBooked = booked.includes(`${selectedDay}-${slot}`);
-                  const exceedsClosing = selectedPackage.duration === 1.5 && slot === "01:00";
+                  const exceedsClosing = selectedDuration > 1 && slot === "01:00";
                   return (
                     <button
                       key={slot}
@@ -423,6 +425,12 @@ export default function Home() {
                   <p className="font-bold">
                     {selectedLabel} {selectedSlot ?? "· saat seç"}
                   </p>
+                </div>
+              </div>
+              <div className="mb-5">
+                <p className="mb-2 text-sm font-semibold">Maç süresi</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 1.5, 2].map((duration) => <button key={duration} type="button" onClick={() => { setSelectedDuration(duration); setSelectedSlot(null); }} className={`rounded-xl border px-3 py-3 text-sm font-extrabold ${selectedDuration === duration ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-white/20 bg-white/10 text-white"}`}>{duration === 1.5 ? "1,5 saat" : `${duration} saat`}</button>)}
                 </div>
               </div>
               <label className="mb-3 block text-sm font-semibold">
