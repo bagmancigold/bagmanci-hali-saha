@@ -30,6 +30,7 @@ create table if not exists public.booking_requests (
   phone text not null,
   booking_date date not null,
   booking_time text not null,
+  subscriber boolean not null default false,
   duration_hours numeric(3,1) not null default 1,
   package_name text not null,
   total_amount numeric(10,2) not null default 0,
@@ -42,6 +43,7 @@ create table if not exists public.booking_requests (
 );
 
 alter table public.booking_requests add column if not exists paid_amount numeric(10,2) not null default 0;
+alter table public.booking_requests add column if not exists subscriber boolean not null default false;
 alter table public.booking_requests add column if not exists duration_hours numeric(3,1) not null default 1;
 alter table public.booking_requests drop constraint if exists booking_requests_payment_status_check;
 alter table public.booking_requests add constraint booking_requests_payment_status_check check (payment_status in ('unpaid', 'deposit', 'paid', 'pending', 'proof_submitted', 'approved', 'rejected')) not valid;

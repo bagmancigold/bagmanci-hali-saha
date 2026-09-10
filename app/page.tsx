@@ -184,6 +184,7 @@ export default function Home() {
           booking_date: selectedDay,
           booking_time: selectedSlot,
           duration_hours: selectedDuration,
+          subscriber: subscriberVerified,
           package_name: bookingPackageTitle,
           total_amount: price,
           deposit_amount: 600,
@@ -374,7 +375,7 @@ export default function Home() {
                   </button>
                 </div>
               </div>
-              <div className="mb-6 grid grid-cols-7 gap-2">
+              <div className={`mb-6 grid grid-cols-7 gap-2 ${subscriberVerified ? "subscriber-calendar" : ""}`}>
                 {days.map((item) => (
                   <button
                     key={item.date}
@@ -398,7 +399,7 @@ export default function Home() {
                   </button>
                 ))}
               </div>
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <div className={`grid grid-cols-2 gap-2 sm:grid-cols-4 ${subscriberVerified ? "subscriber-slots" : ""}`}>
                 {slots.map((slot) => {
                   const slotHour = Number(slot.slice(0, 2));
                   const isBooked = booked.some((booking) => {
