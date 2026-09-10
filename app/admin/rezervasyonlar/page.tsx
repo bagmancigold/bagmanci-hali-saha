@@ -68,6 +68,7 @@ const dateText = (date: Date) =>
 export default function AdminBookingsPage() {
   const [authorized, setAuthorized] = useState(false);
   const [weekOffset, setWeekOffset] = useState(0);
+  const [selectedDate, setSelectedDate] = useState("");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [subscriptionSlots, setSubscriptionSlots] = useState<
     SubscriptionSlot[]
@@ -92,6 +93,17 @@ export default function AdminBookingsPage() {
       }),
     [weekStart],
   );
+  const monthStart = useMemo(
+    () => iso(new Date(weekStart.getFullYear(), weekStart.getMonth(), 1, 12)),
+    [weekStart],
+  );
+  const monthEnd = useMemo(
+    () => iso(new Date(weekStart.getFullYear(), weekStart.getMonth() + 1, 0, 12)),
+    [weekStart],
+  );
+  useEffect(() => {
+    setSelectedDate((current) => (dates.includes(current) ? current : dates[0]));
+  }, [dates]);
 
   const load = async () => {
     const client = getSupabaseClient();
@@ -107,8 +119,8 @@ export default function AdminBookingsPage() {
       .select(
         "id, customer_name, phone, booking_date, booking_time, duration_hours, total_amount, payment_status, subscriber",
       )
-      .gte("booking_date", dates[0])
-      .lte("booking_date", dates[6])
+      .gte("booking_date", monthStart)
+      .lte("booking_date", monthEnd)
       .order("booking_date")
       .order("booking_time");
     if (error) setMessage(error.message);
@@ -116,8 +128,7 @@ export default function AdminBookingsPage() {
       setBookings(data || []);
       const { data: slots } = await client
         .from("subscription_slots")
-        .select("id, user_id, subscription_day, subscription_time, active")
-        .eq("active", true);
+        .select("id, user_id, subscription_day, subscription_time, active");
       const detailedSlots = await Promise.all((slots || []).map(async (slot) => {
         const { data: profile } = await client.from("profiles").select("email, full_name, phone, created_at").eq("id", slot.user_id).maybeSingle();
         const { count } = await client.from("booking_requests").select("id", { count: "exact", head: true }).eq("user_id", slot.user_id).in("payment_status", ["paid", "approved"]);
@@ -133,7 +144,7 @@ export default function AdminBookingsPage() {
         error instanceof Error ? error.message : "Rezervasyonlar yüklenemedi.",
       ),
     );
-  }, [dates]);
+  }, [dates, monthStart, monthEnd]);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(timer);
@@ -162,7 +173,8 @@ export default function AdminBookingsPage() {
   const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const currentHour = `${String(now.getHours()).padStart(2, "0")}.00-${String((now.getHours() + 1) % 24).padStart(2, "0")}.00`;
   const summaryDate = dates.includes(localDate) ? localDate : dates[0];
-  const summaryBookings = bookings.filter(
+  const weekBookings = bookings.filter((booking) => dates.includes(booking.booking_date));
+  const summaryBookings = weekBookings.filter(
     (booking) => booking.booking_date === summaryDate,
   );
   const daytimeMatches = summaryBookings.filter((booking) => {
@@ -174,13 +186,19 @@ export default function AdminBookingsPage() {
     (total, booking) => total + Number(booking.total_amount || 0),
     0,
   );
-  const pendingBookings = bookings.filter((booking) =>
+  const pendingBookings = weekBookings.filter((booking) =>
     ["pending", "proof_submitted", "deposit", "unpaid"].includes(booking.payment_status),
   ).length;
-  const weeklyRevenue = bookings.reduce(
+  const weeklyRevenue = weekBookings.reduce(
     (total, booking) => total + Number(booking.total_amount || 0),
     0,
   );
+  const monthlyRevenue = bookings.reduce(
+    (total, booking) => total + Number(booking.total_amount || 0),
+    0,
+  );
+  const cancelledSubscribers = subscriptionSlots.filter((slot) => !slot.active).length;
+  const activeSubscribers = subscriptionSlots.filter((slot) => slot.active).length;
   const dayTotal = (date: string) =>
     bookings
       .filter((booking) => booking.booking_date === date)
@@ -271,6 +289,19 @@ export default function AdminBookingsPage() {
             {dateText(new Date(weekStart.getTime() + 6 * 86400000))}
           </p>
         </div>
+        <div className="admin-day-picker" aria-label="Defter günü seçimi">
+          {dates.map((date, dayIndex) => (
+            <button
+              key={date}
+              type="button"
+              onClick={() => setSelectedDate(date)}
+              className={selectedDate === date ? "admin-day-picker-active" : ""}
+            >
+              <strong>{days[dayIndex]}</strong>
+              <span>{date.slice(8, 10)}.{date.slice(5, 7)}</span>
+            </button>
+          ))}
+        </div>
         <button type="button" className="manual-booking-button mb-4" onClick={() => openManual()}><Plus size={17} /> Manuel Maç Ekle</button>
         <div className="reservation-summary mb-4 grid w-full grid-cols-2 gap-3">
           <div className="reservation-summary-card">
@@ -285,7 +316,7 @@ export default function AdminBookingsPage() {
           </div>
           <div className="reservation-summary-card">
             <span>AKTİF ABONE</span>
-            <strong>{subscriptionSlots.length}</strong>
+            <strong>{activeSubscribers}</strong>
             <small>Sistemdeki aktif sabit saat</small>
           </div>
           <div className="reservation-summary-card">
@@ -332,7 +363,9 @@ export default function AdminBookingsPage() {
             <div className="reservation-hour reservation-total-heading">
               Toplam
             </div>
-            {dates.map((date, dayIndex) => (
+            {dates.filter((date) => date === selectedDate).map((date) => {
+              const dayIndex = dates.indexOf(date);
+              return (
               <div className="contents" key={date}>
                 <div
                   className={`reservation-day ${date === localDate ? "reservation-day-current" : ""}`}
@@ -390,7 +423,8 @@ export default function AdminBookingsPage() {
                   ₺{dayTotal(date).toLocaleString("tr-TR")}
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         <p className="mt-3 text-[11px] text-[var(--muted)]">
@@ -406,7 +440,17 @@ export default function AdminBookingsPage() {
           </div>
           <div><small>Toplam maç</small><b>{bookings.length}</b></div>
           <div><small>Toplam hasılat</small><b>₺{weeklyRevenue.toLocaleString("tr-TR")}</b></div>
-          <div><small>Aktif abone</small><b>{subscriptionSlots.length}</b></div>
+          <div><small>Aktif abone</small><b>{activeSubscribers}</b></div>
+        </section>
+        <section className="weekly-field-summary monthly-field-summary">
+          <div className="weekly-field-summary-heading">
+            <span>AYLIK SAHA ÖZETİ</span>
+            <strong>{new Intl.DateTimeFormat("tr-TR", { month: "long", year: "numeric" }).format(weekStart)}</strong>
+          </div>
+          <div><small>Toplam maç</small><b>{bookings.length}</b></div>
+          <div><small>Toplam hasılat</small><b>₺{monthlyRevenue.toLocaleString("tr-TR")}</b></div>
+          <div><small>Aktif abone</small><b>{activeSubscribers}</b></div>
+          <div><small>İptal edilen abone</small><b>{cancelledSubscribers}</b></div>
         </section>
         {manualOpen && <div className="admin-modal-backdrop" onClick={() => setManualOpen(false)}><div className="admin-modal" onClick={(event) => event.stopPropagation()}><div className="admin-modal-heading"><div><p>YENİ KAYIT</p><h2>Manuel Rezervasyon Ekle</h2></div><button type="button" onClick={() => setManualOpen(false)}>×</button></div><div className="admin-modal-grid"><label>Gün<input type="date" value={manualBooking.booking_date} onChange={(event) => setManualBooking({ ...manualBooking, booking_date: event.target.value })} /></label><label>Saat<input type="time" value={manualBooking.booking_time} onChange={(event) => setManualBooking({ ...manualBooking, booking_time: event.target.value })} /></label><label className="admin-modal-wide">Takım Kaptanı / Müşteri<input value={manualBooking.customer_name} onChange={(event) => setManualBooking({ ...manualBooking, customer_name: event.target.value })} /></label><label>Telefon<input value={manualBooking.phone} onChange={(event) => setManualBooking({ ...manualBooking, phone: event.target.value.replace(/\D/g, "").slice(0, 11) })} placeholder="05xxxxxxxxx" /></label><label>Ücret<input type="number" value={manualBooking.total_amount} onChange={(event) => setManualBooking({ ...manualBooking, total_amount: event.target.value })} /></label><label>Ödeme Durumu<select value={manualBooking.payment_status} onChange={(event) => setManualBooking({ ...manualBooking, payment_status: event.target.value })}><option value="paid">Ödendi</option><option value="deposit">Kapora Alındı</option><option value="unpaid">Ödenmedi / Maç Sonu</option></select></label><label className="admin-modal-wide">Not / Açıklama<textarea value={manualBooking.notes} onChange={(event) => setManualBooking({ ...manualBooking, notes: event.target.value })} /></label></div><button type="button" className="admin-modal-save" onClick={saveManual} disabled={savingManual}>{savingManual ? "Kaydediliyor..." : "Kaydet"}</button></div></div>}
         {selectedSubscription && <div className="admin-modal-backdrop" onClick={() => setSelectedSubscription(null)}><div className="admin-modal subscription-detail-modal" onClick={(event) => event.stopPropagation()}><div className="admin-modal-heading"><div><p>GOLD ABONE</p><h2>{selectedSubscription.profile?.full_name || "Abone profili"}</h2></div><button type="button" onClick={() => setSelectedSubscription(null)}>×</button></div><div className="subscription-detail-list"><p><span>E-posta</span><strong>{selectedSubscription.profile?.email || "Kayıtlı e-posta yok"}</strong></p><p><span>Telefon</span><strong>{selectedSubscription.profile?.phone || "Telefon yok"}</strong></p><p><span>Kayıt tarihi</span><strong>{selectedSubscription.profile?.created_at ? new Intl.DateTimeFormat("tr-TR").format(new Date(selectedSubscription.profile.created_at)) : "-"}</strong></p><p><span>Toplam oynadığı hafta</span><strong>{selectedSubscription.completedWeeks || 0} hafta</strong></p></div></div></div>}
