@@ -22,6 +22,7 @@ button { appearance: none; }
 .header-login-button, .site-action-button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 999px; padding: 0 22px; background: var(--lime); color: var(--green); font-size: 15px; font-weight: 700; line-height: 1; text-decoration: none; }
 .header-login-button:hover, .site-action-button:hover { background: white; }
 .header-shell { min-width: 0; }
+.header-match-button { position: absolute; right: 292px; top: 18px; border: 1px solid rgb(212 175 55 / 55%); border-radius: 999px; background: rgb(212 175 55 / 9%); padding: 10px 12px; color: var(--lime); font-size: 11px; font-weight: 900; text-decoration: none; }
 .header-brand { max-width: calc(100% - 220px); overflow: hidden; text-overflow: ellipsis; font-size: 22px !important; }
 .header-login-short { display: none; }
 .site-header { width: 100vw; position: fixed !important; inset-inline: 0; }
@@ -29,6 +30,12 @@ button { appearance: none; }
 .header-login-position { position: absolute; right: 20px; top: 14px; min-width: 132px; }
 .header-account-position { position: absolute; right: 20px; top: 14px; }
 .header-reservation-button { position: absolute; right: 175px; top: 18px; border: 1px solid rgb(212 175 55 / 70%); border-radius: 999px; background: rgb(212 175 55 / 12%); padding: 10px 14px; color: var(--lime); font-size: 12px; font-weight: 900; text-decoration: none; }
+.booking-form-card { position: relative; isolation: isolate; overflow: hidden; background: linear-gradient(135deg, rgb(6 26 20 / 94%), rgb(10 74 54 / 90%)), var(--booking-background, url('https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=1400&q=80')) center / cover; }
+.booking-form-card > * { position: relative; z-index: 1; }
+.duration-notice { margin-top: 10px; border-radius: 10px; padding: 9px 10px; font-size: 11px; line-height: 1.45; }
+.duration-notice.success { background: rgb(212 175 55 / 18%); color: #dff6df; }
+.duration-notice.warning { background: rgb(220 70 70 / 18%); color: #ffd3d3; }
+.subscriber-summary-badge { display: inline-flex; max-width: 100%; margin-bottom: 16px; border: 1px solid #d4af37; border-radius: 999px; background: #fff8dc; padding: 9px 14px; color: #8a650d; font-size: 11px; font-weight: 900; }
 .schedule-row { display: grid; gap: 8px; margin-top: 12px; }
 .schedule-row-label { color: var(--green); font-size: 10px; font-weight: 900; letter-spacing: .16em; }
 .schedule-row-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 2px 2px 10px; scrollbar-width: thin; overscroll-behavior-x: contain; }
@@ -105,6 +112,10 @@ button { appearance: none; }
 .account-page-gold .account-card { background: #ffffff; border-color: #d7c27a; }
 .gold-theme .reservation-card, .gold-theme .payment-choice { color: var(--ink); }
 @media (max-width: 640px) {
+  .header-shell { height: 84px; }
+  .header-brand { left: 50%; max-width: 42px; transform: translateX(-50%); }
+  .header-brand > span:last-child { display: none; }
+  .header-match-button { display: none; }
   .header-account-position { right: 20px; top: 16px; }
   .header-reservation-button { left: 92px; right: auto; top: 19px; padding: 8px 10px; font-size: 10px; }
   .header-account-button { min-height: 44px; padding: 0 12px; font-size: 12px; }

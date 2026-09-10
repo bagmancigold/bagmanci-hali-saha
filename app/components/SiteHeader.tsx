@@ -69,6 +69,9 @@ export default function SiteHeader() {
         <a href="#rezervasyon" className="header-reservation-button">
           Rezervasyon
         </a>
+        <a href="#kayitlar" className="header-match-button">
+          Maç Tekrarı
+        </a>
         {userName ? (
           <div className="header-account-position">
             <button

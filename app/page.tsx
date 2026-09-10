@@ -132,6 +132,7 @@ export default function Home() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedPackage, setSelectedPackage] = useState(packages[0]);
   const [selectedDuration, setSelectedDuration] = useState(1);
+  const [durationNotice, setDurationNotice] = useState("");
   const [booked, setBooked] = useState<
     { date: string; time: string; duration: number }[]
   >([]);
@@ -150,6 +151,7 @@ export default function Home() {
   const [videoPlaying, setVideoPlaying] = useState(false);
   const selectedLabel =
     days.find((day) => day.date === selectedDay)?.full ?? selectedDay;
+  const weekTitle = `${new Intl.DateTimeFormat("tr-TR", { month: "long", year: "numeric" }).format(new Date(`${days[0].date}T12:00:00`))} • ${Math.ceil((new Date(`${days[0].date}T12:00:00`).getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / 604800000)}. Hafta`;
   const isNightSlot = selectedSlot
     ? Number(selectedSlot.slice(0, 2)) >= 18 ||
       Number(selectedSlot.slice(0, 2)) < 2
@@ -241,6 +243,11 @@ export default function Home() {
         );
         setForm((current) => ({
           ...current,
+          name:
+            profile?.full_name ||
+            data.user.user_metadata?.full_name ||
+            current.name,
+          phone: profile?.phone || current.phone,
           subscriber: Boolean(profile?.subscriber),
         }));
       });
@@ -303,12 +310,12 @@ export default function Home() {
 
   const selectedWeekday = new Intl.DateTimeFormat("tr-TR", {
     weekday: "long",
-  }).format(new Date(`${selectedDay}T12:00:00`));
+  }).format(new Date(`${selectedDay}T12:00:00`)).toLocaleLowerCase("tr-TR");
   const subscriptionLocked = (slot: string) =>
     subscriptionSlots.some(
       (item) =>
         item.user_id !== currentUserId &&
-        item.subscription_day === selectedWeekday &&
+        item.subscription_day.toLocaleLowerCase("tr-TR") === selectedWeekday &&
         item.subscription_time.startsWith(slot) &&
         item.active,
     );
@@ -316,10 +323,44 @@ export default function Home() {
     subscriptionSlots.some(
       (item) =>
         item.user_id === currentUserId &&
-        item.subscription_day === selectedWeekday &&
+        item.subscription_day.toLocaleLowerCase("tr-TR") === selectedWeekday &&
         item.subscription_time.startsWith(slot) &&
         item.active,
     );
+  const isSlotUnavailable = (slot: string, duration: number) => {
+    const startHour = Number(slot.slice(0, 2));
+    return booked.some((booking) => {
+      if (booking.date !== selectedDay) return false;
+      const bookingStart = Number(booking.time.slice(0, 2));
+      const bookingEnd = bookingStart + booking.duration;
+      return Array.from(
+        { length: Math.ceil(duration) },
+        (_, index) => (startHour + index) % 24,
+      ).some((hour) => hour >= bookingStart && hour < bookingEnd);
+    });
+  };
+  const selectDuration = (duration: number) => {
+    if (!selectedSlot) {
+      setSelectedDuration(duration);
+      setDurationNotice("Önce bir saat seçin.");
+      return;
+    }
+    if (isSlotUnavailable(selectedSlot, duration)) {
+      setDurationNotice(
+        duration === 1.5
+          ? "Seçtiğiniz saatin arkasındaki saat dolu olduğu için yarım saat uzatma eklenemez. Lütfen 1 saati seçin veya ardışık boş saat aralığı bulun."
+          : "Seçilen saat aralığı müsait değil.",
+      );
+      if (duration !== 1) setSelectedDuration(1);
+      return;
+    }
+    setSelectedDuration(duration);
+    setDurationNotice(
+      duration === 1.5
+        ? "✓ Sonraki saat müsait olduğu için 1.5 saatlik maç süresi tanımlandı."
+        : "",
+    );
+  };
   const renderSlot = (slot: string) => {
     const slotHour = Number(slot.slice(0, 2));
     const isBooked = booked.some((booking) => {
@@ -341,6 +382,17 @@ export default function Home() {
         disabled={isLocked}
         onClick={() => {
           setSelectedSlot(slot);
+          if (
+            selectedDuration > 1 &&
+            isSlotUnavailable(slot, selectedDuration)
+          ) {
+            setSelectedDuration(1);
+            setDurationNotice(
+              "Seçilen saatin devamında yeterli boşluk olmadığı için maç süresi 1 saate ayarlandı.",
+            );
+          } else {
+            setDurationNotice("");
+          }
           if (isOwnSubscription)
             setForm((current) => ({
               ...current,
@@ -503,6 +555,10 @@ export default function Home() {
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10">
+            <div className="subscriber-summary-badge">
+              ★ Sabit Abone Olun, 2. Haftadan İtibaren Maç Başı 100 TL Tasarruf
+              Edin
+            </div>
             <p className="mb-4 text-sm font-bold uppercase tracking-[.18em] text-[var(--green)]">
               Canlı takvim
             </p>
@@ -515,15 +571,7 @@ export default function Home() {
             <div className="p-5 sm:p-8">
               <div className="mb-7 flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[var(--muted)]">
-                    {days[0].year} ·{" "}
-                    {Math.ceil(
-                      (new Date(`${days[0].date}T12:00:00`).getTime() -
-                        new Date(new Date().getFullYear(), 0, 1).getTime()) /
-                        604800000,
-                    )}
-                    . hafta
-                  </p>
+                  <p className="text-sm text-[var(--muted)]">{weekTitle}</p>
                   <p className="display text-xl font-extrabold">Müsaitlikler</p>
                 </div>
                 <div className="flex gap-2">
@@ -560,9 +608,6 @@ export default function Home() {
                     }}
                     className={`rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "cursor-not-allowed border-transparent bg-[#f1f3ef] text-[var(--muted)] opacity-45" : selectedDay === item.date ? "border-[var(--green)] bg-[var(--green)] text-white" : "border-[var(--line)] hover:border-[var(--green)]"}`}
                   >
-                    <span className="block text-xs font-extrabold opacity-70">
-                      {item.year}
-                    </span>
                     <span className="mt-1 block text-xs font-semibold opacity-60">
                       {item.day}
                     </span>
@@ -585,7 +630,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="bg-[var(--green)] p-6 text-white sm:p-8">
+            <div className="booking-form-card p-6 text-white sm:p-8">
               <div className="mb-8 flex items-center gap-3">
                 <CalendarDays className="text-[var(--lime)]" />
                 <div>
@@ -602,16 +647,20 @@ export default function Home() {
                     <button
                       key={duration}
                       type="button"
-                      onClick={() => {
-                        setSelectedDuration(duration);
-                        setSelectedSlot(null);
-                      }}
+                      onClick={() => selectDuration(duration)}
                       className={`rounded-xl border px-3 py-3 text-sm font-extrabold ${selectedDuration === duration ? "border-[var(--lime)] bg-[var(--lime)] text-[var(--green)]" : "border-white/20 bg-white/10 text-white"}`}
                     >
                       {duration === 1.5 ? "1,5 saat" : `${duration} saat`}
                     </button>
                   ))}
                 </div>
+                {durationNotice && (
+                  <p
+                    className={`duration-notice ${durationNotice.startsWith("✓") ? "success" : "warning"}`}
+                  >
+                    {durationNotice}
+                  </p>
+                )}
               </div>
               <label className="mb-3 block text-sm font-semibold">
                 Ad soyad
@@ -674,39 +723,6 @@ export default function Home() {
                 </p>
               )}
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="subscriber-showcase px-5 py-12 lg:px-8">
-        <div className="mx-auto grid max-w-[1240px] gap-5 lg:grid-cols-[.85fr_1.15fr] lg:items-center">
-          <div>
-            <p className="mb-3 text-xs font-black uppercase tracking-[.2em] text-[#d4af37]">
-              VIP GOLD KULÜP
-            </p>
-            <h2 className="display text-3xl font-extrabold text-white sm:text-4xl">
-              Neden Bağmancı Abonesi Olmalısınız?
-            </h2>
-          </div>
-          <div className="subscriber-benefits-grid">
-            <article>
-              <strong>01</strong>
-              <p>
-                Haftalık sabit sahanız garanti olsun, maç saatinizi kimse
-                kapamasın.
-              </p>
-            </article>
-            <article>
-              <strong>02</strong>
-              <p>
-                2. haftadan itibaren her maçta 100 TL net tasarruf: 1800 TL
-                yerine 1700 TL.
-              </p>
-            </article>
-            <article>
-              <strong>03</strong>
-              <p>Öncelikli saha ve VIP Gold üyelik ayrıcalıkları.</p>
-            </article>
           </div>
         </div>
       </section>
