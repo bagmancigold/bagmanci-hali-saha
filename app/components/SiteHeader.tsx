@@ -14,6 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import { getSupabaseClient } from "../../lib/supabase";
 import SiteLogo from "./SiteLogo";
+import ThemeToggle from "./ThemeToggle";
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -68,44 +69,47 @@ export default function SiteHeader() {
             BAĞMANCI <span className="text-[var(--lime)]">HALI SAHA</span>
           </span>
         </a>
-        {userName ? (
-          <div className="luxury-header-account">
-            <button
-              type="button"
-              className="luxury-account-button"
-              onClick={() => setAccountOpen((value) => !value)}
+        <div className="luxury-header-controls">
+          <ThemeToggle />
+          {userName ? (
+            <div className="luxury-header-account">
+              <button
+                type="button"
+                className="luxury-account-button"
+                onClick={() => setAccountOpen((value) => !value)}
+              >
+                <UserRound size={16} />
+                <span>Hesabım</span>
+                <ChevronDown size={15} />
+              </button>
+              {accountOpen && (
+                <div className="luxury-account-menu">
+                  <p>Merhaba,</p>
+                  <strong>{userName}</strong>
+                  <a href="/hesabim">
+                    <Settings size={15} /> Ayarlar
+                  </a>
+                  <a href="/hesabim#rezervasyonlar">
+                    <ArrowRight size={15} /> Rezervasyonlarım
+                  </a>
+                  <a href="/hesabim#abonelik">
+                    <ArrowRight size={15} /> Aboneliklerim
+                  </a>
+                  <button type="button" onClick={signOut}>
+                    <LogOut size={15} /> Çıkış Yap
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <a
+              href="/musteri"
+              className="luxury-account-button luxury-login-button"
             >
-              <UserRound size={16} />
-              <span>Hesabım</span>
-              <ChevronDown size={15} />
-            </button>
-            {accountOpen && (
-              <div className="luxury-account-menu">
-                <p>Merhaba,</p>
-                <strong>{userName}</strong>
-                <a href="/hesabim">
-                  <Settings size={15} /> Ayarlar
-                </a>
-                <a href="/hesabim#rezervasyonlar">
-                  <ArrowRight size={15} /> Rezervasyonlarım
-                </a>
-                <a href="/hesabim#abonelik">
-                  <ArrowRight size={15} /> Aboneliklerim
-                </a>
-                <button type="button" onClick={signOut}>
-                  <LogOut size={15} /> Çıkış Yap
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <a
-            href="/musteri"
-            className="luxury-account-button luxury-login-button"
-          >
-            <UserRound size={16} /> <span>GİRİŞ YAP</span>
-          </a>
-        )}
+              <UserRound size={16} /> <span>GİRİŞ YAP</span>
+            </a>
+          )}
+        </div>
       </div>
       <nav className="luxury-sub-bar" aria-label="Ana navigasyon">
         <a href="#rezervasyon" onClick={() => setOpen(false)}>

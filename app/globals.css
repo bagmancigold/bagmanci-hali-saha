@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --ink: #202a27;
@@ -9,11 +10,23 @@
   --lime: #d9f36a;
   --green: #24533d;
   --line: #e5e9e1;
+  color-scheme: light;
+}
+
+.dark {
+  --ink: #F8FAFC;
+  --muted: #b7c9c0;
+  --cream: #061a14;
+  --paper: #0a2e22;
+  --lime: #D4AF37;
+  --green: #0a4a36;
+  --line: rgb(212 175 55 / 35%);
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { margin: 0; color: var(--ink); background: var(--cream); font-family: 'DM Sans', sans-serif; }
+body { margin: 0; color: var(--ink); background: var(--cream); font-family: 'DM Sans', sans-serif; transition: background-color .3s ease, color .3s ease; }
 button, input { font: inherit; }
 button { cursor: pointer; }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -664,4 +677,134 @@ main#top > footer { order: 6; }
   .luxury-sub-bar { min-height: 58px; gap: 7px; padding: 9px 12px 13px; }
   .luxury-sub-bar a { min-height: 36px; flex: 1 1 0; padding: 0 9px; font-size: 10px; letter-spacing: .025em; }
   .luxury-account-menu { top: 48px; right: -4px; }
+}
+
+/* ---------- Theme toggle ---------- */
+.luxury-header-controls { position: relative; display: flex; align-items: center; gap: 8px; justify-self: end; }
+.theme-toggle { position: relative; }
+.theme-toggle-button {
+  display: inline-flex;
+  height: 44px;
+  width: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgb(212 175 55 / 45%);
+  border-radius: 999px;
+  background: rgb(2 31 22 / 48%);
+  backdrop-filter: blur(12px);
+  color: #f3e2a5;
+  transition: border-color .3s ease, box-shadow .3s ease, background-color .3s ease;
+}
+.theme-toggle-button:hover { border-color: #e7c851; box-shadow: 0 0 15px rgb(212 175 55 / 30%); }
+@media (max-width: 640px) { .theme-toggle-button { height: 38px; width: 38px; } }
+.theme-toggle-panel {
+  position: absolute;
+  right: 0;
+  top: 54px;
+  z-index: 6;
+  display: grid;
+  width: 168px;
+  gap: 2px;
+  border: 1px solid rgb(212 175 55 / 40%);
+  border-radius: 16px;
+  background: rgb(6 42 31 / 92%);
+  backdrop-filter: blur(16px) saturate(140%);
+  padding: 8px;
+  box-shadow: 0 20px 50px rgb(0 0 0 / 35%);
+  animation: theme-panel-in .18s ease;
+}
+@keyframes theme-panel-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+.theme-toggle-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  padding: 9px 10px;
+  color: #e7ecea;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+  transition: border-color .2s ease, background-color .2s ease, box-shadow .2s ease;
+}
+.theme-toggle-option:hover { border-color: rgb(212 175 55 / 55%); background: rgb(212 175 55 / 12%); box-shadow: 0 0 12px rgb(212 175 55 / 20%); }
+.theme-toggle-option span { flex: 1; }
+.theme-toggle-option-active { border-color: rgb(212 175 55 / 60%); background: rgb(212 175 55 / 16%); color: #f8fafc; }
+.theme-toggle-check { color: #e7c851; flex: none; }
+
+/* ---------- Dark theme surfaces (glass emerald + gold) ---------- */
+.dark .luxury-account-menu,
+.dark .luxury-mobile-menu,
+.dark .account-card,
+.dark .customer-panel,
+.dark .match-step,
+.dark .match-card,
+.dark .admin-modal,
+.dark .payment-choice {
+  background: rgb(8 46 34 / 70%);
+  border-color: rgb(212 175 55 / 30%);
+  backdrop-filter: blur(14px) saturate(130%);
+  color: #F8FAFC;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 35%);
+}
+.dark .luxury-account-menu a, .dark .luxury-account-menu button,
+.dark .luxury-mobile-menu a { color: #E2E8F0; border-top-color: rgb(212 175 55 / 20%); }
+.dark .luxury-account-menu button { color: #ff9d9d; }
+.dark .luxury-mobile-menu a:hover { background: rgb(212 175 55 / 12%); color: #f3e2a5; }
+.dark .luxury-account-menu strong, .dark .account-card h2, .dark .match-step h3 { color: #f3e2a5; }
+
+.dark .account-card input,
+.dark .account-card select,
+.dark .customer-input,
+.dark .match-filter-input,
+.dark .admin-modal-grid input,
+.dark .admin-modal-grid select,
+.dark .admin-modal-grid textarea {
+  background: rgb(6 26 20 / 65%);
+  border-color: rgb(212 175 55 / 35%);
+  color: #F8FAFC;
+}
+.dark .account-card input:disabled { background: rgb(6 26 20 / 40%); color: #b7c9c0; }
+.dark .customer-social-button { background: rgb(6 26 20 / 55%); border-color: rgb(212 175 55 / 30%); color: #F8FAFC; }
+.dark .payment-choice:hover { background: rgb(212 175 55 / 10%); border-color: rgb(212 175 55 / 55%); }
+.dark .payment-choice-active { background: rgb(212 175 55 / 18%); border-color: #d4af37; box-shadow: inset 0 0 0 2px #d4af37, 0 8px 18px rgb(0 0 0 / 30%); }
+.dark .account-membership { background: rgb(6 26 20 / 55%); border-color: rgb(212 175 55 / 25%); color: #b7c9c0; }
+
+/* Schedule slots: crisp gold-bordered emerald glass in dark mode */
+.dark .schedule-slot {
+  border-color: rgb(212 175 55 / 45%);
+  background: rgb(8 46 34 / 62%);
+  backdrop-filter: blur(10px);
+  color: #F8FAFC;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 30%);
+}
+.dark .schedule-slot i { color: #b7c9c0; }
+.dark .schedule-slot:hover { border-color: #e7c851; background: rgb(8 46 34 / 85%); box-shadow: 0 0 16px rgb(212 175 55 / 25%); }
+.dark .schedule-slot-selected { border-color: #d4af37; background: #d4af37; color: #0a2e22; }
+.dark .schedule-slot-vip { background: radial-gradient(circle at 80% 20%, rgb(212 175 55 / 30%), transparent 42%), rgb(8 46 34 / 75%); }
+.dark .schedule-slot-locked { border-color: rgb(183 201 192 / 25%); background: rgb(6 26 20 / 55%); color: #6b7f76; opacity: .55; }
+
+/* Reservation grid (admin calendar) */
+.dark .reservation-corner, .dark .reservation-day, .dark .reservation-cell {
+  background: rgb(8 46 34 / 55%);
+  border-color: rgb(212 175 55 / 22%);
+  color: #F8FAFC;
+}
+.dark .reservation-hour { background: rgb(6 26 20 / 65%); color: #b7c9c0; }
+.dark .reservation-day-current { background: rgb(212 175 55 / 18%); }
+.dark .reservation-day-expanded { background: rgb(212 175 55 / 26%); }
+.dark .reservation-cell-booked { background: rgb(212 175 55 / 16%); }
+.dark .reservation-cell-subscriber { background: rgb(212 175 55 / 24%); }
+.dark .reservation-cell-subscription-locked { background: rgb(6 26 20 / 55%); border-color: rgb(183 201 192 / 25%); color: #6b7f76; }
+.dark .reservation-cell strong { color: #f3e2a5; }
+.dark .reservation-cell span { color: #b7c9c0; }
+.dark .reservation-cell-current { background: rgb(212 175 55 / 30%); }
+
+/* Smooth global theme transition */
+.schedule-slot, .account-card, .account-card input, .account-card select,
+.customer-input, .customer-social-button, .match-step, .match-card,
+.admin-modal, .payment-choice, .luxury-account-menu, .luxury-mobile-menu,
+.reservation-corner, .reservation-day, .reservation-cell, .reservation-hour {
+  transition: background-color .3s ease, border-color .3s ease, color .3s ease, box-shadow .3s ease;
 }
