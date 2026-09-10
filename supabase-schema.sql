@@ -32,6 +32,8 @@ alter table public.site_settings add column if not exists iban text not null def
 alter table public.site_settings add column if not exists iban_holder text not null default '';
 alter table public.site_settings add column if not exists day_price numeric(10,2) not null default 1200;
 alter table public.site_settings add column if not exists night_price numeric(10,2) not null default 1800;
+alter table public.site_settings add column if not exists subscriber_price numeric(10,2) not null default 1700;
+alter table public.site_settings add column if not exists favicon_image text not null default '';
 
 create table if not exists public.booking_requests (
   id uuid primary key default gen_random_uuid(),

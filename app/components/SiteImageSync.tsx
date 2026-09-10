@@ -10,13 +10,14 @@ export default function SiteImageSync() {
         const { getSupabaseClient } = await import("../../lib/supabase");
         const { data } = await getSupabaseClient()
           .from("site_settings")
-          .select("hero_image, match_image, background_image")
+          .select("hero_image, match_image, background_image, favicon_image")
           .eq("id", "main")
           .maybeSingle();
         const settings = data ?? {
           hero_image: "",
           match_image: "",
           background_image: "",
+          favicon_image: "",
         };
         const hero = document.querySelector<HTMLImageElement>(
           'img[alt="Bağmancı Halı Saha"]',
@@ -27,6 +28,14 @@ export default function SiteImageSync() {
         const field = document.querySelector<HTMLElement>("section.noise");
         if (hero) hero.src = settings.hero_image || defaultSiteImages.hero;
         if (match) match.src = settings.match_image || defaultSiteImages.match;
+        const favicon = settings.favicon_image || defaultSiteImages.favicon;
+        let faviconLink = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+        if (!faviconLink) {
+          faviconLink = document.createElement("link");
+          faviconLink.rel = "icon";
+          document.head.appendChild(faviconLink);
+        }
+        faviconLink.href = favicon;
         if (field) {
           const background =
             settings.background_image || defaultSiteImages.background;
