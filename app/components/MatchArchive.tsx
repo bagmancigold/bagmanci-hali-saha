@@ -4,17 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { CalendarDays, ChevronRight, Play, Search, ShieldCheck, Video } from "lucide-react";
 import { getSupabaseClient } from "../../lib/supabase";
 
-const defaultMatches = [
-  { id: "mac-1", title: "Bağmancı FC - Şanlıurfa United", date: "12 Haziran 2024", field: "Saha 1", duration: "58:12", image: "https://images.unsplash.com/photo-1553778263-73a83bab9b0c?auto=format&fit=crop&w=1200&q=85", video: "https://storage.googleapis.com/coverr-main/mp4/Mt_Baker.mp4" },
-  { id: "mac-2", title: "Kaptanlar Ligi · Hafta 4", date: "08 Haziran 2024", field: "Saha 2", duration: "61:40", image: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=85", video: "https://storage.googleapis.com/coverr-main/mp4/Footboys.mp4" },
-  { id: "mac-3", title: "Cuma Gece Maçı", date: "31 Mayıs 2024", field: "Saha 1", duration: "54:28", image: "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?auto=format&fit=crop&w=1200&q=85", video: "https://storage.googleapis.com/coverr-main/mp4/Playing with the ball.mp4" }
-];
+const emptyMatch = { id: "", title: "", date: "", field: "", duration: "", image: "", video: "" };
 
 export default function MatchArchive() {
-  const [matches, setMatches] = useState(defaultMatches);
+  const [matches, setMatches] = useState<typeof emptyMatch[]>([]);
   const [query, setQuery] = useState("");
   const [field, setField] = useState("Tüm sahalar");
-  const [active, setActive] = useState(defaultMatches[0]);
+  const [active, setActive] = useState<typeof emptyMatch | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -27,7 +23,7 @@ export default function MatchArchive() {
             date: d.match_date,
             field: d.field_name,
             duration: d.duration,
-            image: d.thumbnail_url || defaultMatches[0].image,
+            image: d.thumbnail_url || "",
             video: d.video_url
           }));
           setMatches(formatted);
