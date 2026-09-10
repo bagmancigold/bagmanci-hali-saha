@@ -115,10 +115,13 @@ export default function Home() {
   const [videoPlaying, setVideoPlaying] = useState(false);
   const selectedLabel =
     days.find((day) => day.date === selectedDay)?.full ?? selectedDay;
+  const isNightSlot = selectedSlot ? Number(selectedSlot.slice(0, 2)) >= 18 || Number(selectedSlot.slice(0, 2)) < 2 : selectedPackage.title === "Gece Tarifesi";
+  const tariffPrice = selectedPackage.title === "Maç Kaydı" ? 0 : isNightSlot ? 1800 : 1200;
+  const bookingPackageTitle = selectedPackage.title === "Maç Kaydı" ? selectedPackage.title : `${isNightSlot ? "Gece" : "Gündüz"} Tarifesi`;
   const price =
-    subscriberVerified && selectedPackage.price
-      ? selectedPackage.price * selectedDuration * 0.9
-      : selectedPackage.price * selectedDuration;
+    subscriberVerified && tariffPrice
+      ? tariffPrice * selectedDuration * 0.9
+      : tariffPrice * selectedDuration;
 
   useEffect(() => {
     const currentDay = days.find((day) => day.date >= new Date().toISOString().slice(0, 10));
@@ -181,7 +184,7 @@ export default function Home() {
           booking_date: selectedDay,
           booking_time: selectedSlot,
           duration_hours: selectedDuration,
-          package_name: selectedPackage.title,
+          package_name: bookingPackageTitle,
           total_amount: price,
           deposit_amount: 600,
           payment_choice: "deposit",
