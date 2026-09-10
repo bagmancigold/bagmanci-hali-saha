@@ -289,7 +289,9 @@ export default function AdminBookingsPage() {
             {dateText(new Date(weekStart.getTime() + 6 * 86400000))}
           </p>
         </div>
-        <div className="admin-day-picker" aria-label="Defter günü seçimi">
+        <div className="admin-day-picker-wrap">
+          <span className="admin-day-picker-label">GÜN SEÇ</span>
+          <div className="admin-day-picker" aria-label="Defter günü seçimi">
           {dates.map((date, dayIndex) => (
             <button
               key={date}
@@ -301,6 +303,7 @@ export default function AdminBookingsPage() {
               <span>{date.slice(8, 10)}.{date.slice(5, 7)}</span>
             </button>
           ))}
+          </div>
         </div>
         <button type="button" className="manual-booking-button mb-4" onClick={() => openManual()}><Plus size={17} /> Manuel Maç Ekle</button>
         <div className="reservation-summary mb-4 grid w-full grid-cols-2 gap-3">
@@ -340,7 +343,7 @@ export default function AdminBookingsPage() {
           </div>
           <div className="reservation-summary-card">
             <span>TOPLAM MAÇ</span>
-            <strong>{bookings.length}</strong>
+            <strong>{weekBookings.length}</strong>
             <small>Seçilen haftadaki toplam</small>
           </div>
         </div>
@@ -438,7 +441,7 @@ export default function AdminBookingsPage() {
               {dateText(weekStart)} - {dateText(new Date(weekStart.getTime() + 6 * 86400000))}
             </strong>
           </div>
-          <div><small>Toplam maç</small><b>{bookings.length}</b></div>
+          <div><small>Toplam maç</small><b>{weekBookings.length}</b></div>
           <div><small>Toplam hasılat</small><b>₺{weeklyRevenue.toLocaleString("tr-TR")}</b></div>
           <div><small>Aktif abone</small><b>{activeSubscribers}</b></div>
         </section>

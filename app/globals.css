@@ -316,7 +316,9 @@ button { appearance: none; }
 .weekly-field-summary-heading span, .weekly-field-summary small { color: #8a650d; font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
 .weekly-field-summary-heading strong { color: var(--green); font-size: 14px; }
 .weekly-field-summary b { color: var(--green); font-family: 'Manrope', sans-serif; font-size: 20px; }
-.admin-day-picker { display: flex; gap: 8px; width: 100%; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.admin-day-picker-wrap { margin-bottom: 14px; }
+.admin-day-picker-label { display: block; margin-bottom: 6px; color: var(--green); font-size: 10px; font-weight: 900; letter-spacing: .14em; }
+.admin-day-picker { display: flex; gap: 8px; width: 100%; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
 .admin-day-picker::-webkit-scrollbar { display: none; }
 .admin-day-picker button { display: grid; min-width: 96px; gap: 3px; border: 1px solid var(--line); border-radius: 12px; background: white; padding: 9px 11px; color: var(--green); font-size: 11px; text-align: left; }
 .admin-day-picker button span { color: var(--muted); font-size: 10px; }
