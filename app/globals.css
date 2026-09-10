@@ -115,6 +115,7 @@ main#top > footer { order: 6; }
   .admin-dashboard > header nav { top: 62px; }
   .admin-dashboard > div { padding-top: 24px; }
   .admin-dashboard .admin-stat-card { min-height: 0; padding: 16px; }
+  .admin-dashboard .admin-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-dashboard .admin-stat-card svg { margin-bottom: 10px; }
   .admin-dashboard .admin-stat-card p { font-size: 13px; }
   .admin-dashboard .admin-stat-card strong { font-size: 28px; }

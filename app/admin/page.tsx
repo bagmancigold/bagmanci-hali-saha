@@ -308,12 +308,7 @@ export default function AdminPage() {
     <main className="admin-dashboard min-h-screen bg-[#f5f7f3] text-[var(--ink)]">
       <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--green)] px-5 py-5 text-white lg:px-10">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between">
-          <a href="/" className="flex items-center gap-3">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--lime)] text-[var(--green)]">
-              <Trophy size={19} />
-            </span>
-            <span className="font-extrabold">Bağmancı yönetim</span>
-          </a>
+          <a href="/" className="text-sm font-bold text-white/80">Kontrol merkezi</a>
           <button
             aria-label="Menüyü aç"
             className="rounded-lg border border-white/20 p-2 md:hidden"
@@ -335,6 +330,9 @@ export default function AdminPage() {
             </a>
             <a href="/admin/odemeler" className="text-sm font-bold">
               Ödeme sistemi
+            </a>
+            <a href="/admin/arsiv" className="text-sm font-bold">
+              Arşiv
             </a>
             <button type="button" onClick={signOut} className="mt-2 border-t border-[var(--line)] pt-4 text-left text-sm font-bold text-red-700 md:mt-0 md:border-0 md:pt-0 md:text-white">
               Çıkış yap
@@ -362,7 +360,7 @@ export default function AdminPage() {
             {fieldOpen ? "açık" : "kapalı"}
           </div>
         </div>
-        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="admin-stats-grid mb-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           <div className="admin-stat-card rounded-2xl bg-white p-5 shadow-sm">
             <CalendarDays className="mb-5 text-[var(--green)]" size={20} />
             <p className="text-sm text-[var(--muted)]">Bugünkü maç</p>
