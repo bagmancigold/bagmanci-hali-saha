@@ -191,27 +191,29 @@ export default function Home() {
       .then(async ({ data }) => {
         if (!data.user) return;
         setCurrentUserId(data.user.id);
-        const { data: profile } = await getSupabaseClient()
+        const client = getSupabaseClient();
+        const { data: profile } = await client
           .from("profiles")
           .select(
             "subscriber, preferred_subscription_day, preferred_subscription_time, full_name, phone",
           )
           .eq("id", data.user.id)
           .maybeSingle();
-        setSubscriberVerified(
-          Boolean(
-            profile?.subscriber ||
-              (profile?.preferred_subscription_day &&
-                profile?.preferred_subscription_time),
-          ),
-        );
+        const { data: ownSlot } = await client
+          .from("subscription_slots")
+          .select("subscription_day, subscription_time, active")
+          .eq("user_id", data.user.id)
+          .eq("active", true)
+          .maybeSingle();
+        const isActiveSubscriber = Boolean(profile?.subscriber && ownSlot);
+        setSubscriberVerified(isActiveSubscriber);
         setProfileDefaults({ name: profile?.full_name || data.user.user_metadata?.full_name || "", phone: profile?.phone || "" });
-        const { count } = await getSupabaseClient()
+        const { count } = await client
           .from("booking_requests")
           .select("id", { count: "exact", head: true })
           .eq("user_id", data.user.id)
           .in("payment_status", ["paid", "approved"]);
-        setDiscountEligible(Boolean(profile?.subscriber && (count || 0) >= 1));
+        setDiscountEligible(Boolean(isActiveSubscriber && (count || 0) >= 1));
         setForm((current) => ({
           ...current,
           subscriber: Boolean(profile?.subscriber),

@@ -73,6 +73,8 @@ button { appearance: none; }
 .account-booking-row div:nth-child(2) { display: grid; gap: 3px; }
 .account-empty { color: var(--muted); font-size: 13px; }
 .account-subscription-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.account-subscription-grid select:disabled { cursor: not-allowed; background: #eef1ed; color: var(--muted); opacity: .7; }
+.account-membership-note { margin-top: 10px; color: var(--muted); font-size: 11px; line-height: 1.5; }
 .account-subscription-card { margin-top: 16px; }
 .account-subscription-card.gold { border-color: #d4af37; background: linear-gradient(135deg, #fffdf2, #fff7d6); box-shadow: 0 12px 30px rgb(212 175 55 / 15%); }
 .account-subscription-detail { display: grid; grid-template-columns: 1fr 1fr 1fr auto; align-items: center; gap: 14px; }

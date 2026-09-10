@@ -133,6 +133,18 @@ export default function AccountPage() {
     setMessage("");
     const { data } = await getSupabaseClient().auth.getUser();
     if (!data.user) return;
+    if (!profile.subscriber) {
+      const { error } = await getSupabaseClient().from("profiles").upsert({
+        id: data.user.id,
+        email: data.user.email || "",
+        full_name: fullName,
+        phone: profile.phone.trim(),
+        subscriber: false,
+      });
+      setSaving(false);
+      setMessage(error ? error.message : "Başarıyla güncellendi");
+      return;
+    }
     if (
       !profile.preferred_subscription_day ||
       !profile.preferred_subscription_time
@@ -198,7 +210,7 @@ export default function AccountPage() {
       email: data.user.email || "",
       full_name: fullName,
       phone: profile.phone.trim(),
-      subscriber: true,
+      subscriber: profile.subscriber,
       subscription_package:
         profile.subscription_package || "Haftalık Sabit Saha Aboneliği",
       preferred_subscription_day: profile.preferred_subscription_day,
@@ -237,11 +249,7 @@ export default function AccountPage() {
     }
   };
 
-  const isGold = Boolean(
-    profile.subscriber ||
-      (profile.preferred_subscription_day &&
-        profile.preferred_subscription_time),
-  );
+  const isGold = Boolean(profile.subscriber && subscription?.active);
 
   if (loading)
     return (
@@ -322,6 +330,7 @@ export default function AccountPage() {
               <label>
                 Abonelik Günü
                 <select
+                  disabled={!profile.subscriber}
                   value={profile.preferred_subscription_day}
                   onChange={(event) =>
                     updateField(
@@ -341,6 +350,7 @@ export default function AccountPage() {
               <label>
                 Abonelik Saati
                 <select
+                  disabled={!profile.subscriber}
                   value={profile.preferred_subscription_time}
                   onChange={(event) =>
                     updateField(
@@ -358,6 +368,11 @@ export default function AccountPage() {
                 </select>
               </label>
             </div>
+            {!profile.subscriber && (
+              <p className="account-membership-note">
+                Abonelik günü ve saati yalnızca aktif aboneler tarafından düzenlenebilir.
+              </p>
+            )}
             <button
               type="button"
               onClick={save}
