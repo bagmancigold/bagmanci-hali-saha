@@ -305,8 +305,8 @@ export default function AdminPage() {
     );
 
   return (
-    <main className="min-h-screen bg-[#f5f7f3] text-[var(--ink)]">
-      <header className="border-b border-[var(--line)] bg-[var(--green)] px-5 py-5 text-white lg:px-10">
+    <main className="admin-dashboard min-h-screen bg-[#f5f7f3] text-[var(--ink)]">
+      <header className="sticky top-0 z-40 border-b border-[var(--line)] bg-[var(--green)] px-5 py-5 text-white lg:px-10">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between">
           <a href="/" className="flex items-center gap-3">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--lime)] text-[var(--green)]">
@@ -333,6 +333,12 @@ export default function AdminPage() {
             <a href="#ayarlar" className="text-sm">
               Ayarlar
             </a>
+            <a href="/admin/odemeler" className="text-sm font-bold">
+              Ödeme sistemi
+            </a>
+            <button type="button" onClick={signOut} className="mt-2 border-t border-[var(--line)] pt-4 text-left text-sm font-bold text-red-700 md:mt-0 md:border-0 md:pt-0 md:text-white">
+              Çıkış yap
+            </button>
           </nav>
         </div>
       </header>
@@ -357,22 +363,22 @@ export default function AdminPage() {
           </div>
         </div>
         <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <div className="admin-stat-card rounded-2xl bg-white p-5 shadow-sm">
             <CalendarDays className="mb-5 text-[var(--green)]" size={20} />
             <p className="text-sm text-[var(--muted)]">Bugünkü maç</p>
             <strong className="display text-3xl">{bookings.length}</strong>
           </div>
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <div className="admin-stat-card rounded-2xl bg-white p-5 shadow-sm">
             <DollarSign className="mb-5 text-[var(--green)]" size={20} />
             <p className="text-sm text-[var(--muted)]">Günlük ciro</p>
             <strong className="display text-3xl">₺{stats.revenue}</strong>
           </div>
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <div className="admin-stat-card rounded-2xl bg-white p-5 shadow-sm">
             <Users className="mb-5 text-[var(--green)]" size={20} />
             <p className="text-sm text-[var(--muted)]">Aktif abone</p>
             <strong className="display text-3xl">{stats.subscribers}</strong>
           </div>
-          <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <div className="admin-stat-card rounded-2xl bg-white p-5 shadow-sm">
             <Clock3 className="mb-5 text-[var(--green)]" size={20} />
             <p className="text-sm text-[var(--muted)]">Bekleyen kayıt</p>
             <strong className="display text-3xl">
@@ -387,7 +393,7 @@ export default function AdminPage() {
           id="rezervasyonlar"
           className="overflow-hidden rounded-2xl bg-white shadow-sm"
         >
-          <div className="flex flex-col justify-between gap-3 border-b border-[var(--line)] p-6 sm:flex-row sm:items-center">
+          <div className="admin-reservations-header flex flex-col justify-between gap-3 border-b border-[var(--line)] p-6 sm:flex-row sm:items-center">
             <div>
               <h2 className="display text-2xl font-extrabold">
                 Bugünün rezervasyonları
@@ -407,7 +413,7 @@ export default function AdminPage() {
             {bookings.map((booking, index) => (
               <div
                 key={`${booking.time}-${booking.name}`}
-                className="grid gap-4 p-6 md:grid-cols-[90px_1fr_150px_180px] md:items-center"
+                className="admin-booking-row grid gap-4 p-6 md:grid-cols-[90px_1fr_150px_180px] md:items-center"
               >
                 <div className="display text-xl font-extrabold text-[var(--green)]">
                   {booking.time}

@@ -111,4 +111,19 @@ main#top > footer { order: 6; }
 
 @media (max-width: 640px) {
   .display { letter-spacing: -0.035em; }
+  .admin-dashboard > header { padding-top: 12px; padding-bottom: 12px; }
+  .admin-dashboard > header nav { top: 62px; }
+  .admin-dashboard > div { padding-top: 24px; }
+  .admin-dashboard .admin-stat-card { min-height: 0; padding: 16px; }
+  .admin-dashboard .admin-stat-card svg { margin-bottom: 10px; }
+  .admin-dashboard .admin-stat-card p { font-size: 13px; }
+  .admin-dashboard .admin-stat-card strong { font-size: 28px; }
+  .admin-dashboard .admin-reservations-header { padding: 16px; }
+  .admin-dashboard .admin-reservations-header h2 { font-size: 21px; }
+  .admin-dashboard .admin-reservations-header p { font-size: 12px; }
+  .admin-dashboard .admin-booking-row { gap: 8px; padding: 14px 16px; }
+  .admin-dashboard .admin-booking-row > div:first-child { font-size: 18px; }
+  .admin-dashboard .admin-booking-row > div:nth-child(2) p:first-child { font-size: 14px; }
+  .admin-dashboard .admin-booking-row > div:nth-child(2) p:last-child { margin-top: 3px; font-size: 12px; }
+  .admin-dashboard .admin-booking-row > span { padding: 5px 9px; font-size: 11px; }
 }

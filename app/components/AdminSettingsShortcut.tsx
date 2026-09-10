@@ -18,7 +18,7 @@ export default function AdminSettingsShortcut() {
     return () => listener.subscription.unsubscribe();
   }, [pathname]);
 
-  if (!authorized || !pathname.startsWith("/admin")) return null;
+  if (!authorized || !pathname.startsWith("/admin") || pathname === "/admin") return null;
 
   const signOut = async () => {
     await getSupabaseClient().auth.signOut();
