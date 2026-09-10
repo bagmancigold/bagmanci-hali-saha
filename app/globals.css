@@ -568,6 +568,10 @@ main#top > footer { order: 6; }
 .luxury-mobile-menu a { border-radius: 10px; padding: 12px; color: var(--ink); font-size: 13px; font-weight: 700; text-decoration: none; }
 .luxury-mobile-menu a:hover { background: #edf2e8; color: var(--green); }
 @media (min-width: 768px) { .luxury-header-menu { display: none; } }
+@media (min-width: 768px) {
+  .luxury-header-brand { grid-column: 2; }
+  .luxury-header-account, .luxury-login-button { grid-column: 3; }
+}
 @media (max-width: 640px) {
   .luxury-header-top { min-height: 70px; padding: 10px 14px; }
   .luxury-header-brand { gap: 6px; font-size: 12px; letter-spacing: .035em; }
