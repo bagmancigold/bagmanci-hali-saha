@@ -81,6 +81,9 @@ button { appearance: none; }
 .account-subscription-detail strong { color: var(--green); font-size: 14px; }
 .account-subscription-detail button { border: 1px solid #c39a21; border-radius: 999px; background: #d4af37; padding: 10px 14px; color: #211b08; font-size: 11px; font-weight: 900; }
 .gold-theme { --green: #1c1a16; --lime: #d4af37; --cream: #0f0e0c; --paper: #191714; --ink: #f9f4e8; --muted: #b9ad95; --line: #554729; color: var(--ink); background: #0f0e0c; }
+.gold-theme > section:not(.noise), .gold-theme > footer { background: #191714 !important; color: var(--ink); }
+.gold-theme > section:not(.noise) p, .gold-theme > footer p { color: var(--muted); }
+.gold-theme > section:not(.noise) h2, .gold-theme > section:not(.noise) h3 { color: var(--ink); }
 .gold-theme .customer-panel, .gold-theme .match-step, .gold-theme .match-card, .gold-theme .reservation-card { background: #191714; border-color: #554729; }
 .gold-theme .account-card { background: #191714; border-color: #80672b; }
 .gold-theme .account-membership.active, .gold-theme .account-subscription-card.gold { background: linear-gradient(135deg, #2a2415, #17130b); border-color: #d4af37; }
