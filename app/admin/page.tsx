@@ -3,32 +3,14 @@
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
-  CalendarDays,
-  Check,
-  Clock3,
   CreditCard,
-  DollarSign,
   LockKeyhole,
   Menu,
-  Phone,
-  Settings,
   ShieldCheck,
   Trophy,
-  Users,
-  X,
 } from "lucide-react";
 import { getSupabaseClient } from "../../lib/supabase";
 import AdminBookingsPage from "./rezervasyonlar/page";
-
-type AdminBooking = {
-  time: string;
-  name: string;
-  phone: string;
-  package: string;
-  status: string;
-  total: number;
-};
-const initialBookings: AdminBooking[] = [];
 
 export default function AdminPage() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -40,11 +22,7 @@ export default function AdminPage() {
   const [mfaQrCode, setMfaQrCode] = useState("");
   const [mfaSecret, setMfaSecret] = useState("");
   const [mfaMode, setMfaMode] = useState<"verify" | "enroll" | null>(null);
-  const [bookings, setBookings] = useState(initialBookings);
-  const [fieldOpen, setFieldOpen] = useState(true);
-  const [notice, setNotice] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [stats, setStats] = useState({ revenue: 0, subscribers: 0 });
 
   useEffect(() => {
     let client;
@@ -81,30 +59,6 @@ export default function AdminPage() {
       listener.subscription.unsubscribe();
     };
   }, []);
-
-  useEffect(() => {
-    if (!loggedIn) return;
-    const loadRealBookings = async () => {
-      const today = new Date().toISOString().slice(0, 10);
-      const client = getSupabaseClient();
-      const [{ data }, { count: subscribers }] = await Promise.all([
-        client.from("booking_requests").select("booking_time, customer_name, phone, package_name, payment_status, total_amount").eq("booking_date", today).order("booking_time"),
-        client.from("profiles").select("id", { count: "exact", head: true }).eq("subscriber", true),
-      ]);
-      setBookings(
-        (data || []).map((item) => ({
-          time: item.booking_time,
-          name: item.customer_name,
-          phone: item.phone,
-          package: item.package_name,
-          status: item.payment_status,
-          total: Number(item.total_amount || 0),
-        })),
-      );
-      setStats({ revenue: (data || []).reduce((sum, item) => sum + Number(item.total_amount || 0), 0), subscribers: subscribers || 0 });
-    };
-    loadRealBookings();
-  }, [loggedIn]);
 
   const handleLogin = async () => {
     if (!loginForm.username || !loginForm.password) {
@@ -184,15 +138,6 @@ export default function AdminPage() {
     await getSupabaseClient().auth.signOut();
     setLoggedIn(false);
     setMfaMode(null);
-  };
-
-  const updateBooking = (index: number, status: string) => {
-    setBookings((current) =>
-      current.map((booking, bookingIndex) =>
-        bookingIndex === index ? { ...booking, status } : booking,
-      ),
-    );
-    setNotice(`Rezervasyon ${status.toLowerCase()} olarak güncellendi.`);
   };
 
   if (!loggedIn && mfaMode)
@@ -319,13 +264,10 @@ export default function AdminPage() {
             <a href="/" className="flex items-center gap-2 text-sm">
               <ArrowLeft size={16} /> Siteye dön
             </a>
-            <a href="/admin/arsiv" className="text-sm">Arşiv</a>
+            <a href="/admin/arsiv" className="text-sm">Arşivler</a>
             <a href="/admin/ayarlar" className="text-sm">Ayarlar</a>
             <a href="/admin/odemeler" className="text-sm font-bold">
               Ödeme sistemi
-            </a>
-            <a href="/admin/arsiv" className="text-sm font-bold">
-              Arşiv
             </a>
             <button type="button" onClick={signOut} className="mt-2 border-t border-[var(--line)] pt-4 text-left text-sm font-bold text-red-700 md:mt-0 md:border-0 md:pt-0 md:text-white">
               Çıkış yap
@@ -334,142 +276,7 @@ export default function AdminPage() {
         </div>
       </header>
       <div className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10">
-        <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-          <div>
-            <p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-[var(--green)]">
-              ADMIN PANELİ
-            </p>
-            <h1 className="display text-4xl font-extrabold sm:text-5xl">
-              Bugünün saha özeti
-            </h1>
-            <p className="mt-3 text-[var(--muted)]">
-              Haftalık rezervasyonları, ödemeleri ve abonelikleri tek ekrandan yönet.
-            </p>
-          </div>
-        </div>
-        <div className="admin-stats-grid mb-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          <div className="admin-stat-card rounded-2xl bg-white p-5 shadow-sm">
-            <CalendarDays className="mb-5 text-[var(--green)]" size={20} />
-            <p className="text-sm text-[var(--muted)]">Bugünkü maç</p>
-            <strong className="display text-3xl">{bookings.length}</strong>
-          </div>
-          <div className="admin-stat-card rounded-2xl bg-white p-5 shadow-sm">
-            <DollarSign className="mb-5 text-[var(--green)]" size={20} />
-            <p className="text-sm text-[var(--muted)]">Günlük ciro</p>
-            <strong className="display text-3xl">₺{stats.revenue}</strong>
-          </div>
-          <div className="admin-stat-card rounded-2xl bg-white p-5 shadow-sm">
-            <Users className="mb-5 text-[var(--green)]" size={20} />
-            <p className="text-sm text-[var(--muted)]">Aktif abone</p>
-            <strong className="display text-3xl">{stats.subscribers}</strong>
-          </div>
-          <div className="admin-stat-card rounded-2xl bg-white p-5 shadow-sm">
-            <Clock3 className="mb-5 text-[var(--green)]" size={20} />
-            <p className="text-sm text-[var(--muted)]">Bekleyen kayıt</p>
-            <strong className="display text-3xl">
-              {
-                bookings.filter((booking) => booking.status === "pending" || booking.status === "proof_submitted")
-                  .length
-              }
-            </strong>
-          </div>
-        </div>
         <AdminBookingsPage />
-        <section
-          id="rezervasyonlar"
-          className="overflow-hidden rounded-2xl bg-white shadow-sm"
-        >
-          <div className="admin-reservations-header flex flex-col justify-between gap-3 border-b border-[var(--line)] p-6 sm:flex-row sm:items-center">
-            <div>
-              <h2 className="display text-2xl font-extrabold">
-                Bugünün rezervasyonları
-              </h2>
-              <p className="mt-1 text-sm text-[var(--muted)]">
-                {new Intl.DateTimeFormat("tr-TR", { dateStyle: "long" }).format(new Date())}
-              </p>
-            </div>
-            <button
-              onClick={() => { window.location.href = "/admin/rezervasyonlar"; }}
-              className="rounded-full bg-[var(--green)] px-4 py-2 text-sm font-bold text-white"
-            >
-              Rezervasyonları yönet
-            </button>
-          </div>
-          <div className="divide-y divide-[var(--line)]">
-            {bookings.map((booking, index) => (
-              <div
-                key={`${booking.time}-${booking.name}`}
-                className="admin-booking-row grid gap-4 p-6 md:grid-cols-[90px_1fr_150px_180px] md:items-center"
-              >
-                <div className="display text-xl font-extrabold text-[var(--green)]">
-                  {booking.time}
-                </div>
-                <div>
-                  <p className="font-bold">{booking.name}</p>
-                  <p className="mt-1 flex items-center gap-2 text-sm text-[var(--muted)]">
-                    <Phone size={14} /> {booking.phone} · {booking.package}
-                  </p>
-                </div>
-                <span
-                  className={`w-fit rounded-full px-3 py-1 text-xs font-bold ${booking.status === "Onaylandı" ? "bg-[#e5f5bf] text-[var(--green)]" : "bg-[#fff1c9] text-[#8a5a00]"}`}
-                >
-                  {booking.status}
-                </span>
-                <div className="flex gap-2">
-                  <button
-                    aria-label={`${booking.name} kaydını onayla`}
-                    onClick={() => updateBooking(index, "Onaylandı")}
-                    className="rounded-full bg-[var(--green)] p-2 text-white"
-                  >
-                    <Check size={16} />
-                  </button>
-                  <button
-                    aria-label={`${booking.name} kaydını iptal et`}
-                    onClick={() => updateBooking(index, "İptal edildi")}
-                    className="rounded-full bg-red-100 p-2 text-red-700"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-          {notice && (
-            <p className="border-t border-[var(--line)] bg-[#f5f7f3] px-6 py-4 text-sm font-semibold text-[var(--green)]">
-              {notice}
-            </p>
-          )}
-        </section>
-        <section id="ayarlar" className="mt-8 grid gap-4 lg:grid-cols-2">
-          <div className="rounded-2xl bg-[var(--green)] p-6 text-white">
-            <ShieldCheck className="mb-5 text-[var(--lime)]" />
-            <h2 className="display text-2xl font-extrabold">Saha durumu</h2>
-            <p className="mt-2 text-sm text-white/65">
-              Yeni rezervasyon kabulünü buradan açıp kapat.
-            </p>
-            <button
-              onClick={() => {
-                setFieldOpen(!fieldOpen);
-                setNotice(`Saha ${fieldOpen ? "kapatıldı" : "açıldı"}.`);
-              }}
-              className="mt-6 flex items-center gap-2 rounded-full bg-[var(--lime)] px-5 py-3 text-sm font-bold text-[var(--green)]"
-            >
-              <Settings size={16} /> Sahayı {fieldOpen ? "kapat" : "aç"}
-            </button>
-          </div>
-          <div className="rounded-2xl bg-white p-6">
-            <h2 className="display text-2xl font-extrabold">
-              İşletme bilgileri
-            </h2>
-            <div className="mt-5 space-y-3 text-sm text-[var(--muted)]">
-              <p>0545 223 78 78</p>
-              <p>0414 247 51 51</p>
-              <p>Gündüz: 1200 TL</p>
-              <p>Gece: 1800 TL</p>
-              <p>Abone fiyatı: ilk haftadan sonra 1.700 TL</p>
-            </div>
-          </div>
-        </section>
       </div>
     </main>
   );
