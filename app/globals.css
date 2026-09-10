@@ -30,7 +30,7 @@ button { appearance: none; }
 .header-login-position { position: absolute; right: 20px; top: 14px; min-width: 132px; }
 .header-account-position { position: absolute; right: 20px; top: 14px; }
 .header-reservation-button { position: absolute; right: 175px; top: 18px; border: 1px solid rgb(212 175 55 / 70%); border-radius: 999px; background: rgb(212 175 55 / 12%); padding: 10px 14px; color: var(--lime); font-size: 12px; font-weight: 900; text-decoration: none; }
-.booking-form-card { position: relative; isolation: isolate; overflow: hidden; background: linear-gradient(135deg, rgb(6 26 20 / 94%), rgb(10 74 54 / 90%)), var(--booking-background, url('https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=1400&q=80')) center / cover; }
+.booking-form-card { position: relative; isolation: isolate; overflow: hidden; background-color: #0a241b; background-image: linear-gradient(135deg, rgb(6 26 20 / 94%), rgb(10 74 54 / 90%)), var(--booking-background); background-position: center; background-size: cover; }
 .booking-form-card > * { position: relative; z-index: 1; }
 .duration-notice { margin-top: 10px; border-radius: 10px; padding: 9px 10px; font-size: 11px; line-height: 1.45; }
 .duration-notice.success { background: rgb(212 175 55 / 18%); color: #dff6df; }
