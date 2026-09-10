@@ -39,7 +39,11 @@ button { appearance: none; }
 .schedule-row { display: grid; gap: 8px; margin-top: 12px; }
 .schedule-row-label { color: var(--green); font-size: 10px; font-weight: 900; letter-spacing: .16em; }
 .schedule-row-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 2px 2px 10px; scrollbar-width: thin; overscroll-behavior-x: contain; }
-.schedule-slot { display: inline-flex; min-width: 116px; min-height: 58px; flex: 0 0 116px; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 1px solid #d7c27a; border-radius: 14px; background: rgb(255 255 255 / 72%); color: var(--ink); font-size: 15px; font-weight: 800; }
+.schedule-slot { position: relative; display: inline-flex; min-width: 116px; min-height: 64px; flex: 0 0 116px; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border: 1px solid #d7c27a; border-radius: 14px; background: rgb(255 255 255 / 72%); color: var(--ink); font-size: 13px; font-weight: 800; }
+.schedule-slot i { color: var(--muted); font-size: 10px; font-style: normal; line-height: 1; }
+.schedule-slot-crown { position: absolute; right: 7px; top: 6px; color: #d4af37; filter: drop-shadow(0 0 4px rgb(212 175 55 / 65%)); }
+.schedule-slot-vip { border-color: #d4af37; background: radial-gradient(circle at 80% 20%, rgb(212 175 55 / 25%), transparent 42%), #eaf5d1; box-shadow: inset 0 0 0 1px rgb(212 175 55 / 45%), 0 5px 16px rgb(212 175 55 / 12%); }
+.schedule-slot-vip.schedule-slot-selected { background: #d4af37; color: #173329; }
 .schedule-slot:hover { border-color: var(--green); background: white; }
 .schedule-slot-selected { border-color: var(--lime); background: var(--lime); color: var(--green); box-shadow: 0 0 0 2px rgb(212 175 55 / 25%); }
 .schedule-slot-locked { cursor: not-allowed; border-color: #c8ceca; background: #dfe3df; color: #7b847e; opacity: .46; }
@@ -133,10 +137,19 @@ button { appearance: none; }
 
 .header-actions { display: flex; align-items: center; gap: 8px; }
 .header-actions .header-reservation-button, .header-actions .header-match-button { position: static; display: inline-flex; min-height: 42px; align-items: center; justify-content: center; padding: 0 13px; white-space: nowrap; }
-.schedule-days { display: flex; gap: 8px; min-width: 0; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: thin; overscroll-behavior-x: contain; }
+.schedule-days { display: flex; flex-wrap: nowrap; gap: 8px; min-width: 0; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-x; }
 .schedule-days > button { min-width: 76px; flex: 1 0 76px; }
-.schedule-row-scroll { display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, minmax(58px, auto)); grid-auto-columns: minmax(116px, 1fr); overflow-x: auto; overflow-y: hidden; padding-bottom: 10px; scrollbar-width: thin; }
+.schedule-row-scroll { display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, minmax(64px, auto)); grid-auto-columns: minmax(116px, 1fr); flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding-bottom: 10px; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-x; }
 .schedule-row-scroll .schedule-slot { min-width: 0; width: auto; }
+.touch-pan-x { touch-action: pan-x; overscroll-behavior-x: contain; }
+.scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.booking-form-card, .payment-page > div { box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0; }
+@media (max-width: 640px) {
+  .booking-form-card { max-width: 28rem; margin-inline: auto; padding-inline: 1rem !important; }
+  .payment-page { overflow-x: hidden; }
+  .payment-page > div { max-width: 28rem; margin-inline: auto; padding-inline: 1rem; }
+}
 
 @media (min-width: 641px) {
   .header-shell { min-height: 80px; padding: 12px 40px; gap: 18px; }

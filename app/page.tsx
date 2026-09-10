@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock3,
+  Crown,
   Instagram,
   MapPin,
   Phone,
@@ -404,11 +405,13 @@ export default function Home() {
     });
     const isSubscriptionLocked = subscriptionLocked(slot);
     const isOwnSubscription = ownSubscriptionSlot(slot);
+    const isSubscriptionSlot = isSubscriptionLocked || isOwnSubscription;
     const exceedsClosing = selectedDuration > 1 && slot === "01:00";
     const isLocked =
       (isBooked && !isOwnSubscription) ||
       (isSubscriptionLocked && !isOwnSubscription) ||
       exceedsClosing;
+    const endSlot = `${String((slotHour + 1) % 24).padStart(2, "0")}:00`;
     return (
       <button
         key={slot}
@@ -436,12 +439,15 @@ export default function Home() {
             }));
           setNotice("");
         }}
-        className={`schedule-slot ${isLocked ? "schedule-slot-locked" : selectedSlot === slot ? "schedule-slot-selected" : ""}`}
+        className={`schedule-slot ${isSubscriptionSlot ? "schedule-slot-vip" : ""} ${isLocked ? "schedule-slot-locked" : selectedSlot === slot ? "schedule-slot-selected" : ""}`}
       >
+        {isSubscriptionSlot && <Crown className="schedule-slot-crown" size={15} />}
         {isSubscriptionLocked && !isOwnSubscription ? (
           <>
             <span>{slot}</span>
-            <small>DOLU (ABONELİK)</small>
+            <i aria-hidden="true">•</i>
+            <span>{endSlot}</span>
+            <small>DOLU / ABONE</small>
           </>
         ) : isBooked && !isOwnSubscription ? (
           <>
@@ -449,7 +455,11 @@ export default function Home() {
             <small>KAPORA / REZERVASYON</small>
           </>
         ) : (
-          slot
+          <>
+            <span>{slot}</span>
+            <i aria-hidden="true">•</i>
+            <span>{endSlot}</span>
+          </>
         )}
       </button>
     );
@@ -585,7 +595,7 @@ export default function Home() {
 
       <section
         id="rezervasyon"
-        className="bg-white px-5 py-20 lg:px-8 lg:py-28"
+        className="scroll-mt-32 bg-white px-5 py-20 lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10">
@@ -626,7 +636,7 @@ export default function Home() {
                 </div>
               </div>
               <div
-                className={`schedule-days mb-6 ${subscriberVerified ? "subscriber-calendar" : ""}`}
+                className={`schedule-days touch-pan-x scrollbar-none mb-6 ${subscriberVerified ? "subscriber-calendar" : ""}`}
               >
                 {days.map((item) => (
                   <button
@@ -653,13 +663,13 @@ export default function Home() {
               </div>
               <div className="schedule-row">
                 <div className="schedule-row-label">GÜNDÜZ</div>
-                <div className="schedule-row-scroll">
+                <div className="schedule-row-scroll touch-pan-x scrollbar-none">
                   {daytimeSlots.map(renderSlot)}
                 </div>
               </div>
               <div className="schedule-row">
                 <div className="schedule-row-label">GECE</div>
-                <div className="schedule-row-scroll">
+                <div className="schedule-row-scroll touch-pan-x scrollbar-none">
                   {nighttimeSlots.map(renderSlot)}
                 </div>
               </div>
