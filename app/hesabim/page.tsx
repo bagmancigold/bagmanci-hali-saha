@@ -159,17 +159,27 @@ export default function AccountPage() {
       .update({ active: false })
       .eq("user_id", data.user.id)
       .eq("active", true);
-    const { data: savedSlot, error: slotError } = await client
+    const { data: previousSlot } = await client
       .from("subscription_slots")
-      .upsert(
-        {
-          user_id: data.user.id,
-          subscription_day: profile.preferred_subscription_day,
-          subscription_time: profile.preferred_subscription_time,
-          active: true,
-        },
-        { onConflict: "subscription_day,subscription_time" },
-      )
+      .select("id")
+      .eq("user_id", data.user.id)
+      .eq("subscription_day", profile.preferred_subscription_day)
+      .eq("subscription_time", profile.preferred_subscription_time)
+      .maybeSingle();
+    const slotQuery = previousSlot
+      ? client
+          .from("subscription_slots")
+          .update({ active: true })
+          .eq("id", previousSlot.id)
+      : client
+          .from("subscription_slots")
+          .insert({
+            user_id: data.user.id,
+            subscription_day: profile.preferred_subscription_day,
+            subscription_time: profile.preferred_subscription_time,
+            active: true,
+          });
+    const { data: savedSlot, error: slotError } = await slotQuery
       .select(
         "id, subscription_day, subscription_time, field_name, remaining_weeks, active",
       )

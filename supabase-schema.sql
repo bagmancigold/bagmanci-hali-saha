@@ -117,9 +117,11 @@ create table if not exists public.subscription_slots (
   field_name text not null default 'Bağmancı Halı Saha',
   remaining_weeks integer not null default 12,
   active boolean not null default true,
-  created_at timestamptz not null default now(),
-  unique (subscription_day, subscription_time)
+  created_at timestamptz not null default now()
 );
+
+alter table public.subscription_slots drop constraint if exists subscription_slots_subscription_day_subscription_time_key;
+create unique index if not exists subscription_slots_active_unique on public.subscription_slots (subscription_day, subscription_time) where active = true;
 
 alter table public.subscription_slots enable row level security;
 drop policy if exists "public can read active subscription slots" on public.subscription_slots;
