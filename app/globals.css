@@ -103,7 +103,7 @@ button { appearance: none; }
 .match-card small { margin-top: 5px; color: var(--muted); font-size: 11px; }
 .reservation-grid { display: grid; grid-template-columns: 112px repeat(15, minmax(68px, 1fr)) minmax(92px, 1fr); }
 .reservation-corner, .reservation-hour, .reservation-day, .reservation-cell { min-height: 72px; border-right: 2px solid #c2cec5; border-bottom: 2px solid #c2cec5; }
-.reservation-corner, .reservation-day { position: sticky; left: 0; z-index: 3; }
+.reservation-corner, .reservation-day { position: sticky; left: 0; z-index: 3; background: white; box-shadow: 3px 0 0 #c2cec5; }
 .reservation-corner { z-index: 4; }
 .reservation-corner { display: flex; align-items: center; padding: 10px; color: var(--muted); font-size: 11px; font-weight: 800; }
 .reservation-hour { display: flex; align-items: center; justify-content: center; background: #f5f7f3; color: var(--muted); font-size: 11px; font-weight: 800; white-space: nowrap; box-shadow: inset -1px 0 0 rgb(255 255 255 / 45%); }
@@ -138,8 +138,11 @@ button { appearance: none; }
 .subscriber-calendar > button:not(:disabled)::after, .subscriber-slots > button:not(:disabled)::after { content: 'ABONE'; display: block; margin-top: 4px; color: #9a6d0b; font-size: 8px; font-weight: 900; letter-spacing: .08em; }
 @media (max-width: 640px) {
   .reservation-grid { grid-template-columns: 94px repeat(15, 92px) 108px; min-width: 1582px; }
-  .reservation-corner, .reservation-hour, .reservation-day, .reservation-cell { min-height: 70px; }
-  .reservation-hour { font-size: 10px; }
+  .reservation-corner, .reservation-hour { min-height: 58px; }
+  .reservation-day, .reservation-cell { min-height: 70px; }
+  .reservation-hour { font-size: 9px; }
+  .reservation-corner { padding: 6px; font-size: 9px; white-space: nowrap; }
+  .reservation-scroll { overscroll-behavior-x: contain; scrollbar-width: thin; }
   .reservation-day { padding: 7px; font-size: 11px; }
   .reservation-cell { padding: 4px; }
   .reservation-total-cell { min-height: 66px; font-size: 10px; }
