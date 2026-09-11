@@ -16,7 +16,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){localStorage.setItem('theme','dark');t='dark';}document.documentElement.classList.toggle('dark',t==='dark');}catch(e){}})();`,
+            __html: `(function(){try{localStorage.setItem('theme','dark');document.documentElement.classList.add('dark');document.documentElement.classList.remove('light');}catch(e){}})();`,
           }}
         />
       </head>

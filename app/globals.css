@@ -726,6 +726,7 @@ main#top > footer { order: 6; }
   transition: border-color .3s ease, box-shadow .3s ease, background-color .3s ease;
 }
 .theme-toggle-button:hover { border-color: #e7c851; box-shadow: 0 0 15px rgb(212 175 55 / 30%); }
+.theme-toggle-button:disabled { cursor: default; opacity: 1; }
 @media (max-width: 640px) { .theme-toggle-button { height: 38px; width: 38px; } }
 .theme-toggle-panel {
   position: absolute;
@@ -884,3 +885,23 @@ main#top > footer { order: 6; }
 .dark .site-footer, .dark .site-footer span { color: #cbd5e1; }
 .dark .site-footer a:hover { color: #fbbf24; }
 .dark .map-frame { border: 1px solid rgb(6 78 59 / 50%); border-radius: 1rem; overflow: hidden; background: #09261b; }
+
+/* ---------- Hard dark-mode lock: light theme is permanently disabled ---------- */
+:root, html, body, main {
+  background-color: #051811 !important;
+  color: #F8FAFC !important;
+}
+
+div[class*="bg-white"],
+div[class*="bg-stone"],
+div[class*="bg-slate-50"],
+section,
+footer {
+  background-color: #051811 !important;
+}
+
+div:has(> .text-amber-400),
+div:has(> h3),
+div:has(> p) {
+  color: #F8FAFC !important;
+}
