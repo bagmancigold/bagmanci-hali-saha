@@ -33,10 +33,19 @@ body {
   min-height: 100vh;
 }
 html.dark main,
-html.dark div[class*="bg-luxury"],
-html.dark div[class*="bg-white"] {
+html.dark [class*="bg-luxury"],
+html.dark [class*="bg-white"],
+html.dark [class*="f5f7f3"],
+html.dark [class*="eef1eb"],
+html.dark [class*="fcfdfa"],
+html.dark [class*="fbfcf9"] {
   background-color: #051811 !important;
 }
+
+/* Typography safety net: only applies where nothing more specific already sets a color. */
+:where(html.dark) p { color: #E2E8F0; }
+:where(html.dark) h1, :where(html.dark) h2, :where(html.dark) h3, :where(html.dark) h4 { color: #FFFFFF; }
+:where(html.dark) input, :where(html.dark) select, :where(html.dark) textarea { color: #FFFFFF; }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -273,6 +282,7 @@ button { appearance: none; }
 .match-card strong, .match-card small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .match-card strong { font-size: 13px; }
 .match-card small { margin-top: 5px; color: var(--muted); font-size: 11px; }
+.match-empty-state { background: white; color: var(--muted); }
 .reservation-grid { display: grid; grid-template-columns: 112px repeat(15, minmax(68px, 1fr)) minmax(92px, 1fr); }
 .reservation-corner, .reservation-hour, .reservation-day, .reservation-cell { min-height: 72px; border-right: 2px solid #c2cec5; border-bottom: 2px solid #c2cec5; }
 .reservation-corner, .reservation-day { position: sticky; left: 0; z-index: 3; background: white; box-shadow: 3px 0 0 #c2cec5; }
@@ -768,7 +778,13 @@ main#top > footer { order: 6; }
 .dark .luxury-mobile-menu a { color: #E2E8F0; border-top-color: rgb(212 175 55 / 20%); }
 .dark .luxury-account-menu button { color: #ff9d9d; }
 .dark .luxury-mobile-menu a:hover { background: rgb(212 175 55 / 12%); color: #f3e2a5; }
-.dark .luxury-account-menu strong, .dark .account-card h2, .dark .match-step h3 { color: #f3e2a5; }
+.dark .luxury-account-menu strong, .dark .account-card h2 { color: #f3e2a5; }
+.dark .match-step h3 { color: #FFFFFF; font-weight: 800; }
+.dark .match-step p { color: #E2E8F0; }
+.dark .match-step > span, .dark .match-step > svg { color: #FBBF24; }
+.dark .match-card strong { color: #FFFFFF; }
+.dark .match-card small { color: #E2E8F0; }
+.dark .match-empty-state { background: rgb(9 38 27 / 40%); border: 1px solid rgb(212 175 55 / 30%); color: #F1F5F9; }
 
 .dark .account-card input,
 .dark .account-card select,
@@ -782,6 +798,8 @@ main#top > footer { order: 6; }
   color: #F8FAFC;
 }
 .dark .account-card input:disabled { background: rgb(5 24 17 / 50%); color: #b7c9c0; }
+.dark .match-filter-input { background: rgb(6 78 59 / 25%); }
+.dark .match-filter-input::placeholder { color: #94A3B8; }
 .dark .customer-social-button { background: rgb(5 24 17 / 65%); border-color: rgb(212 175 55 / 30%); color: #F8FAFC; }
 .dark .payment-choice:hover { background: rgb(212 175 55 / 10%); border-color: rgb(212 175 55 / 55%); }
 .dark .payment-choice-active { background: rgb(212 175 55 / 18%); border-color: #d4af37; box-shadow: inset 0 0 0 2px #d4af37, 0 8px 18px rgb(0 0 0 / 30%); }
