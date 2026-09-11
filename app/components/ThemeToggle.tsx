@@ -29,12 +29,11 @@ export default function ThemeToggle() {
     return () => document.removeEventListener("mousedown", onClick);
   }, [open]);
 
-  // Hidrasyon uyuşmazlığını ve kaymayı önleyen buton alanı
   if (!mounted) {
     return (
       <div
         aria-hidden
-        className="h-10 w-10 rounded-xl border border-transparent"
+        className="h-9 w-9 rounded-xl border border-transparent"
         style={{ visibility: "hidden" }}
       />
     );
@@ -46,20 +45,20 @@ export default function ThemeToggle() {
     (resolvedTheme === "dark" ? Moon : Sun);
 
   return (
-    <div className="theme-toggle relative" ref={rootRef}>
+    <div className="relative" ref={rootRef}>
       <button
         type="button"
-        className="theme-toggle-button flex h-10 w-10 items-center justify-center rounded-xl border border-stone-300 bg-stone-100 text-stone-900 shadow-sm transition-colors hover:border-amber-500 hover:bg-stone-200 dark:border-emerald-800/60 dark:bg-[#07241a] dark:text-white dark:hover:bg-emerald-950"
+        className="flex h-9 w-9 items-center justify-center rounded-xl border border-stone-300/80 bg-white/90 text-stone-800 shadow-sm transition hover:border-amber-400 hover:text-amber-600 dark:border-emerald-800/60 dark:bg-[#07241a] dark:text-stone-200 dark:hover:border-amber-400/60 dark:hover:text-amber-300"
         aria-label="Tema seç"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <ActiveIcon size={16} className="text-stone-900 dark:text-amber-400" />
+        <ActiveIcon size={16} className="text-stone-800 dark:text-amber-400 transition-colors" />
       </button>
 
       {open && (
         <div
-          className="theme-toggle-panel absolute right-0 mt-2 min-w-[130px] rounded-2xl border border-stone-200 bg-white p-1.5 shadow-2xl backdrop-blur-xl dark:border-emerald-800/60 dark:bg-[#062016]"
+          className="absolute right-0 mt-2 min-w-[130px] rounded-2xl border border-stone-200 bg-white p-1.5 shadow-2xl backdrop-blur-xl dark:border-emerald-800/60 dark:bg-[#062016]"
           role="menu"
         >
           {OPTIONS.map(({ value, label, Icon }) => {
@@ -70,7 +69,7 @@ export default function ThemeToggle() {
                 type="button"
                 role="menuitemradio"
                 aria-checked={isActive}
-                className={`theme-toggle-option flex w-full items-center justify-between gap-2.5 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
+                className={`flex w-full items-center justify-between gap-2.5 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
                   isActive
                     ? "bg-amber-400/20 text-amber-900 dark:bg-amber-400/20 dark:text-amber-300"
                     : "text-stone-700 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-white/10 dark:hover:text-white"
