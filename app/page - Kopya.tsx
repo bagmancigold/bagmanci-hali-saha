@@ -12,6 +12,9 @@ import {
   Instagram,
   MapPin,
   Phone,
+  Play,
+  ShieldCheck,
+  Trophy,
   Users,
 } from "lucide-react";
 import SiteHeader from "./components/SiteHeader";
@@ -134,6 +137,7 @@ export default function Home() {
     phone: "",
   });
   const [notice, setNotice] = useState("");
+  const [videoPlaying, setVideoPlaying] = useState(false);
 
   const selectedLabel =
     days.find((day) => day.date === selectedDay)?.full ?? selectedDay;
@@ -464,64 +468,57 @@ export default function Home() {
   };
 
   return (
-    <main id="top" className="home-page min-h-screen bg-[#FCFDF9] text-slate-900 transition-colors duration-300 dark:bg-[#051811] dark:text-[#F8FAFC]">
+    <main id="top" className="home-page min-h-screen bg-[var(--cream)] text-[var(--ink)]">
       <SiteHeader />
       <SiteImageSync />
+      <MatchArchive />
 
-      {/* HERO SECTION - EN TEPEDE & NET BEYAZ METİNLER */}
-      <section className="home-section noise field-lines relative flex min-h-[720px] items-center overflow-hidden bg-[#062017] px-5 pb-16 pt-36 lg:min-h-[820px] lg:px-8">
-        <div className="mx-auto grid w-full max-w-[1240px] items-center gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
+      {/* HERO SECTION */}
+      <section className="home-section noise field-lines relative flex min-h-[700px] items-center overflow-hidden px-5 pb-16 pt-32 lg:min-h-[780px] lg:px-8">
+        <div className="mx-auto grid w-full max-w-[1240px] items-end gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
           <div className="relative z-10 max-w-[680px]">
-            <div className="mb-6 flex items-center gap-2.5 rounded-full border border-emerald-700/50 bg-emerald-950/60 px-4 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-md w-fit">
+            <div className="home-kicker mb-7 flex items-center gap-2 text-sm font-semibold">
               <span className="h-2 w-2 animate-pulse rounded-full bg-amber-400" />{" "}
               Bağmancı Halı Saha · Şanlıurfa
             </div>
-            <h1 className="display max-w-[680px] text-[clamp(3.8rem,8vw,7.2rem)] font-extrabold leading-[.9] text-white drop-shadow-md">
-              Maçın adresi <span className="text-emerald-400">belli.</span>
+            <h1 className="home-title display max-w-[680px] text-[clamp(3.8rem,8vw,7.5rem)] font-extrabold leading-[.9]">
+              Maçın adresi <span>belli.</span>
             </h1>
-            <p className="mt-8 max-w-[480px] text-lg font-medium leading-8 text-white/90 drop-shadow">
+            <p className="home-muted mt-8 max-w-[470px] text-lg leading-8">
               Takımını topla, paketi seç, sahanı ayırt. Gündüz tarifesi 1200 TL,
               gece tarifesi 1800 TL.
             </p>
-            <div className="mt-9 flex items-center gap-4">
-              <a
-                href="#paketler"
-                className="inline-flex items-center gap-3 rounded-full bg-amber-400 px-7 py-4 text-sm font-extrabold text-black shadow-lg shadow-amber-400/20 transition hover:bg-amber-300 hover:scale-[1.02]"
-              >
-                Paket seç <ArrowRight size={18} />
-              </a>
-              <a
-                href="#rezervasyon"
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-4 text-sm font-bold text-white backdrop-blur-md transition hover:bg-white/20"
-              >
-                Hemen Randevu Al
-              </a>
-            </div>
+            <a
+              href="#paketler"
+              className="mt-9 inline-flex items-center gap-3 rounded-full bg-amber-400 px-6 py-4 text-sm font-bold text-black hover:bg-amber-300"
+            >
+              Paket seç <ArrowRight size={18} />
+            </a>
           </div>
-          <div className="relative mx-auto w-full max-w-[500px] lg:mb-[-40px]">
-            <div className="home-photo-card relative aspect-[4/5] overflow-hidden rounded-[180px_180px_24px_24px] border-[8px] border-emerald-800/40 shadow-2xl">
+          <div className="relative mx-auto w-full max-w-[500px] lg:mb-[-55px]">
+            <div className="home-photo-card relative aspect-[4/5] overflow-hidden rounded-[180px_180px_18px_18px] border-[10px] shadow-2xl">
               <img
                 className="h-full w-full object-cover"
                 src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=900&q=85"
                 alt="Bağmancı Halı Saha"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#051811]/90 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent dark:from-[#051811]/90" />
             </div>
-            <div className="home-stat-card absolute -bottom-6 -left-4 flex items-center gap-3.5 rounded-2xl border border-emerald-700/50 bg-[#07241a]/95 p-4 shadow-2xl backdrop-blur-md sm:-left-8">
+            <div className="home-stat-card absolute -bottom-7 -left-5 flex items-center gap-3 rounded-2xl p-4 shadow-2xl backdrop-blur-md sm:-left-10">
               <div className="flex -space-x-2">
-                <span className="h-9 w-9 rounded-full border-2 border-amber-400 bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=12')" }} />
-                <span className="h-9 w-9 rounded-full border-2 border-amber-400 bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=32')" }} />
-                <span className="h-9 w-9 rounded-full border-2 border-amber-400 bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=13')" }} />
+                <span className="h-9 w-9 rounded-full border-2 border-amber-400/50 bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=12')" }} />
+                <span className="h-9 w-9 rounded-full border-2 border-amber-400/50 bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=32')" }} />
+                <span className="h-9 w-9 rounded-full border-2 border-amber-400/50 bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=13')" }} />
               </div>
               <div>
-                <p className="text-xs font-semibold text-white/70">Bu hafta sahada</p>
-                <p className="font-extrabold text-amber-400">120+ oyuncu</p>
+                <p className="home-muted text-xs">Bu hafta sahada</p>
+                <p className="font-extrabold text-amber-600 dark:text-amber-300">120+ oyuncu</p>
               </div>
             </div>
           </div>
         </div>
-        <div className="absolute bottom-6 left-8 hidden items-center gap-3 text-xs font-semibold text-white/60 lg:flex">
-          <span className="h-px w-10 bg-amber-400/50" /> Şanlıurfa · Bağmancı
+        <div className="home-muted absolute bottom-7 left-5 hidden items-center gap-3 text-xs font-semibold lg:flex">
+          <span className="h-px w-10 bg-amber-400/40" /> Şanlıurfa · Bağmancı
         </div>
       </section>
 
@@ -762,10 +759,63 @@ export default function Home() {
         </div>
       </section>
 
-      {/* GERÇEK VE GELİŞMİŞ MAÇ ARŞİVİ SECTION */}
-      <div id="kayitlar">
-        <MatchArchive />
-      </div>
+      {/* MAÇ KAYITLARI SECTION */}
+      <section
+        id="kayitlar-banner"
+        className="home-section px-5 py-20 lg:px-8 lg:py-28"
+      >
+        <div className="mx-auto max-w-[1240px]">
+          <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <div>
+              <p className="home-kicker mb-4 text-sm font-bold uppercase tracking-[.18em]">
+                Maç kayıtları
+              </p>
+              <h2 className="home-title display text-4xl font-extrabold leading-none sm:text-5xl">
+                Güzel maçın{" "}
+                <span>tekrarı olur.</span>
+              </h2>
+            </div>
+            <p className="home-muted max-w-[270px] text-sm leading-6">
+              Abonelerimizin maç kaydı ücretsizdir. Normal saat kiralayanlar
+              için kayıt ayrıca ücretli olabilir.
+            </p>
+          </div>
+          <div className="home-photo-card group relative min-h-[390px] overflow-hidden rounded-3xl">
+            <img
+              className="absolute inset-0 h-full w-full object-cover opacity-75 transition duration-700 group-hover:scale-105"
+              src="https://images.unsplash.com/photo-1553778263-73a83bab9b0c?auto=format&fit=crop&w=1200&q=85"
+              alt="Bağmancı Halı Saha maç kaydı"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+            {videoPlaying ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                <p className="rounded-full bg-amber-400 px-5 py-3 text-sm font-bold text-black">
+                  Maç kaydı oynatılıyor
+                </p>
+              </div>
+            ) : (
+              <button
+                aria-label="Maç videosunu oynat"
+                onClick={() => setVideoPlaying(true)}
+                className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-amber-400 text-black transition group-hover:scale-110"
+              >
+                <Play fill="currentColor" size={23} />
+              </button>
+            )}
+            <div className="absolute bottom-6 left-6 text-white">
+              <span className="mb-2 inline-block rounded-full border border-amber-400/40 bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-amber-300 backdrop-blur">
+                Gerçek maç arşivi
+              </span>
+              <h3 className="display text-2xl font-extrabold text-white">
+                Maç kayıtları arşivden yüklenir
+              </h3>
+              <p className="mt-1 text-xs text-white/60">
+                Admin tarafından eklenen kayıtlar burada görünür
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* İLETİŞİM & TARİFELER SECTION */}
       <section
