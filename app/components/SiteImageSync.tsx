@@ -30,9 +30,8 @@ export default function SiteImageSync() {
           .select(`${BASE_COLUMNS}, ${EXTRA_COLUMNS}`)
           .eq("id", "main")
           .maybeSingle();
+
         if (full.error) {
-          // newer columns (logo/fit/favicon) may not exist yet on this database;
-          // retry with only the original columns so hero/match/background still sync.
           const partial = await client
             .from("site_settings")
             .select(BASE_COLUMNS)
@@ -61,13 +60,12 @@ export default function SiteImageSync() {
           match.style.objectFit = settings.match_fit || defaultImageFits.match;
         }
         if (heroSection) {
-          // Hero section backdrop uses hero_image, kept fully separate from the
-          // reservation card's own background_image so they never end up identical.
           const heroBackground = settings.hero_image || defaultSiteImages.hero;
-          heroSection.style.backgroundImage = `linear-gradient(rgba(21, 67, 47, .82), rgba(21, 67, 47, .88)), linear-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .07) 1px, transparent 1px), url("${heroBackground}")`;
-          heroSection.style.backgroundSize = `cover, 42px 42px, 42px 42px, ${settings.hero_fit || defaultImageFits.hero}`;
-          heroSection.style.backgroundPosition = "center, center, center, center";
-          heroSection.style.backgroundRepeat = "no-repeat, repeat, repeat, no-repeat";
+          // Zümrüt yeşili overlay ile birleştirilmiş koyu arka plan:
+          heroSection.style.backgroundImage = `linear-gradient(rgba(5, 24, 17, .88), rgba(5, 24, 17, .95)), url("${heroBackground}")`;
+          heroSection.style.backgroundSize = "cover";
+          heroSection.style.backgroundPosition = "center";
+          heroSection.style.backgroundColor = "#051811";
         }
 
         const favicon = settings.favicon_image || defaultSiteImages.favicon;
@@ -79,32 +77,34 @@ export default function SiteImageSync() {
         }
         faviconLink.href = favicon;
 
-        // Reservation card background lives only in --booking-background so it never
-        // gets mixed up with the hero section's own look.
-        const backgroundFit = settings.background_fit || defaultImageFits.background;
-        document.documentElement.style.setProperty(
-          "--booking-background",
-          `url("${settings.background_image || defaultSiteImages.background}")`,
-        );
-        document.documentElement.style.setProperty("--booking-background-size", backgroundFit);
+        // Arka plan değişkenini sadece koyu zümrütle harmanlanmış şekilde ata, ASLA saf beyaz zemin bırakma:
+        if (settings.background_image) {
+          document.documentElement.style.setProperty(
+            "--booking-background",
+            `linear-gradient(rgba(5, 24, 17, 0.92), rgba(5, 24, 17, 0.96)), url("${settings.background_image}")`,
+          );
+        } else {
+          document.documentElement.style.setProperty(
+            "--booking-background",
+            "#051811",
+          );
+        }
+        document.documentElement.style.setProperty("--booking-background-size", "cover");
 
         const logoMount = document.querySelector<HTMLElement>("[data-site-logo]");
-        if (logoMount) {
-          const logoUrl = settings.logo_image;
-          if (logoUrl) {
-            let logoImg = logoMount.querySelector<HTMLImageElement>("img[data-site-logo-image]");
-            if (!logoImg) {
-              logoMount.innerHTML = "";
-              logoImg = document.createElement("img");
-              logoImg.dataset.siteLogoImage = "true";
-              logoImg.alt = "Bağmancı Halı Saha logosu";
-              logoImg.style.width = "100%";
-              logoImg.style.height = "100%";
-              logoMount.appendChild(logoImg);
-            }
-            logoImg.src = logoUrl;
-            logoImg.style.objectFit = settings.logo_fit || defaultImageFits.logo;
+        if (logoMount && settings.logo_image) {
+          let logoImg = logoMount.querySelector<HTMLImageElement>("img[data-site-logo-image]");
+          if (!logoImg) {
+            logoMount.innerHTML = "";
+            logoImg = document.createElement("img");
+            logoImg.dataset.siteLogoImage = "true";
+            logoImg.alt = "Bağmancı Halı Saha logosu";
+            logoImg.style.width = "100%";
+            logoImg.style.height = "100%";
+            logoMount.appendChild(logoImg);
           }
+          logoImg.src = settings.logo_image;
+          logoImg.style.objectFit = settings.logo_fit || defaultImageFits.logo;
         }
       } catch {
         return;
@@ -115,4 +115,3 @@ export default function SiteImageSync() {
 
   return null;
 }
-
