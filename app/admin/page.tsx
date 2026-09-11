@@ -279,7 +279,8 @@ export default function AdminPage() {
           </nav>
         </div>
       </header>
-      <div className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10">
+      {/* Üst boşluk py-10 yerine py-4 yapılarak o havadaki kötü boşluk kapatıldı */}
+      <div className="mx-auto max-w-[1280px] px-5 py-4 lg:px-10">
         <AdminBookingsPage />
       </div>
     </main>
