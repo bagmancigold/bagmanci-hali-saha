@@ -385,6 +385,10 @@ button { appearance: none; }
 .admin-pricing-grid label { color: #f8eec4; font-size: 11px; font-weight: 800; }
 .admin-pricing-grid input { display: block; width: 100%; margin-top: 7px; border: 1px solid rgb(212 175 55 / 30%); border-radius: 11px; background: rgb(255 255 255 / 9%); padding: 12px; color: white; outline: none; }
 .admin-settings-message { margin-top: 12px; color: var(--green); font-size: 12px; font-weight: 800; }
+.admin-settings-message.success { color: #16a34a; }
+.admin-settings-message.error { color: #dc2626; }
+.dark .admin-settings-message.success { color: #4ade80; }
+.dark .admin-settings-message.error { color: #f87171; }
 @media (max-width: 640px) { .admin-settings-tabs { flex-direction: column; } .admin-settings-tab { width: 100%; justify-content: center; } .admin-settings-grid, .admin-pricing-grid { grid-template-columns: 1fr; } .admin-settings-panel { padding: 14px; } .admin-pricing-panel { padding: 18px; } }
 .admin-day-records { display: grid; gap: 10px; margin-top: 14px; border: 1px solid #d7c27a; border-radius: 16px; background: #fffdf2; padding: 14px; }
 .admin-day-records > div:first-child { display: grid; gap: 4px; border-bottom: 1px solid #d7c27a; padding-bottom: 10px; }
