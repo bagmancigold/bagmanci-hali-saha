@@ -276,21 +276,6 @@ export default function AdminPage() {
         </div>
       </header>
       <div className="mx-auto max-w-[1280px] px-5 py-10 lg:px-10">
-        {/* REZERVASYONLAR SAYFASINA TIKLANABİLİRLİK ÖZELLİKLERİ ENTEGRE EDİLMİŞ BÖLÜM */}
-        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <a href="/admin/odemeler" className="block rounded-2xl bg-white p-6 shadow-sm transition hover:shadow-md hover:border-emerald-500 border border-transparent">
-            <p className="text-xs font-bold text-stone-500 uppercase tracking-wider">Günün Hasılatı</p>
-            <p className="mt-2 text-2xl font-black text-emerald-700">Detayları Gör →</p>
-          </a>
-          <a href="/admin/odemeler" className="block rounded-2xl bg-white p-6 shadow-sm transition hover:shadow-md hover:border-emerald-500 border border-transparent">
-            <p className="text-xs font-bold text-stone-500 uppercase tracking-wider">Toplam Hasılat</p>
-            <p className="mt-2 text-2xl font-black text-emerald-700">Ödemeleri Yönet →</p>
-          </a>
-          <a href="/admin/arsiv" className="block rounded-2xl bg-white p-6 shadow-sm transition hover:shadow-md hover:border-emerald-500 border border-transparent">
-            <p className="text-xs font-bold text-stone-500 uppercase tracking-wider">Aktif Abone & Kayıtlar</p>
-            <p className="mt-2 text-2xl font-black text-emerald-700">Arşivi Aç →</p>
-          </a>
-        </div>
         <AdminBookingsPage />
       </div>
     </main>
