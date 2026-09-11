@@ -15,9 +15,9 @@
 
 .dark {
   --ink: #F8FAFC;
-  --muted: #b7c9c0;
-  --cream: #061a14;
-  --paper: #0a2e22;
+  --muted: #b0b0b0;
+  --cream: #0a0a0a;
+  --paper: #161616;
   --lime: #D4AF37;
   --green: #0a4a36;
   --line: rgb(212 175 55 / 35%);
@@ -742,7 +742,7 @@ main#top > footer { order: 6; }
 .dark .match-card,
 .dark .admin-modal,
 .dark .payment-choice {
-  background: rgb(8 46 34 / 70%);
+  background: rgb(20 20 20 / 78%);
   border-color: rgb(212 175 55 / 30%);
   backdrop-filter: blur(14px) saturate(130%);
   color: #F8FAFC;
@@ -761,29 +761,29 @@ main#top > footer { order: 6; }
 .dark .admin-modal-grid input,
 .dark .admin-modal-grid select,
 .dark .admin-modal-grid textarea {
-  background: rgb(6 26 20 / 65%);
+  background: rgb(15 15 15 / 70%);
   border-color: rgb(212 175 55 / 35%);
   color: #F8FAFC;
 }
-.dark .account-card input:disabled { background: rgb(6 26 20 / 40%); color: #b7c9c0; }
-.dark .customer-social-button { background: rgb(6 26 20 / 55%); border-color: rgb(212 175 55 / 30%); color: #F8FAFC; }
+.dark .account-card input:disabled { background: rgb(15 15 15 / 45%); color: #b0b0b0; }
+.dark .customer-social-button { background: rgb(15 15 15 / 60%); border-color: rgb(212 175 55 / 30%); color: #F8FAFC; }
 .dark .payment-choice:hover { background: rgb(212 175 55 / 10%); border-color: rgb(212 175 55 / 55%); }
 .dark .payment-choice-active { background: rgb(212 175 55 / 18%); border-color: #d4af37; box-shadow: inset 0 0 0 2px #d4af37, 0 8px 18px rgb(0 0 0 / 30%); }
-.dark .account-membership { background: rgb(6 26 20 / 55%); border-color: rgb(212 175 55 / 25%); color: #b7c9c0; }
+.dark .account-membership { background: rgb(15 15 15 / 60%); border-color: rgb(212 175 55 / 25%); color: #b0b0b0; }
 
-/* Schedule slots: crisp gold-bordered emerald glass in dark mode */
+/* Schedule slots: crisp gold-bordered near-black glass in dark mode */
 .dark .schedule-slot {
   border-color: rgb(251 191 36 / 40%);
-  background: #0d2e22;
+  background: #171717;
   backdrop-filter: blur(10px);
   color: #FFFFFF;
   box-shadow: 0 4px 14px rgb(0 0 0 / 30%);
 }
 .dark .schedule-slot i { color: #FBBF24; }
-.dark .schedule-slot:hover { border-color: #FBBF24; background: #103628; box-shadow: 0 0 16px rgb(251 191 36 / 30%); }
+.dark .schedule-slot:hover { border-color: #FBBF24; background: #202020; box-shadow: 0 0 16px rgb(251 191 36 / 30%); }
 .dark .schedule-slot-selected { border-color: #FBBF24; background: #FBBF24; color: #000000; font-weight: 800; }
 .dark .schedule-slot-selected i { color: #000000; }
-.dark .schedule-slot-vip { background: radial-gradient(circle at 80% 20%, rgb(251 191 36 / 30%), transparent 42%), #0d2e22; }
+.dark .schedule-slot-vip { background: radial-gradient(circle at 80% 20%, rgb(251 191 36 / 30%), transparent 42%), #171717; }
 .dark .schedule-slot-locked { border-color: transparent; background: rgb(0 0 0 / 40%); color: #6B7280; opacity: 1; }
 .dark .schedule-slot-locked i { color: #6B7280; }
 .dark .schedule-row-label { color: #FBBF24; }
@@ -791,16 +791,16 @@ main#top > footer { order: 6; }
 
 /* Reservation grid (admin calendar) */
 .dark .reservation-corner, .dark .reservation-day, .dark .reservation-cell {
-  background: rgb(8 46 34 / 55%);
+  background: rgb(20 20 20 / 65%);
   border-color: rgb(212 175 55 / 22%);
   color: #F8FAFC;
 }
-.dark .reservation-hour { background: rgb(6 26 20 / 65%); color: #b7c9c0; }
+.dark .reservation-hour { background: rgb(15 15 15 / 70%); color: #b0b0b0; }
 .dark .reservation-day-current { background: rgb(212 175 55 / 18%); }
 .dark .reservation-day-expanded { background: rgb(212 175 55 / 26%); }
 .dark .reservation-cell-booked { background: rgb(212 175 55 / 16%); }
 .dark .reservation-cell-subscriber { background: rgb(212 175 55 / 24%); }
-.dark .reservation-cell-subscription-locked { background: rgb(6 26 20 / 55%); border-color: rgb(183 201 192 / 25%); color: #6b7f76; }
+.dark .reservation-cell-subscription-locked { background: rgb(15 15 15 / 60%); border-color: rgb(183 201 192 / 25%); color: #6b7f76; }
 .dark .reservation-cell strong { color: #f3e2a5; }
 .dark .reservation-cell span { color: #b7c9c0; }
 .dark .reservation-cell-current { background: rgb(212 175 55 / 30%); }

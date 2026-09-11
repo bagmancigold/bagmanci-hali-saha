@@ -595,7 +595,7 @@ export default function Home() {
 
       <section
         id="rezervasyon"
-        className="scroll-mt-32 bg-white px-5 py-20 dark:bg-[#04130d] lg:px-8 lg:py-28"
+        className="scroll-mt-32 bg-white px-5 py-20 dark:bg-[#0a0a0a] lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10">
@@ -611,7 +611,7 @@ export default function Home() {
               <span className="text-[var(--green)] dark:text-amber-400">maça başla.</span>
             </h2>
           </div>
-          <div className="grid min-w-0 overflow-visible rounded-[28px] border border-[var(--line)] dark:border-emerald-800/40 dark:bg-[#0a231a]/80 dark:backdrop-blur-md lg:grid-cols-[1.4fr_.8fr]">
+          <div className="grid min-w-0 overflow-visible rounded-[28px] border border-[var(--line)] dark:border-zinc-700/40 dark:bg-[#141414]/80 dark:backdrop-blur-md lg:grid-cols-[1.4fr_.8fr]">
             <div className="min-w-0 p-5 sm:p-8">
               <div className="mb-7 flex items-center justify-between">
                 <div>
@@ -650,7 +650,7 @@ export default function Home() {
                       setSelectedSlot(null);
                       setNotice("");
                     }}
-                    className={`min-w-[68px] flex-shrink-0 rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "cursor-not-allowed border-transparent bg-[#f1f3ef] text-[var(--muted)] opacity-45 dark:bg-black/30 dark:text-emerald-100/30" : selectedDay === item.date ? "border-[var(--green)] bg-[var(--green)] text-white dark:border-amber-400 dark:bg-[#0d2e22] dark:text-white dark:shadow-[0_0_14px_rgba(251,191,36,0.45)]" : "border-[var(--line)] hover:border-[var(--green)] dark:border-amber-500/30 dark:bg-[#0d2e22] dark:text-white dark:hover:border-amber-400"}`}
+                    className={`min-w-[68px] flex-shrink-0 rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "cursor-not-allowed border-transparent bg-[#f1f3ef] text-[var(--muted)] opacity-45 dark:bg-black/30 dark:text-white/30" : selectedDay === item.date ? "border-[var(--green)] bg-[var(--green)] text-white dark:border-amber-400 dark:bg-[#171717] dark:text-white dark:shadow-[0_0_14px_rgba(251,191,36,0.45)]" : "border-[var(--line)] hover:border-[var(--green)] dark:border-amber-500/30 dark:bg-[#171717] dark:text-white dark:hover:border-amber-400"}`}
                   >
                     <span className="mt-1 block text-xs font-semibold opacity-60">
                       {item.day}
