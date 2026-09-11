@@ -468,8 +468,8 @@ export default function Home() {
       <SiteHeader />
       <SiteImageSync />
 
-      {/* 1. EN TEPEDE KARŞILAMA (HERO) */}
-      <section className="home-section noise field-lines relative flex min-h-[720px] items-center overflow-hidden bg-[#051811] px-5 pb-16 pt-36 lg:min-h-[820px] lg:px-8">
+      {/* 1. ADIM: EN TEPEDE KARŞILAMA EKRANI (HERO) */}
+      <section className="home-section noise field-lines relative flex min-h-[720px] items-center overflow-hidden bg-[#051811] px-5 pb-16 pt-32 lg:min-h-[820px] lg:px-8">
         <div className="mx-auto grid w-full max-w-[1240px] items-end gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
           <div className="relative z-10 max-w-[680px]">
             <div className="mb-6 flex items-center gap-2.5 rounded-full border border-emerald-700/60 bg-emerald-950/80 px-4 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-md w-fit">
@@ -525,10 +525,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. TARİFELER */}
+      {/* 2. ADIM: TARİFELER */}
       <section
         id="paketler"
-        className="home-section scroll-mt-36 px-5 py-20 lg:px-8 lg:py-28"
+        className="home-section scroll-mt-32 px-5 py-20 lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
@@ -588,10 +588,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. REZERVASYON TAKVİMİ */}
+      {/* 3. ADIM: REZERVASYON TAKVİMİ */}
       <section
         id="rezervasyon"
-        className="home-section scroll-mt-36 px-5 py-20 lg:px-8 lg:py-28"
+        className="home-section scroll-mt-32 px-5 py-20 lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10">
@@ -762,15 +762,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. GERÇEK MAÇ KAYITLARI & ARŞİV */}
-      <section id="kayitlar" className="scroll-mt-36">
+      {/* 4. ADIM: MAÇ KAYITLARI & ARŞİV */}
+      <section id="kayitlar" className="scroll-mt-32">
         <MatchArchive />
       </section>
 
-      {/* 5. İLETİŞİM & HARİTA */}
+      {/* 5. ADIM: İLETİŞİM & HARİTA */}
       <section
         id="iletisim"
-        className="home-section scroll-mt-36 px-5 py-20 lg:px-8 lg:py-28"
+        className="home-section scroll-mt-32 px-5 py-20 lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="grid gap-12 lg:grid-cols-[1fr_1fr]">
