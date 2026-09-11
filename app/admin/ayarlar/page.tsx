@@ -156,7 +156,7 @@ export default function SiteSettingsPage() {
     }
     setSaving(null);
     if (error) {
-      setMessage(`Görseller kaydedilemedi: ${error.message}`);
+      setMessage(`Görseller kaydedilemedi. Supabase SQL politikasını güncelle: ${error.message}`);
       return;
     }
     setImages((current) => ({ ...current }));
@@ -168,7 +168,7 @@ export default function SiteSettingsPage() {
     setSaving("pricing");
     const { error } = await getSupabaseClient().from("site_settings").upsert({ id: "main", day_price: Number(prices.day) || 1200, night_price: Number(prices.night) || 1800, subscriber_price: Number(prices.subscriber) || 1700, updated_at: new Date().toISOString() });
     setSaving(null);
-    setMessage(error ? `Tarifeler kaydedilemedi: ${error.message}` : "Tarife ayarları kaydedildi.");
+    setMessage(error ? `Tarifeler kaydedilemedi. Supabase SQL politikasını güncelle: ${error.message}` : "Tarife ayarları kaydedildi.");
   };
 
   if (!authorized) return <main className="flex min-h-screen items-center justify-center bg-[var(--green)] px-5"><div className="max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl"><ShieldCheck className="mx-auto mb-5 text-[var(--green)]" size={36} /><h1 className="display text-2xl font-extrabold">Yetkili admin girişi gerekli</h1><p className="mt-3 text-sm leading-6 text-[var(--muted)]">Site ayarlarını görmek için admin hesabıyla giriş yapıp 2FA kodunu doğrula.</p><a href="/admin" className="mt-6 inline-flex rounded-full bg-[var(--green)] px-5 py-3 text-sm font-bold text-white">Admin girişine git</a><p className="mt-4 text-xs text-[var(--muted)]">{message}</p></div></main>;

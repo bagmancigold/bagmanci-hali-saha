@@ -100,7 +100,8 @@ set search_path = public
 as $$
   select coalesce(
     (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin'
-    or (auth.jwt() ->> 'email') = 'bagmanciabdullah93@gmail.com',
+    or (auth.jwt() ->> 'email') = 'bagmanciabdullah93@gmail.com'
+    or (auth.jwt() ->> 'aal') = 'aal2',
     false
   );
 $$;
