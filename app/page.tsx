@@ -355,6 +355,12 @@ export default function Home() {
 
   const refreshSlotAvailability = async () => {
     if (!selectedSlot) return false;
+    
+    // Kendi sabit abonelik saatinse çakışma kontrolünü pas geç (Ödeme engeli kalktı)
+    if (ownSubscriptionSlot(selectedSlot)) {
+      return false;
+    }
+
     const { data, error } = await getSupabaseClient()
       .from("booking_requests")
       .select("booking_time, duration_hours")
