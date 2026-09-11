@@ -256,15 +256,19 @@ export default function AdminPage() {
       <header className="admin-luxury-header sticky top-0 z-40 px-5 py-5 text-white lg:px-10">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between">
           <a href="/" className="admin-luxury-brand"><span><Trophy size={18} /></span> BAĞMANCI <b>ADMIN</b></a>
-          <div className="hidden items-center gap-2 md:flex"><a href="/admin/odemeler" className="admin-vip-pill"><CreditCard size={14} /> Ödeme</a><a href="/admin/arsiv" className="admin-vip-pill">Arşivler</a></div>
-          <div className="flex items-center gap-2 md:hidden"><a href="/admin/odemeler" aria-label="Ödeme" className="admin-vip-pill">Ödeme</a><a href="/admin/arsiv" className="admin-vip-pill">Arşivler</a><button aria-label="Menüyü aç" className="admin-menu-button" onClick={() => setMenuOpen(!menuOpen)}><Menu size={20} /></button></div>
+          <div className="hidden items-center gap-2 md:flex">
+            <a href="/admin/odemeler" className="admin-vip-pill"><CreditCard size={14} /> Ödeme</a>
+          </div>
+          <div className="flex items-center gap-2 md:hidden">
+            <a href="/admin/odemeler" aria-label="Ödeme" className="admin-vip-pill">Ödeme</a>
+            <button aria-label="Menüyü aç" className="admin-menu-button" onClick={() => setMenuOpen(!menuOpen)}><Menu size={20} /></button>
+          </div>
           <nav
             className={`${menuOpen ? "flex" : "hidden"} absolute left-4 right-4 top-20 z-10 flex-col gap-4 rounded-xl bg-white p-5 text-[var(--ink)] shadow-xl md:static md:flex md:flex-row md:items-center md:gap-6 md:bg-transparent md:p-0 md:text-white md:shadow-none`}
           >
             <a href="/" className="flex items-center gap-2 text-sm">
               <ArrowLeft size={16} /> Siteye dön
             </a>
-            <a href="/admin/arsiv" className="text-sm">Arşivler</a>
             <a href="/admin/ayarlar" className="text-sm">Ayarlar</a>
             <a href="/admin/odemeler" className="text-sm font-bold">
               Ödeme sistemi
