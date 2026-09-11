@@ -8,12 +8,31 @@ export default function SiteImageSync() {
     const syncImages = async () => {
       try {
         const { getSupabaseClient } = await import("../../lib/supabase");
-        const { data } = await getSupabaseClient()
+        const client = getSupabaseClient();
+        let settings: {
+          hero_image?: string;
+          match_image?: string;
+          background_image?: string;
+          favicon_image?: string;
+        } | null = null;
+        const full = await client
           .from("site_settings")
           .select("hero_image, match_image, background_image, favicon_image")
           .eq("id", "main")
           .maybeSingle();
-        const settings = data ?? {
+        if (full.error) {
+          // favicon_image column may not exist yet on this database; retry without it
+          // so hero/match/background images still update instead of failing silently.
+          const partial = await client
+            .from("site_settings")
+            .select("hero_image, match_image, background_image")
+            .eq("id", "main")
+            .maybeSingle();
+          settings = partial.data;
+        } else {
+          settings = full.data;
+        }
+        settings = settings ?? {
           hero_image: "",
           match_image: "",
           background_image: "",

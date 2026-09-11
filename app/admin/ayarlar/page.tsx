@@ -35,7 +35,13 @@ export default function SiteSettingsPage() {
           return;
         }
         setAuthorized(true);
-        const { data, error } = await client.from("site_settings").select("hero_image, match_image, background_image, favicon_image, day_price, night_price, subscriber_price").eq("id", "main").maybeSingle();
+        let { data, error } = await client.from("site_settings").select("hero_image, match_image, background_image, favicon_image, day_price, night_price, subscriber_price").eq("id", "main").maybeSingle();
+        if (error) {
+          // favicon_image column may not exist yet on this database; retry without it.
+          const retry = await client.from("site_settings").select("hero_image, match_image, background_image, day_price, night_price, subscriber_price").eq("id", "main").maybeSingle();
+          data = retry.data ? { ...retry.data, favicon_image: "" } : retry.data;
+          error = retry.error;
+        }
         if (error) throw error;
         if (data) {
           setImages({ hero: data.hero_image || defaultSiteImages.hero, match: data.match_image || defaultSiteImages.match, background: data.background_image || defaultSiteImages.background, favicon: data.favicon_image || defaultSiteImages.favicon });
