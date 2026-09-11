@@ -12,19 +12,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="tr" className="dark" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{localStorage.setItem('theme','dark');document.documentElement.classList.add('dark');document.documentElement.classList.remove('light');}catch(e){}})();`,
-          }}
-        />
-      </head>
+    <html lang="tr" suppressHydrationWarning>
       <body
-        className="w-full max-w-[100vw] overflow-x-hidden bg-[#051811] text-[#F8FAFC]"
+        className="w-full max-w-[100vw] overflow-x-hidden bg-[#FCFDF9] text-slate-900 transition-colors duration-300 dark:bg-[#051811] dark:text-[#F8FAFC] antialiased"
         suppressHydrationWarning
       >
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange={false}>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

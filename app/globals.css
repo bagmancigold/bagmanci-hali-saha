@@ -25,7 +25,7 @@
 }
 
 /* Guarantee: no hardcoded light surface can win over dark mode, and no flash before hydration */
-html, body {
+html.dark, html.dark body {
   background-color: #051811 !important;
   color: #F8FAFC !important;
 }
@@ -886,22 +886,17 @@ main#top > footer { order: 6; }
 .dark .site-footer a:hover { color: #fbbf24; }
 .dark .map-frame { border: 1px solid rgb(6 78 59 / 50%); border-radius: 1rem; overflow: hidden; background: #09261b; }
 
-/* ---------- Hard dark-mode lock: light theme is permanently disabled ---------- */
-:root, html, body, main {
-  background-color: #051811 !important;
-  color: #F8FAFC !important;
-}
-
-div[class*="bg-white"],
-div[class*="bg-stone"],
-div[class*="bg-slate-50"],
-section,
-footer {
+/* ---------- Dark-mode-only surface lock (scoped, never affects light theme) ---------- */
+html.dark div[class*="bg-white"],
+html.dark div[class*="bg-stone"],
+html.dark div[class*="bg-slate-50"],
+html.dark section,
+html.dark footer {
   background-color: #051811 !important;
 }
 
-div:has(> .text-amber-400),
-div:has(> h3),
-div:has(> p) {
+html.dark div:has(> .text-amber-400),
+html.dark div:has(> h3),
+html.dark div:has(> p) {
   color: #F8FAFC !important;
 }
