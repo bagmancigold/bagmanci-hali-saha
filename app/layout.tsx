@@ -13,7 +13,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="tr" suppressHydrationWarning>
-      <body className="w-full max-w-[100vw] overflow-x-hidden" suppressHydrationWarning>
+      <body
+        className="w-full max-w-[100vw] overflow-x-hidden bg-[#fcfdfa] text-slate-900 transition-colors duration-300 dark:bg-[#051811] dark:text-[#F8FAFC]"
+        suppressHydrationWarning
+      >
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

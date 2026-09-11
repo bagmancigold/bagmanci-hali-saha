@@ -15,13 +15,24 @@
 
 .dark {
   --ink: #F8FAFC;
-  --muted: #b0b0b0;
-  --cream: #0a0a0a;
-  --paper: #161616;
+  --muted: #b7c9c0;
+  --cream: #051811;
+  --paper: #09261b;
   --lime: #D4AF37;
   --green: #0a4a36;
   --line: rgb(212 175 55 / 35%);
   color-scheme: dark;
+}
+
+/* Guarantee: no hardcoded light surface can win over dark mode */
+html.dark, html.dark body {
+  background-color: #051811 !important;
+  color: #F8FAFC !important;
+}
+html.dark main,
+html.dark div[class*="bg-luxury"],
+html.dark div[class*="bg-white"] {
+  background-color: #051811 !important;
 }
 
 * { box-sizing: border-box; }
@@ -742,7 +753,7 @@ main#top > footer { order: 6; }
 .dark .match-card,
 .dark .admin-modal,
 .dark .payment-choice {
-  background: rgb(20 20 20 / 78%);
+  background: rgb(9 38 27 / 80%);
   border-color: rgb(212 175 55 / 30%);
   backdrop-filter: blur(14px) saturate(130%);
   color: #F8FAFC;
@@ -761,29 +772,29 @@ main#top > footer { order: 6; }
 .dark .admin-modal-grid input,
 .dark .admin-modal-grid select,
 .dark .admin-modal-grid textarea {
-  background: rgb(15 15 15 / 70%);
+  background: rgb(5 24 17 / 75%);
   border-color: rgb(212 175 55 / 35%);
   color: #F8FAFC;
 }
-.dark .account-card input:disabled { background: rgb(15 15 15 / 45%); color: #b0b0b0; }
-.dark .customer-social-button { background: rgb(15 15 15 / 60%); border-color: rgb(212 175 55 / 30%); color: #F8FAFC; }
+.dark .account-card input:disabled { background: rgb(5 24 17 / 50%); color: #b7c9c0; }
+.dark .customer-social-button { background: rgb(5 24 17 / 65%); border-color: rgb(212 175 55 / 30%); color: #F8FAFC; }
 .dark .payment-choice:hover { background: rgb(212 175 55 / 10%); border-color: rgb(212 175 55 / 55%); }
 .dark .payment-choice-active { background: rgb(212 175 55 / 18%); border-color: #d4af37; box-shadow: inset 0 0 0 2px #d4af37, 0 8px 18px rgb(0 0 0 / 30%); }
-.dark .account-membership { background: rgb(15 15 15 / 60%); border-color: rgb(212 175 55 / 25%); color: #b0b0b0; }
+.dark .account-membership { background: rgb(5 24 17 / 65%); border-color: rgb(212 175 55 / 25%); color: #b7c9c0; }
 
-/* Schedule slots: crisp gold-bordered near-black glass in dark mode */
+/* Schedule slots: crisp gold-bordered emerald glass in dark mode */
 .dark .schedule-slot {
   border-color: rgb(251 191 36 / 40%);
-  background: #171717;
+  background: #09261b;
   backdrop-filter: blur(10px);
   color: #FFFFFF;
   box-shadow: 0 4px 14px rgb(0 0 0 / 30%);
 }
 .dark .schedule-slot i { color: #FBBF24; }
-.dark .schedule-slot:hover { border-color: #FBBF24; background: #202020; box-shadow: 0 0 16px rgb(251 191 36 / 30%); }
+.dark .schedule-slot:hover { border-color: #FBBF24; background: #0d3324; box-shadow: 0 0 16px rgb(251 191 36 / 30%); }
 .dark .schedule-slot-selected { border-color: #FBBF24; background: #FBBF24; color: #000000; font-weight: 800; }
 .dark .schedule-slot-selected i { color: #000000; }
-.dark .schedule-slot-vip { background: radial-gradient(circle at 80% 20%, rgb(251 191 36 / 30%), transparent 42%), #171717; }
+.dark .schedule-slot-vip { background: radial-gradient(circle at 80% 20%, rgb(251 191 36 / 30%), transparent 42%), #09261b; }
 .dark .schedule-slot-locked { border-color: transparent; background: rgb(0 0 0 / 40%); color: #6B7280; opacity: 1; }
 .dark .schedule-slot-locked i { color: #6B7280; }
 .dark .schedule-row-label { color: #FBBF24; }
@@ -791,16 +802,16 @@ main#top > footer { order: 6; }
 
 /* Reservation grid (admin calendar) */
 .dark .reservation-corner, .dark .reservation-day, .dark .reservation-cell {
-  background: rgb(20 20 20 / 65%);
+  background: rgb(9 38 27 / 70%);
   border-color: rgb(212 175 55 / 22%);
   color: #F8FAFC;
 }
-.dark .reservation-hour { background: rgb(15 15 15 / 70%); color: #b0b0b0; }
+.dark .reservation-hour { background: rgb(5 24 17 / 75%); color: #b7c9c0; }
 .dark .reservation-day-current { background: rgb(212 175 55 / 18%); }
 .dark .reservation-day-expanded { background: rgb(212 175 55 / 26%); }
 .dark .reservation-cell-booked { background: rgb(212 175 55 / 16%); }
 .dark .reservation-cell-subscriber { background: rgb(212 175 55 / 24%); }
-.dark .reservation-cell-subscription-locked { background: rgb(15 15 15 / 60%); border-color: rgb(183 201 192 / 25%); color: #6b7f76; }
+.dark .reservation-cell-subscription-locked { background: rgb(5 24 17 / 65%); border-color: rgb(183 201 192 / 25%); color: #6b7f76; }
 .dark .reservation-cell strong { color: #f3e2a5; }
 .dark .reservation-cell span { color: #b7c9c0; }
 .dark .reservation-cell-current { background: rgb(212 175 55 / 30%); }
@@ -812,3 +823,17 @@ main#top > footer { order: 6; }
 .reservation-corner, .reservation-day, .reservation-cell, .reservation-hour {
   transition: background-color .3s ease, border-color .3s ease, color .3s ease, box-shadow .3s ease;
 }
+
+/* Pricing cards (Gunduz/Gece/Abone) and footer */
+.dark .pricing-card {
+  background: #09261b;
+  border: 1px solid rgb(6 95 70 / 40%);
+  box-shadow: 0 12px 30px rgb(0 0 0 / 35%);
+}
+.dark .pricing-card-title { color: #ffffff; }
+.dark .pricing-card-note { color: #cbd5e1; }
+.dark .pricing-card-accent { color: #fbbf24; }
+.dark .site-footer { background: #030e0a; }
+.dark .site-footer, .dark .site-footer span { color: #cbd5e1; }
+.dark .site-footer a:hover { color: #fbbf24; }
+.dark .map-frame { border: 1px solid rgb(6 78 59 / 50%); border-radius: 1rem; overflow: hidden; background: #09261b; }

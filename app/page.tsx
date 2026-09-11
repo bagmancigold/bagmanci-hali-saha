@@ -543,15 +543,15 @@ export default function Home() {
             {packages.map((pack, index) => (
               <article
                 key={pack.title}
-                className={`relative rounded-3xl p-7 ${index === 1 ? "bg-[var(--green)] text-white shadow-2xl md:-translate-y-3" : "bg-white"}`}
+                className={`pricing-card relative rounded-3xl p-7 ${index === 1 ? "bg-[var(--green)] text-white shadow-2xl md:-translate-y-3" : "bg-white"}`}
               >
                 <p
-                  className={`text-sm font-bold ${index === 1 ? "text-[var(--lime)]" : "text-[var(--green)]"}`}
+                  className={`pricing-card-accent text-sm font-bold ${index === 1 ? "text-[var(--lime)]" : "text-[var(--green)]"}`}
                 >
                   {pack.title}
                 </p>
                 <div className="mt-5 flex items-end gap-1">
-                  <span className="display text-5xl font-extrabold">
+                  <span className="display pricing-card-title text-5xl font-extrabold">
                     {pack.price ? `₺${pack.price}` : "Ücretsiz"}
                   </span>
                   {pack.price ? (
@@ -565,7 +565,7 @@ export default function Home() {
                   ) : null}
                 </div>
                 <p
-                  className={`mt-2 text-sm ${index === 1 ? "text-white/60" : "text-[var(--muted)]"}`}
+                  className={`pricing-card-note mt-2 text-sm ${index === 1 ? "text-white/60" : "text-[var(--muted)]"}`}
                 >
                   {pack.note}
                 </p>
@@ -595,7 +595,7 @@ export default function Home() {
 
       <section
         id="rezervasyon"
-        className="scroll-mt-32 bg-white px-5 py-20 dark:bg-[#0a0a0a] lg:px-8 lg:py-28"
+        className="scroll-mt-32 bg-white px-5 py-20 dark:bg-[#051811] lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10">
@@ -611,7 +611,7 @@ export default function Home() {
               <span className="text-[var(--green)] dark:text-amber-400">maça başla.</span>
             </h2>
           </div>
-          <div className="grid min-w-0 overflow-visible rounded-[28px] border border-[var(--line)] dark:border-zinc-700/40 dark:bg-[#141414]/80 dark:backdrop-blur-md lg:grid-cols-[1.4fr_.8fr]">
+          <div className="grid min-w-0 overflow-visible rounded-[28px] border border-[var(--line)] dark:border-emerald-800/40 dark:bg-[#09261b]/80 dark:backdrop-blur-md lg:grid-cols-[1.4fr_.8fr]">
             <div className="min-w-0 p-5 sm:p-8">
               <div className="mb-7 flex items-center justify-between">
                 <div>
@@ -650,7 +650,7 @@ export default function Home() {
                       setSelectedSlot(null);
                       setNotice("");
                     }}
-                    className={`min-w-[68px] flex-shrink-0 rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "cursor-not-allowed border-transparent bg-[#f1f3ef] text-[var(--muted)] opacity-45 dark:bg-black/30 dark:text-white/30" : selectedDay === item.date ? "border-[var(--green)] bg-[var(--green)] text-white dark:border-amber-400 dark:bg-[#171717] dark:text-white dark:shadow-[0_0_14px_rgba(251,191,36,0.45)]" : "border-[var(--line)] hover:border-[var(--green)] dark:border-amber-500/30 dark:bg-[#171717] dark:text-white dark:hover:border-amber-400"}`}
+                    className={`min-w-[68px] flex-shrink-0 rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "cursor-not-allowed border-transparent bg-[#f1f3ef] text-[var(--muted)] opacity-45 dark:bg-black/30 dark:text-white/30" : selectedDay === item.date ? "border-[var(--green)] bg-[var(--green)] text-white dark:border-amber-400 dark:bg-[#09261b] dark:text-white dark:shadow-[0_0_14px_rgba(251,191,36,0.45)]" : "border-[var(--line)] hover:border-[var(--green)] dark:border-amber-500/30 dark:bg-[#09261b] dark:text-white dark:hover:border-amber-400"}`}
                   >
                     <span className="mt-1 block text-xs font-semibold opacity-60">
                       {item.day}
@@ -881,7 +881,7 @@ export default function Home() {
                 </a>
               </div>
             </div>
-            <div className="overflow-hidden rounded-3xl bg-white/10 p-2">
+            <div className="map-frame overflow-hidden rounded-3xl bg-white/10 p-2">
               <iframe
                 title="Bağmancı Halı Saha konumu"
                 src="https://www.google.com/maps?q=Bağmancı+Halı+Saha+Şanlıurfa&output=embed"
@@ -916,7 +916,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="bg-[#17382a] px-5 py-8 text-sm text-white/55 lg:px-8">
+      <footer className="site-footer bg-[#17382a] px-5 py-8 text-sm text-white/55 lg:px-8">
         <div className="mx-auto flex max-w-[1240px] flex-col justify-between gap-4 sm:flex-row">
           <span>© 2026 Bağmancı Halı Saha</span>
           <div className="flex gap-5">
