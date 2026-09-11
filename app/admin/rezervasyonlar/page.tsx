@@ -250,8 +250,8 @@ export default function AdminBookingsPage() {
               Rezervasyonlar
             </h1>
           </div>
-          <div className="flex flex-wrap items-center justify-end gap-3">
-            <p className="text-right text-xs text-[var(--muted)]">
+          <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end">
+            <p className="text-left text-xs text-[var(--muted)] sm:text-right">
               {dateText(weekStart)} -{" "}
               {dateText(new Date(weekStart.getTime() + 6 * 86400000))}
             </p>
