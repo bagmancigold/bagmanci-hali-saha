@@ -34,6 +34,12 @@ alter table public.site_settings add column if not exists day_price numeric(10,2
 alter table public.site_settings add column if not exists night_price numeric(10,2) not null default 1800;
 alter table public.site_settings add column if not exists subscriber_price numeric(10,2) not null default 1700;
 alter table public.site_settings add column if not exists favicon_image text not null default '';
+alter table public.site_settings add column if not exists logo_image text not null default '';
+alter table public.site_settings add column if not exists hero_fit text not null default 'cover';
+alter table public.site_settings add column if not exists background_fit text not null default 'cover';
+alter table public.site_settings add column if not exists match_fit text not null default 'cover';
+alter table public.site_settings add column if not exists logo_fit text not null default 'contain';
+alter table public.site_settings add column if not exists favicon_fit text not null default 'contain';
 
 create table if not exists public.booking_requests (
   id uuid primary key default gen_random_uuid(),
@@ -223,3 +229,6 @@ drop policy if exists "public can read match records" on public.match_records;
 drop policy if exists "admins manage match records" on public.match_records;
 create policy "public can read match records" on public.match_records for select to anon, authenticated using (true);
 create policy "admins manage match records" on public.match_records for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- Force PostgREST to pick up any new/renamed columns immediately.
+NOTIFY pgrst, 'reload schema';

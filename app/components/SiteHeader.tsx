@@ -62,7 +62,7 @@ export default function SiteHeader() {
           aria-label="BAĞMANCI HALI SAHA ana sayfa"
           className="luxury-header-brand display"
         >
-          <span className="luxury-header-logo-mark">
+          <span className="luxury-header-logo-mark" data-site-logo>
             <SiteLogo size={25} />
           </span>
           <span>

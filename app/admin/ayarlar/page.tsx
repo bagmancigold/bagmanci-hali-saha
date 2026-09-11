@@ -3,17 +3,25 @@
 import { ArrowLeft, CalendarDays, CreditCard, Image, Save, ShieldCheck, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getSupabaseClient } from "../../../lib/supabase";
-import { defaultSiteImages, type SiteImages } from "../../../lib/siteSettings";
+import { defaultImageFits, defaultSiteImages, type ImageFit, type SiteImages } from "../../../lib/siteSettings";
 
 type ImageKey = keyof SiteImages;
 type ImageField = { key: ImageKey; title: string; description: string; alt: string };
 
 const imageFields: ImageField[] = [
-  { key: "hero", title: "Hero / Karşılama Arka Planı", description: "Maçın adresi belli alanının görseli.", alt: "Hero görseli önizleme" },
-  { key: "background", title: "Rezervasyon Kartı Arka Planı", description: "Rezervasyon formunun arkasındaki doku.", alt: "Rezervasyon kartı önizleme" },
+  { key: "hero", title: "Hero / Karşılama Arka Planı", description: "Maçın adresi belli alanının görseli (hero bölümünün tamamının arka planıdır).", alt: "Hero görseli önizleme" },
+  { key: "background", title: "Rezervasyon Kartı Arka Planı", description: "Yalnızca rezervasyon formunun arkasındaki doku. Hero ile karışmaz.", alt: "Rezervasyon kartı önizleme" },
   { key: "match", title: "Maç Tekrarı & Video Banner", description: "Maç arşivi ve video alanının görseli.", alt: "Maç tekrarları görseli önizleme" },
+  { key: "logo", title: "Site Logosu", description: "Header'da marka ikonunun yerine çıkar. Boş bırakılırsa varsayılan ikon kullanılır.", alt: "Site logosu önizleme" },
   { key: "favicon", title: "Site Favicon / Mini Logo", description: "Tarayıcı sekmesindeki mini logo.", alt: "Favicon önizleme" },
 ];
+
+const fitOptions: { value: ImageFit; label: string }[] = [
+  { value: "cover", label: "Kırp (alanı doldur)" },
+  { value: "contain", label: "Tam sığdır (kırpma yok)" },
+];
+
+const NEW_COLUMNS = ["favicon_image", "logo_image", "hero_fit", "background_fit", "match_fit", "logo_fit", "favicon_fit"];
 
 const defaultPrices = { day: "1200", night: "1800", subscriber: "1700" };
 
@@ -23,6 +31,7 @@ export default function SiteSettingsPage() {
   const [message, setMessage] = useState("Kontrol ediliyor...");
   const [saving, setSaving] = useState<string | null>(null);
   const [images, setImages] = useState<SiteImages>(defaultSiteImages);
+  const [fits, setFits] = useState<Record<ImageKey, ImageFit>>(defaultImageFits);
   const [prices, setPrices] = useState(defaultPrices);
 
   useEffect(() => {
@@ -35,21 +44,63 @@ export default function SiteSettingsPage() {
           return;
         }
         setAuthorized(true);
-        let { data, error } = await client.from("site_settings").select("hero_image, match_image, background_image, favicon_image, day_price, night_price, subscriber_price").eq("id", "main").maybeSingle();
+        let { data, error } = await client
+          .from("site_settings")
+          .select("hero_image, match_image, background_image, favicon_image, logo_image, hero_fit, background_fit, match_fit, logo_fit, day_price, night_price, subscriber_price")
+          .eq("id", "main")
+          .maybeSingle<{
+            hero_image: string;
+            match_image: string;
+            background_image: string;
+            favicon_image: string;
+            logo_image: string;
+            hero_fit: ImageFit;
+            background_fit: ImageFit;
+            match_fit: ImageFit;
+            logo_fit: ImageFit;
+            day_price: number;
+            night_price: number;
+            subscriber_price: number;
+          }>();
         if (error) {
-          // favicon_image column may not exist yet on this database; retry without it.
-          const retry = await client.from("site_settings").select("hero_image, match_image, background_image, day_price, night_price, subscriber_price").eq("id", "main").maybeSingle();
-          data = retry.data ? { ...retry.data, favicon_image: "" } : retry.data;
+          // newer columns (logo/fit/favicon) may not exist yet on this database; retry with the originals only.
+          const retry = await client
+            .from("site_settings")
+            .select("hero_image, match_image, background_image, day_price, night_price, subscriber_price")
+            .eq("id", "main")
+            .maybeSingle<{
+              hero_image: string;
+              match_image: string;
+              background_image: string;
+              day_price: number;
+              night_price: number;
+              subscriber_price: number;
+            }>();
+          data = retry.data as typeof data;
           error = retry.error;
         }
         if (error) throw error;
         if (data) {
-          setImages({ hero: data.hero_image || defaultSiteImages.hero, match: data.match_image || defaultSiteImages.match, background: data.background_image || defaultSiteImages.background, favicon: data.favicon_image || defaultSiteImages.favicon });
+          setImages({
+            hero: data.hero_image || defaultSiteImages.hero,
+            match: data.match_image || defaultSiteImages.match,
+            background: data.background_image || defaultSiteImages.background,
+            favicon: data.favicon_image || defaultSiteImages.favicon,
+            logo: data.logo_image || defaultSiteImages.logo,
+          });
+          setFits({
+            hero: data.hero_fit || defaultImageFits.hero,
+            match: data.match_fit || defaultImageFits.match,
+            background: data.background_fit || defaultImageFits.background,
+            favicon: defaultImageFits.favicon,
+            logo: data.logo_fit || defaultImageFits.logo,
+          });
           setPrices({ day: String(data.day_price || defaultPrices.day), night: String(data.night_price || defaultPrices.night), subscriber: String(data.subscriber_price || defaultPrices.subscriber) });
         }
         setMessage("");
       } catch {
         setImages(defaultSiteImages);
+        setFits(defaultImageFits);
         setPrices(defaultPrices);
         setMessage("Varsayılan ayarlar kullanılıyor. Supabase kaydı bulunamadıysa kaydet ile oluşturabilirsin.");
       }
@@ -84,19 +135,24 @@ export default function SiteSettingsPage() {
       match_image: images.match,
       background_image: images.background,
       favicon_image: images.favicon,
+      logo_image: images.logo,
+      hero_fit: fits.hero,
+      background_fit: fits.background,
+      match_fit: fits.match,
+      logo_fit: fits.logo,
       updated_at: new Date().toISOString(),
     };
     let { error } = await getSupabaseClient().from("site_settings").upsert(payload);
-    if (error && /favicon_image/i.test(error.message) && /schema cache|column/i.test(error.message)) {
-      // favicon_image migration not yet applied on the database; save the rest so the admin isn't blocked.
-      const { favicon_image: _favicon, ...fallbackPayload } = payload;
+    if (error && NEW_COLUMNS.some((column) => error!.message.includes(column)) && /schema cache|column/i.test(error.message)) {
+      // some newer columns aren't migrated on this database yet; save the guaranteed ones so the admin isn't blocked.
+      const fallbackPayload = { id: payload.id, hero_image: payload.hero_image, match_image: payload.match_image, background_image: payload.background_image, updated_at: payload.updated_at };
       const retry = await getSupabaseClient().from("site_settings").upsert(fallbackPayload);
       error = retry.error;
       setSaving(null);
       setMessage(
         error
           ? `Görseller kaydedilemedi: ${error.message}`
-          : "Diğer görseller kaydedildi. Favicon için Supabase'de 'favicon_image' sütun migrasyonunu çalıştırman gerekiyor.",
+          : "Hero/rezervasyon/maç görselleri kaydedildi. Logo, favicon ve yerleşim ayarları için Supabase'de migrasyonu çalıştırman gerekiyor.",
       );
       return;
     }
@@ -113,5 +169,5 @@ export default function SiteSettingsPage() {
 
   if (!authorized) return <main className="flex min-h-screen items-center justify-center bg-[var(--green)] px-5"><div className="max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl"><ShieldCheck className="mx-auto mb-5 text-[var(--green)]" size={36} /><h1 className="display text-2xl font-extrabold">Yetkili admin girişi gerekli</h1><p className="mt-3 text-sm leading-6 text-[var(--muted)]">Site ayarlarını görmek için admin hesabıyla giriş yapıp 2FA kodunu doğrula.</p><a href="/admin" className="mt-6 inline-flex rounded-full bg-[var(--green)] px-5 py-3 text-sm font-bold text-white">Admin girişine git</a><p className="mt-4 text-xs text-[var(--muted)]">{message}</p></div></main>;
 
-  return <main className="admin-settings-page min-h-screen px-5 py-10 text-[var(--ink)] lg:px-10"><div className="mx-auto max-w-5xl"><a href="/admin" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-[var(--green)]"><ArrowLeft size={16} /> Admin paneline dön</a><div className="mb-8"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-[var(--green)]">Yönetim</p><h1 className="display text-4xl font-extrabold">Site ayarları</h1><p className="mt-2 text-sm text-[var(--muted)]">Görselleri ve tarifeleri tek ekrandan yönet.</p></div><div className="admin-settings-tabs" role="tablist"><button type="button" role="tab" aria-selected={activeTab === "images"} className={activeTab === "images" ? "admin-settings-tab active" : "admin-settings-tab"} onClick={() => setActiveTab("images")}><Image size={17} /> Görsel Yönetimi</button><button type="button" role="tab" aria-selected={activeTab === "pricing"} className={activeTab === "pricing" ? "admin-settings-tab active" : "admin-settings-tab"} onClick={() => setActiveTab("pricing")}><CreditCard size={17} /> Tarife Ayarları</button></div>{activeTab === "images" ? <section className="admin-settings-panel"><div className="admin-settings-grid">{imageFields.map((field) => <article className="admin-image-card" key={field.key}><div className="admin-image-preview"><img src={images[field.key]} alt={field.alt} /><span>{field.title}</span></div><h2>{field.title}</h2><p>{field.description}</p><div className="admin-image-actions"><label className="admin-upload-button"><Upload size={15} /> Görsel yükle<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (file) uploadImage(field.key, file); }} /></label><input value={images[field.key]} onChange={(event) => setImages((current) => ({ ...current, [field.key]: event.target.value }))} placeholder="Görsel URL'si" /></div></article>)}</div><button type="button" className="admin-gold-save" onClick={saveImages} disabled={saving !== null}><Save size={16} /> {saving === "images" ? "Kaydediliyor..." : "Görselleri kaydet"}</button></section> : <section className="admin-pricing-panel"><div className="admin-pricing-heading"><CalendarDays size={22} /><div><h2>Tarife Ayarları</h2><p>Gündüz, gece ve abone fiyatlarını güncelle.</p></div></div><div className="admin-pricing-grid"><label>Gündüz Tarifesi (TL)<input type="number" min="0" value={prices.day} onChange={(event) => setPrices((current) => ({ ...current, day: event.target.value }))} /></label><label>Gece Tarifesi (TL)<input type="number" min="0" value={prices.night} onChange={(event) => setPrices((current) => ({ ...current, night: event.target.value }))} /></label><label>Abone İndirimli Fiyatı (TL)<input type="number" min="0" value={prices.subscriber} onChange={(event) => setPrices((current) => ({ ...current, subscriber: event.target.value }))} /></label></div><button type="button" className="admin-gold-save" onClick={savePrices} disabled={saving !== null}><Save size={16} /> {saving === "pricing" ? "Kaydediliyor..." : "Tarifeleri kaydet"}</button></section>}{message && <p className="admin-settings-message">{message}</p>}</div></main>;
+  return <main className="admin-settings-page min-h-screen px-5 py-10 text-[var(--ink)] lg:px-10"><div className="mx-auto max-w-5xl"><a href="/admin" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-[var(--green)]"><ArrowLeft size={16} /> Admin paneline dön</a><div className="mb-8"><p className="mb-3 text-xs font-bold uppercase tracking-[.18em] text-[var(--green)]">Yönetim</p><h1 className="display text-4xl font-extrabold">Site ayarları</h1><p className="mt-2 text-sm text-[var(--muted)]">Görselleri ve tarifeleri tek ekrandan yönet.</p></div><div className="admin-settings-tabs" role="tablist"><button type="button" role="tab" aria-selected={activeTab === "images"} className={activeTab === "images" ? "admin-settings-tab active" : "admin-settings-tab"} onClick={() => setActiveTab("images")}><Image size={17} /> Görsel Yönetimi</button><button type="button" role="tab" aria-selected={activeTab === "pricing"} className={activeTab === "pricing" ? "admin-settings-tab active" : "admin-settings-tab"} onClick={() => setActiveTab("pricing")}><CreditCard size={17} /> Tarife Ayarları</button></div>{activeTab === "images" ? <section className="admin-settings-panel"><div className="admin-settings-grid">{imageFields.map((field) => <article className="admin-image-card" key={field.key}><div className="admin-image-preview"><img src={images[field.key]} alt={field.alt} style={{ objectFit: fits[field.key] }} /><span>{field.title}</span></div><h2>{field.title}</h2><p>{field.description}</p><div className="admin-image-actions"><label className="admin-upload-button"><Upload size={15} /> Görsel yükle<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden" onChange={(event) => { const file = event.target.files?.[0]; if (file) uploadImage(field.key, file); }} /></label><input value={images[field.key]} onChange={(event) => setImages((current) => ({ ...current, [field.key]: event.target.value }))} placeholder="Görsel URL'si" /></div><label className="admin-fit-select">Mobilde görünüm<select value={fits[field.key]} onChange={(event) => setFits((current) => ({ ...current, [field.key]: event.target.value as ImageFit }))}>{fitOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label></article>)}</div><button type="button" className="admin-gold-save" onClick={saveImages} disabled={saving !== null}><Save size={16} /> {saving === "images" ? "Kaydediliyor..." : "Görselleri kaydet"}</button></section> : <section className="admin-pricing-panel"><div className="admin-pricing-heading"><CalendarDays size={22} /><div><h2>Tarife Ayarları</h2><p>Gündüz, gece ve abone fiyatlarını güncelle.</p></div></div><div className="admin-pricing-grid"><label>Gündüz Tarifesi (TL)<input type="number" min="0" value={prices.day} onChange={(event) => setPrices((current) => ({ ...current, day: event.target.value }))} /></label><label>Gece Tarifesi (TL)<input type="number" min="0" value={prices.night} onChange={(event) => setPrices((current) => ({ ...current, night: event.target.value }))} /></label><label>Abone İndirimli Fiyatı (TL)<input type="number" min="0" value={prices.subscriber} onChange={(event) => setPrices((current) => ({ ...current, subscriber: event.target.value }))} /></label></div><button type="button" className="admin-gold-save" onClick={savePrices} disabled={saving !== null}><Save size={16} /> {saving === "pricing" ? "Kaydediliyor..." : "Tarifeleri kaydet"}</button></section>}{message && <p className="admin-settings-message">{message}</p>}</div></main>;
 }

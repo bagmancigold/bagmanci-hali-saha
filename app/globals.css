@@ -57,7 +57,7 @@ button { appearance: none; }
 .header-login-position { position: absolute; right: 20px; top: 14px; min-width: 132px; }
 .header-account-position { position: absolute; right: 20px; top: 14px; }
 .header-reservation-button { position: absolute; right: 175px; top: 18px; border: 1px solid rgb(212 175 55 / 70%); border-radius: 999px; background: rgb(212 175 55 / 12%); padding: 10px 14px; color: var(--lime); font-size: 12px; font-weight: 900; text-decoration: none; }
-.booking-form-card { position: relative; isolation: isolate; overflow: hidden; background-color: #0a241b; background-image: linear-gradient(135deg, rgb(6 26 20 / 94%), rgb(10 74 54 / 90%)), var(--booking-background); background-position: center; background-size: cover; }
+.booking-form-card { position: relative; isolation: isolate; overflow: hidden; background-color: #0a241b; background-image: linear-gradient(135deg, rgb(6 26 20 / 94%), rgb(10 74 54 / 90%)), var(--booking-background); background-position: center; background-size: cover, var(--booking-background-size, cover); }
 .booking-form-card > * { position: relative; z-index: 1; }
 .duration-notice { margin-top: 10px; border-radius: 10px; padding: 9px 10px; font-size: 11px; line-height: 1.45; }
 .duration-notice.success { background: rgb(212 175 55 / 18%); color: #dff6df; }
@@ -360,6 +360,8 @@ button { appearance: none; }
 .admin-image-card h2 { margin-top: 12px; color: var(--ink); font-size: 14px; font-weight: 900; }
 .admin-image-card p { margin-top: 4px; color: var(--muted); font-size: 11px; line-height: 1.4; }
 .admin-image-actions { display: grid; gap: 7px; margin-top: 12px; }
+.admin-fit-select { display: block; margin-top: 10px; color: var(--muted); font-size: 11px; font-weight: 800; }
+.admin-fit-select select { display: block; width: 100%; margin-top: 5px; border: 1px solid var(--line); border-radius: 10px; background: white; padding: 9px 10px; color: var(--ink); font-size: 12px; font-weight: 700; }
 .admin-image-actions input { min-width: 0; width: 100%; border: 1px solid var(--line); border-radius: 10px; background: white; padding: 10px; color: var(--ink); font-size: 11px; outline: none; }
 .admin-upload-button { display: inline-flex; min-height: 34px; width: fit-content; align-items: center; gap: 6px; border: 1px solid rgb(36 83 61 / 25%); border-radius: 999px; padding: 0 11px; color: var(--green); font-size: 11px; font-weight: 800; }
 .admin-gold-save { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; margin-top: 18px; border: 1px solid #c39a21; border-radius: 999px; background: #d4af37; padding: 0 18px; color: #211b08; font-size: 12px; font-weight: 900; }
