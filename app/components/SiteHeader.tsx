@@ -47,52 +47,56 @@ export default function SiteHeader() {
   };
 
   return (
-    <header className="luxury-header site-header fixed left-0 right-0 top-0 z-50 w-full max-w-[100vw] box-border !bg-[#FCFDF9] dark:!bg-[#051811] border-b border-stone-200/90 dark:border-emerald-900/40 shadow-sm transition-colors duration-200">
-      {/* 1. KATMAN: ÜST BAR (LOGO VE KONTROLLER) */}
-      <div className="luxury-header-top mx-auto flex w-full max-w-[1240px] items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+    <header className="fixed left-0 right-0 top-0 z-50 w-full border-b border-stone-200/90 bg-[#FCFDF9] text-stone-900 shadow-sm transition-colors duration-200 dark:border-emerald-900/40 dark:bg-[#051811] dark:text-white">
+      {/* 1. KATMAN: LOGO & KONTROLLER */}
+      <div className="mx-auto flex h-16 max-w-[1240px] items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
           <button
             type="button"
             aria-label={open ? "Menüyü kapat" : "Menüyü aç"}
-            className="luxury-header-menu rounded-xl border border-stone-300/80 p-2 text-stone-900 transition hover:bg-stone-100 dark:border-emerald-800/60 dark:text-white dark:hover:bg-emerald-950 md:hidden"
+            className="rounded-xl border border-stone-300 p-2 text-stone-800 transition hover:bg-stone-100 dark:border-emerald-800/60 dark:text-white dark:hover:bg-emerald-950 md:hidden"
             onClick={() => setOpen(!open)}
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
+          
+          {/* LOGO VE MARKA ADI: 'BAĞMANCI' RENGİ KESİN OLARAK SİYAH / KOYU ANTRASİT YAPILDI */}
           <a
             href="/"
             aria-label="BAĞMANCI HALI SAHA ana sayfa"
-            className="luxury-header-brand display flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-stone-900 dark:text-white"
+            className="flex items-center gap-2.5 text-lg font-black tracking-tight"
           >
-            <span className="luxury-header-logo-mark flex items-center text-amber-500" data-site-logo>
-              <SiteLogo size={26} />
+            <span className="flex items-center text-amber-500" data-site-logo>
+              <SiteLogo size={28} />
             </span>
-            <span>
-              BAĞMANCI <span className="text-emerald-700 dark:text-emerald-400">HALI SAHA</span>
+            <span className="font-extrabold tracking-normal">
+              <span className="text-[#091510] dark:text-white">BAĞMANCI </span>
+              <span className="text-emerald-700 dark:text-emerald-400">HALI SAHA</span>
             </span>
           </a>
         </div>
 
-        <div className="luxury-header-controls flex items-center gap-3">
-          {/* GÜNDÜZ MODUNDA TEMA BUTONUNA NET KONTRAST SAĞLAYAN WRAPPER */}
-          <div className="flex items-center text-stone-900 dark:text-white">
+        {/* SAĞ KISIM: TEMA SEÇİCİ & KULLANICI HESABI */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center">
             <ThemeToggle />
           </div>
 
           {userName ? (
-            <div className="luxury-header-account relative">
+            <div className="relative">
               <button
                 type="button"
-                className="luxury-account-button flex h-10 items-center gap-2 rounded-xl border border-stone-300 bg-stone-100/90 px-3.5 text-xs font-bold text-stone-900 transition hover:border-amber-500 dark:border-emerald-800/60 dark:bg-[#07241a] dark:text-white"
+                className="flex h-10 items-center gap-2 rounded-xl border border-amber-400/80 bg-amber-400/10 px-3.5 text-xs font-bold text-stone-900 transition hover:bg-amber-400 hover:text-black dark:border-amber-400/50 dark:bg-amber-400/10 dark:text-amber-300"
                 onClick={() => setAccountOpen((value) => !value)}
               >
                 <UserRound size={15} className="text-amber-600 dark:text-amber-400" />
                 <span className="hidden sm:inline">Hesabım</span>
                 <ChevronDown size={14} className="opacity-70" />
               </button>
+
               {accountOpen && (
-                <div className="luxury-account-menu absolute right-0 mt-2 w-56 rounded-2xl border border-stone-200 bg-white p-3 text-xs shadow-2xl dark:border-emerald-800/60 dark:bg-[#062016] dark:text-white">
-                  <p className="text-[11px] font-medium text-stone-500 dark:text-stone-400">Merhaba,</p>
+                <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-stone-200 bg-white p-3 text-xs shadow-2xl dark:border-emerald-800/60 dark:bg-[#062016] dark:text-white">
+                  <p className="text-[11px] font-medium text-stone-500 dark:text-stone-400">Giriş yapıldı</p>
                   <strong className="block truncate text-sm font-extrabold text-stone-900 dark:text-white">{userName}</strong>
                   <div className="my-2.5 h-px bg-stone-200 dark:bg-emerald-900/40" />
                   <a
@@ -126,7 +130,7 @@ export default function SiteHeader() {
           ) : (
             <a
               href="/musteri"
-              className="luxury-account-button luxury-login-button flex h-10 items-center gap-1.5 rounded-xl bg-amber-400 px-4 text-xs font-black text-black shadow-md transition hover:bg-amber-300"
+              className="flex h-10 items-center gap-1.5 rounded-xl bg-amber-400 px-4 text-xs font-black text-black shadow-sm transition hover:bg-amber-300"
             >
               <UserRound size={15} /> <span>GİRİŞ YAP</span>
             </a>
@@ -134,33 +138,33 @@ export default function SiteHeader() {
         </div>
       </div>
 
-      {/* 2. KATMAN: ALT NAVİGASYON BARI (ORİJİNAL İKİ KATLI YAPI) */}
+      {/* 2. KATMAN: ZARİF ALT MENÜ (HAP BUTONLAR TAMAMEN KALDIRILDI, ŞIK VE TEMİZ METİN LİNKLERİ) */}
       <nav
-        className="luxury-sub-bar hidden w-full border-t border-stone-200/70 bg-stone-50/90 py-2.5 transition-colors duration-200 dark:border-emerald-900/30 dark:bg-[#04140e]/90 md:block"
+        className="hidden w-full border-t border-stone-200/80 bg-stone-100/70 py-2.5 dark:border-emerald-900/30 dark:bg-[#03130d]/80 md:block"
         aria-label="Ana navigasyon"
       >
-        <div className="mx-auto flex max-w-[1240px] items-center justify-start gap-8 px-4 text-xs font-bold uppercase tracking-wider sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-[1240px] items-center gap-8 px-4 text-xs font-bold uppercase tracking-wider sm:px-6 lg:px-8">
           <a
             href="#paketler"
-            className="text-stone-700 transition hover:text-amber-600 dark:text-stone-300 dark:hover:text-amber-400"
+            className="text-stone-600 transition-colors hover:text-amber-600 dark:text-stone-300 dark:hover:text-amber-400"
           >
             Paketler
           </a>
           <a
             href="#rezervasyon"
-            className="flex items-center gap-1.5 text-stone-700 transition hover:text-amber-600 dark:text-stone-300 dark:hover:text-amber-400"
+            className="flex items-center gap-1.5 text-stone-600 transition-colors hover:text-amber-600 dark:text-stone-300 dark:hover:text-amber-400"
           >
             <CalendarDays size={14} className="text-amber-500" /> Rezervasyon
           </a>
           <a
             href="#kayitlar"
-            className="flex items-center gap-1.5 text-stone-700 transition hover:text-amber-600 dark:text-stone-300 dark:hover:text-amber-400"
+            className="flex items-center gap-1.5 text-stone-600 transition-colors hover:text-amber-600 dark:text-stone-300 dark:hover:text-amber-400"
           >
             <Play size={14} className="text-amber-500" /> Maç Tekrarı
           </a>
           <a
             href="#iletisim"
-            className="text-stone-700 transition hover:text-amber-600 dark:text-stone-300 dark:hover:text-amber-400"
+            className="text-stone-600 transition-colors hover:text-amber-600 dark:text-stone-300 dark:hover:text-amber-400"
           >
             İletişim
           </a>
@@ -169,7 +173,7 @@ export default function SiteHeader() {
 
       {/* MOBİL AÇILIR MENÜ */}
       {open && (
-        <nav className="luxury-mobile-menu flex flex-col gap-3 border-t border-stone-200/90 bg-white px-5 py-4 text-sm font-bold shadow-xl dark:border-emerald-900/40 dark:bg-[#051811] md:hidden">
+        <nav className="flex flex-col gap-3 border-t border-stone-200 bg-white px-5 py-4 text-sm font-bold shadow-xl dark:border-emerald-900/40 dark:bg-[#051811] md:hidden">
           <a
             href="#paketler"
             onClick={() => setOpen(false)}
