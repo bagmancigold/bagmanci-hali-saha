@@ -247,35 +247,39 @@ export default function AdminPaymentsPage() {
                     </strong>
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min="0"
-                    value={amounts[item.id] || "0"}
-                    onChange={(event) =>
-                      setAmounts({ ...amounts, [item.id]: event.target.value })
-                    }
-                    className="w-28 rounded-xl border px-3 py-2 text-sm"
-                    aria-label="Ödenen tutar"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => savePayment(item)}
-                    className="rounded-full bg-[var(--green)] px-4 py-2 text-xs font-bold text-white"
-                  >
-                    Tutarı kaydet
-                  </button>
-                  <button type="button" onClick={() => savePayment(item, "paid")} className="rounded-full bg-[var(--green)] px-3 py-2 text-xs font-bold text-white">Tamamı</button>
-                  <button type="button" onClick={() => savePayment(item, "deposit")} className="rounded-full bg-[#fff1c9] px-3 py-2 text-xs font-bold text-[#8a5a00]">Kapora</button>
-                  <button type="button" onClick={() => savePayment(item, "unpaid")} className="rounded-full border px-3 py-2 text-xs font-bold">Ödenmedi</button>
-                  <button
-                    type="button"
-                    onClick={() => removeBooking(item.id)}
-                    className="rounded-full p-2 text-red-600"
-                    aria-label="Rezervasyonu sil"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-end">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <input
+                      type="number"
+                      min="0"
+                      value={amounts[item.id] || "0"}
+                      onChange={(event) =>
+                        setAmounts({ ...amounts, [item.id]: event.target.value })
+                      }
+                      className="min-w-0 flex-1 rounded-xl border px-3 py-2 text-sm md:w-28 md:flex-none"
+                      aria-label="Ödenen tutar"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => savePayment(item)}
+                      className="shrink-0 rounded-full bg-[var(--green)] px-3 py-2 text-xs font-bold leading-tight text-white"
+                    >
+                      Tutarı kaydet
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-[repeat(3,minmax(0,1fr))_auto] items-center gap-2 md:flex">
+                    <button type="button" onClick={() => savePayment(item, "paid")} className="min-w-0 rounded-full bg-[var(--green)] px-2 py-2 text-xs font-bold leading-tight text-white">Tamamı</button>
+                    <button type="button" onClick={() => savePayment(item, "deposit")} className="min-w-0 rounded-full bg-[#fff1c9] px-2 py-2 text-xs font-bold leading-tight text-[#8a5a00]">Kapora</button>
+                    <button type="button" onClick={() => savePayment(item, "unpaid")} className="min-w-0 rounded-full border px-2 py-2 text-xs font-bold leading-tight">Ödenmedi</button>
+                    <button
+                      type="button"
+                      onClick={() => removeBooking(item.id)}
+                      className="rounded-full p-2 text-red-600"
+                      aria-label="Rezervasyonu sil"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </article>
