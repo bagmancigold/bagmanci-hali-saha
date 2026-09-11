@@ -1,13 +1,32 @@
-import type { SVGProps } from "react";
+export default function SiteLogo({
+  size = 24,
+  className = "",
+}: {
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      {/* Kafa */}
+      <circle cx="15" cy="6.5" r="2.8" fill="currentColor" />
 
-type SiteLogoProps = SVGProps<SVGSVGElement> & { size?: number };
+      {/* Ronaldo Arkadan Vuruş Silüeti (Gövde, Denge Kolları ve Bacaklar) */}
+      <path
+        d="M14.2 9.5C12.5 9.8 10.8 10.6 8.5 12.2C7.8 12.7 7.5 13.5 8.1 14.1C8.7 14.7 9.6 14.5 10.4 13.8L12.2 12.5V17L9.5 24.5C9.2 25.3 9.6 26.2 10.5 26.3C11.3 26.4 12 25.8 12.3 25L14.5 19.5L16.8 21.8L21 24.5C21.8 25 22.8 24.7 23.2 23.9C23.6 23.1 23.2 22 22.3 21.5L18.5 18.5L16.5 15.5V11.8C18.2 12.6 19.8 13.6 21.2 14.8C21.9 15.4 22.8 15.2 23.3 14.5C23.8 13.8 23.5 12.9 22.7 12.3C20.6 10.8 18.2 9.8 15.8 9.5H14.2Z"
+        fill="currentColor"
+      />
 
-export default function SiteLogo({ size = 24, ...props }: SiteLogoProps) {
-  return <svg aria-hidden="true" width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-    <circle cx="17" cy="8.5" r="4" fill="currentColor" />
-    <circle cx="39" cy="18" r="4.5" fill="currentColor" />
-    <path d="M15.1 14.1c1.5-1.5 4.1-1.6 5.8-.2l3.8 3.1 5.6 1.6c1.4.4 2.2 1.8 1.8 3.1-.4 1.4-1.8 2.2-3.2 1.8l-6.4-1.8c-.5-.1-1-.4-1.4-.7l-2-1.6-1.2 6.1 5.7 3.8c1.2.8 1.5 2.5.7 3.7-.8 1.2-2.5 1.5-3.7.7l-7-4.7c-1-.7-1.5-1.8-1.3-3l1.4-7.3-3.9 2.7-3.5 4.2c-.9 1.1-2.5 1.3-3.6.4-1.1-.9-1.3-2.5-.4-3.6l4-4.8c.2-.2.4-.4.7-.6l6.7-4.7Z" fill="currentColor" />
-    <path d="m17.9 30.4-4.4 7.5c-.7 1.2-.3 2.8.9 3.5 1.2.7 2.8.3 3.5-.9l4.8-8.1-4.8-2Z" fill="currentColor" />
-    <path d="m25.8 22.4 6.2 1.8 4.7-1.5c1.4-.4 2.8.4 3.2 1.8.4 1.4-.4 2.8-1.8 3.2l-5.5 1.7c-.5.2-1 .2-1.5 0l-6.8-2.1-2.1-2.8 3.6-2.1Z" fill="currentColor" />
-  </svg>;
+      {/* Vurulan Futbol Topu */}
+      <circle cx="24.5" cy="27" r="2.5" fill="currentColor" />
+      {/* Top Detayı */}
+      <circle cx="24.5" cy="27" r="1.2" fill="#FBBF24" />
+    </svg>
+  );
 }
