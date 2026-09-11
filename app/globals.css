@@ -771,13 +771,33 @@ main#top > footer { order: 6; }
 .dark .match-step,
 .dark .match-card,
 .dark .admin-modal,
-.dark .payment-choice {
+.dark .payment-choice,
+.dark .admin-settings-panel,
+.dark .admin-image-card,
+.dark .header-account-menu,
+.dark .reservation-summary-card,
+.dark .reservation-total-cell,
+.dark .admin-day-records {
   background: rgb(9 38 27 / 80%);
   border-color: rgb(212 175 55 / 30%);
   backdrop-filter: blur(14px) saturate(130%);
   color: #F8FAFC;
   box-shadow: 0 18px 40px rgb(0 0 0 / 35%);
 }
+.dark .reservation-summary-card span { color: #E2E8F0; }
+.dark .reservation-summary-card strong { color: #FBBF24; }
+.dark .reservation-summary-card small { color: #94A3B8; }
+.dark .admin-settings-panel h2, .dark .admin-image-card h2 { color: #FFFFFF; }
+.dark .admin-image-card p { color: #E2E8F0; }
+.dark .admin-fit-select select,
+.dark .admin-image-actions input,
+.dark .match-filter-input,
+.dark .customer-input {
+  background: rgb(5 24 17 / 75%);
+  border-color: rgb(212 175 55 / 35%);
+  color: #F8FAFC;
+}
+.dark .account-signout { background: rgb(9 38 27 / 70%); border-color: rgb(220 70 70 / 40%); color: #ff9d9d; }
 .dark .luxury-account-menu a, .dark .luxury-account-menu button,
 .dark .luxury-mobile-menu a { color: #E2E8F0; border-top-color: rgb(212 175 55 / 20%); }
 .dark .luxury-account-menu button { color: #ff9d9d; }

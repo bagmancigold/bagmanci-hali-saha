@@ -1,13 +1,12 @@
 "use client";
 
-import { Check, Laptop, Moon, Sun } from "lucide-react";
+import { Check, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 
 const OPTIONS = [
   { value: "light", label: "Açık", Icon: Sun },
   { value: "dark", label: "Koyu", Icon: Moon },
-  { value: "system", label: "Sistem", Icon: Laptop },
 ] as const;
 
 export default function ThemeToggle() {
@@ -40,7 +39,7 @@ export default function ThemeToggle() {
     );
   }
 
-  const active = theme ?? "system";
+  const active = theme === "light" ? "light" : "dark";
   const ActiveIcon =
     OPTIONS.find((option) => option.value === active)?.Icon ??
     (resolvedTheme === "dark" ? Moon : Sun);
