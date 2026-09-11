@@ -29,12 +29,12 @@ export default function ThemeToggle() {
     return () => document.removeEventListener("mousedown", onClick);
   }, [open]);
 
-  // Hidrasyon uyuşmazlığını ve kaymayı önleyen buton alanı
+  // Avoid hydration mismatch: render a stable placeholder until the client resolves the theme.
   if (!mounted) {
     return (
       <div
         aria-hidden
-        className="h-10 w-10 rounded-xl border border-transparent"
+        className="theme-toggle-button"
         style={{ visibility: "hidden" }}
       />
     );
@@ -46,22 +46,18 @@ export default function ThemeToggle() {
     (resolvedTheme === "dark" ? Moon : Sun);
 
   return (
-    <div className="theme-toggle relative" ref={rootRef}>
+    <div className="theme-toggle" ref={rootRef}>
       <button
         type="button"
-        className="theme-toggle-button flex h-10 w-10 items-center justify-center rounded-xl border border-stone-300 bg-stone-100 text-stone-900 shadow-sm transition-colors hover:border-amber-500 hover:bg-stone-200 dark:border-emerald-800/60 dark:bg-[#07241a] dark:text-white dark:hover:bg-emerald-950"
+        className="theme-toggle-button"
         aria-label="Tema seç"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <ActiveIcon size={16} className="text-stone-900 dark:text-amber-400" />
+        <ActiveIcon size={15} />
       </button>
-
       {open && (
-        <div
-          className="theme-toggle-panel absolute right-0 mt-2 min-w-[130px] rounded-2xl border border-stone-200 bg-white p-1.5 shadow-2xl backdrop-blur-xl dark:border-emerald-800/60 dark:bg-[#062016]"
-          role="menu"
-        >
+        <div className="theme-toggle-panel" role="menu">
           {OPTIONS.map(({ value, label, Icon }) => {
             const isActive = active === value;
             return (
@@ -70,21 +66,15 @@ export default function ThemeToggle() {
                 type="button"
                 role="menuitemradio"
                 aria-checked={isActive}
-                className={`theme-toggle-option flex w-full items-center justify-between gap-2.5 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
-                  isActive
-                    ? "bg-amber-400/20 text-amber-900 dark:bg-amber-400/20 dark:text-amber-300"
-                    : "text-stone-700 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-white/10 dark:hover:text-white"
-                }`}
+                className={`theme-toggle-option${isActive ? " theme-toggle-option-active" : ""}`}
                 onClick={() => {
                   setTheme(value);
                   setOpen(false);
                 }}
               >
-                <div className="flex items-center gap-2">
-                  <Icon size={14} className={isActive ? "text-amber-600 dark:text-amber-400" : "opacity-70"} />
-                  <span>{label}</span>
-                </div>
-                {isActive && <Check size={13} className="text-amber-600 dark:text-amber-400 font-extrabold" />}
+                <Icon size={14} />
+                <span>{label}</span>
+                {isActive && <Check size={13} className="theme-toggle-check" />}
               </button>
             );
           })}

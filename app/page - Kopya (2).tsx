@@ -464,29 +464,29 @@ export default function Home() {
   };
 
   return (
-    <main id="top" className="home-page min-h-screen bg-[var(--cream)] text-[var(--ink)]">
+    <main id="top" className="home-page min-h-screen bg-[#FCFDF9] text-slate-900 transition-colors duration-300 dark:bg-[#051811] dark:text-[#F8FAFC]">
       <SiteHeader />
       <SiteImageSync />
 
-      {/* 1. ADIM: EN TEPEDE KARŞILAMA EKRANI (HERO) */}
-      <section className="home-section noise field-lines relative flex min-h-[720px] items-center overflow-hidden bg-[#051811] px-5 pb-16 pt-36 lg:min-h-[820px] lg:px-8">
-        <div className="mx-auto grid w-full max-w-[1240px] items-end gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
+      {/* HERO SECTION - EN TEPEDE & NET BEYAZ METİNLER */}
+      <section className="home-section noise field-lines relative flex min-h-[720px] items-center overflow-hidden bg-[#062017] px-5 pb-16 pt-36 lg:min-h-[820px] lg:px-8">
+        <div className="mx-auto grid w-full max-w-[1240px] items-center gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
           <div className="relative z-10 max-w-[680px]">
-            <div className="mb-6 flex items-center gap-2.5 rounded-full border border-emerald-700/60 bg-emerald-950/80 px-4 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-md w-fit">
+            <div className="mb-6 flex items-center gap-2.5 rounded-full border border-emerald-700/50 bg-emerald-950/60 px-4 py-1.5 text-xs font-semibold text-white shadow-sm backdrop-blur-md w-fit">
               <span className="h-2 w-2 animate-pulse rounded-full bg-amber-400" />{" "}
               Bağmancı Halı Saha · Şanlıurfa
             </div>
-            <h1 className="display max-w-[680px] text-[clamp(3.8rem,8vw,7.5rem)] font-extrabold leading-[.9] text-white">
+            <h1 className="display max-w-[680px] text-[clamp(3.8rem,8vw,7.2rem)] font-extrabold leading-[.9] text-white drop-shadow-md">
               Maçın adresi <span className="text-emerald-400">belli.</span>
             </h1>
-            <p className="mt-8 max-w-[470px] text-lg font-medium leading-8 text-white/90">
+            <p className="mt-8 max-w-[480px] text-lg font-medium leading-8 text-white/90 drop-shadow">
               Takımını topla, paketi seç, sahanı ayırt. Gündüz tarifesi 1200 TL,
               gece tarifesi 1800 TL.
             </p>
             <div className="mt-9 flex items-center gap-4">
               <a
                 href="#paketler"
-                className="inline-flex items-center gap-3 rounded-full bg-amber-400 px-7 py-4 text-sm font-extrabold text-black shadow-lg shadow-amber-400/20 transition hover:bg-amber-300"
+                className="inline-flex items-center gap-3 rounded-full bg-amber-400 px-7 py-4 text-sm font-extrabold text-black shadow-lg shadow-amber-400/20 transition hover:bg-amber-300 hover:scale-[1.02]"
               >
                 Paket seç <ArrowRight size={18} />
               </a>
@@ -498,8 +498,8 @@ export default function Home() {
               </a>
             </div>
           </div>
-          <div className="relative mx-auto w-full max-w-[500px] lg:mb-[-55px]">
-            <div className="home-photo-card relative aspect-[4/5] overflow-hidden rounded-[180px_180px_18px_18px] border-[10px] border-emerald-900/40 shadow-2xl">
+          <div className="relative mx-auto w-full max-w-[500px] lg:mb-[-40px]">
+            <div className="home-photo-card relative aspect-[4/5] overflow-hidden rounded-[180px_180px_24px_24px] border-[8px] border-emerald-800/40 shadow-2xl">
               <img
                 className="h-full w-full object-cover"
                 src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=900&q=85"
@@ -507,7 +507,7 @@ export default function Home() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#051811]/90 via-transparent to-transparent" />
             </div>
-            <div className="home-stat-card absolute -bottom-7 -left-5 flex items-center gap-3.5 rounded-2xl border border-emerald-700/50 bg-[#07241a]/95 p-4 shadow-2xl backdrop-blur-md sm:-left-10">
+            <div className="home-stat-card absolute -bottom-6 -left-4 flex items-center gap-3.5 rounded-2xl border border-emerald-700/50 bg-[#07241a]/95 p-4 shadow-2xl backdrop-blur-md sm:-left-8">
               <div className="flex -space-x-2">
                 <span className="h-9 w-9 rounded-full border-2 border-amber-400 bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=12')" }} />
                 <span className="h-9 w-9 rounded-full border-2 border-amber-400 bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=32')" }} />
@@ -520,15 +520,15 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className="absolute bottom-7 left-5 hidden items-center gap-3 text-xs font-semibold text-white/60 lg:flex">
-          <span className="h-px w-10 bg-amber-400/40" /> Şanlıurfa · Bağmancı
+        <div className="absolute bottom-6 left-8 hidden items-center gap-3 text-xs font-semibold text-white/60 lg:flex">
+          <span className="h-px w-10 bg-amber-400/50" /> Şanlıurfa · Bağmancı
         </div>
       </section>
 
-      {/* 2. ADIM: TARİFELER / PAKETLER */}
+      {/* TARİFELER SECTION */}
       <section
         id="paketler"
-        className="home-section scroll-mt-36 px-5 py-20 lg:px-8 lg:py-28"
+        className="home-section px-5 py-20 lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
@@ -588,10 +588,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. ADIM: REZERVASYON TAKVİMİ */}
+      {/* REZERVASYON SECTION */}
       <section
         id="rezervasyon"
-        className="home-section scroll-mt-36 px-5 py-20 lg:px-8 lg:py-28"
+        className="home-section scroll-mt-32 px-5 py-20 lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10">
@@ -762,15 +762,15 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. ADIM: GERÇEK MAÇ KAYITLARI (GELİŞMİŞ ARŞİV) */}
-      <section id="kayitlar" className="scroll-mt-36">
+      {/* GERÇEK VE GELİŞMİŞ MAÇ ARŞİVİ SECTION */}
+      <div id="kayitlar">
         <MatchArchive />
-      </section>
+      </div>
 
-      {/* 5. ADIM: İLETİŞİM & HARİTA */}
+      {/* İLETİŞİM & TARİFELER SECTION */}
       <section
         id="iletisim"
-        className="home-section scroll-mt-36 px-5 py-20 lg:px-8 lg:py-28"
+        className="home-section px-5 py-20 lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="grid gap-12 lg:grid-cols-[1fr_1fr]">
