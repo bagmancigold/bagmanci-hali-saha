@@ -24,10 +24,13 @@
   color-scheme: dark;
 }
 
-/* Guarantee: no hardcoded light surface can win over dark mode */
-html.dark, html.dark body {
+/* Guarantee: no hardcoded light surface can win over dark mode, and no flash before hydration */
+html, body {
   background-color: #051811 !important;
   color: #F8FAFC !important;
+}
+body {
+  min-height: 100vh;
 }
 html.dark main,
 html.dark div[class*="bg-luxury"],
