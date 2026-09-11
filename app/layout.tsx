@@ -14,7 +14,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="tr" suppressHydrationWarning>
       <body
-        className="w-full max-w-[100vw] overflow-x-hidden bg-[#FCFDF9] text-slate-900 transition-colors duration-300 dark:bg-[#051811] dark:text-[#F8FAFC] antialiased"
+        className="w-full max-w-[100vw] overflow-x-hidden bg-[var(--cream)] text-[var(--ink)] transition-colors duration-300 antialiased"
         suppressHydrationWarning
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange={false}>

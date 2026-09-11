@@ -66,7 +66,7 @@ button { appearance: none; }
 .header-login-position { position: absolute; right: 20px; top: 14px; min-width: 132px; }
 .header-account-position { position: absolute; right: 20px; top: 14px; }
 .header-reservation-button { position: absolute; right: 175px; top: 18px; border: 1px solid rgb(212 175 55 / 70%); border-radius: 999px; background: rgb(212 175 55 / 12%); padding: 10px 14px; color: var(--lime); font-size: 12px; font-weight: 900; text-decoration: none; }
-.booking-form-card { position: relative; isolation: isolate; overflow: hidden; background-color: #0a241b; background-image: linear-gradient(135deg, rgb(6 26 20 / 94%), rgb(10 74 54 / 90%)), var(--booking-background); background-position: center; background-size: cover, var(--booking-background-size, cover); }
+.booking-form-card { position: relative; isolation: isolate; overflow: hidden; background-color: #ffffff; color: var(--ink); }
 .booking-form-card > * { position: relative; z-index: 1; }
 .duration-notice { margin-top: 10px; border-radius: 10px; padding: 9px 10px; font-size: 11px; line-height: 1.45; }
 .duration-notice.success { background: rgb(212 175 55 / 18%); color: #dff6df; }
@@ -738,10 +738,10 @@ main#top > footer { order: 6; }
   gap: 2px;
   border: 1px solid rgb(212 175 55 / 40%);
   border-radius: 16px;
-  background: rgb(6 42 31 / 92%);
+  background: rgb(250 251 246 / 97%);
   backdrop-filter: blur(16px) saturate(140%);
   padding: 8px;
-  box-shadow: 0 20px 50px rgb(0 0 0 / 35%);
+  box-shadow: 0 20px 50px rgb(0 0 0 / 28%);
   animation: theme-panel-in .18s ease;
 }
 @keyframes theme-panel-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
@@ -753,7 +753,7 @@ main#top > footer { order: 6; }
   border-radius: 11px;
   background: transparent;
   padding: 9px 10px;
-  color: #e7ecea;
+  color: var(--ink);
   font-size: 12px;
   font-weight: 700;
   text-align: left;
@@ -761,8 +761,12 @@ main#top > footer { order: 6; }
 }
 .theme-toggle-option:hover { border-color: rgb(212 175 55 / 55%); background: rgb(212 175 55 / 12%); box-shadow: 0 0 12px rgb(212 175 55 / 20%); }
 .theme-toggle-option span { flex: 1; }
-.theme-toggle-option-active { border-color: rgb(212 175 55 / 60%); background: rgb(212 175 55 / 16%); color: #f8fafc; }
-.theme-toggle-check { color: #e7c851; flex: none; }
+.theme-toggle-option-active { border-color: rgb(212 175 55 / 60%); background: rgb(212 175 55 / 16%); color: var(--ink); }
+.theme-toggle-check { color: #b48718; flex: none; }
+.dark .theme-toggle-panel { background: rgb(6 42 31 / 92%); box-shadow: 0 20px 50px rgb(0 0 0 / 35%); }
+.dark .theme-toggle-option { color: #e7ecea; }
+.dark .theme-toggle-option-active { color: #f8fafc; }
+.dark .theme-toggle-check { color: #e7c851; }
 
 /* ---------- Dark theme surfaces (glass emerald + gold) ---------- */
 .dark .luxury-account-menu,
@@ -886,17 +890,105 @@ main#top > footer { order: 6; }
 .dark .site-footer a:hover { color: #fbbf24; }
 .dark .map-frame { border: 1px solid rgb(6 78 59 / 50%); border-radius: 1rem; overflow: hidden; background: #09261b; }
 
-/* ---------- Dark-mode-only surface lock (scoped, never affects light theme) ---------- */
-html.dark div[class*="bg-white"],
-html.dark div[class*="bg-stone"],
-html.dark div[class*="bg-slate-50"],
-html.dark section,
-html.dark footer {
-  background-color: #051811 !important;
+.dark .booking-form-card {
+  background-color: #0a241b;
+  background-image: linear-gradient(135deg, rgb(6 26 20 / 94%), rgb(10 74 54 / 90%)), var(--booking-background);
+  background-position: center;
+  background-size: cover, var(--booking-background-size, cover);
+  color: #F8FAFC;
 }
 
-html.dark div:has(> .text-amber-400),
-html.dark div:has(> h3),
-html.dark div:has(> p) {
-  color: #F8FAFC !important;
+/* ---------- Homepage light-first surfaces (admin cream/white palette) ---------- */
+.home-page { background: var(--cream); color: var(--ink); }
+.home-section { background: #f8faf7; color: var(--ink); }
+.home-section .home-kicker { color: var(--green); }
+.home-title { color: var(--ink); }
+.home-title span { color: var(--green); }
+.home-muted { color: var(--muted); }
+.home-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: var(--ink);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 5%);
+}
+.home-card-accent { background: #ffffff; border: 1px solid #d4af37; color: var(--ink); box-shadow: 0 8px 24px rgb(212 175 55 / 12%); }
+.home-input {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: var(--ink);
+}
+.home-input::placeholder { color: #94a3b8; }
+.home-chip {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+.home-chip-disabled { background: #e8ebe6; border-color: transparent; color: #9aa39c; }
+.home-ghost-button {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  color: var(--green);
+}
+.pricing-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: var(--ink);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 5%);
+}
+.pricing-card-title { color: var(--ink); }
+.pricing-card-note { color: var(--muted); }
+.pricing-card-accent { color: var(--green); }
+.pricing-card-featured {
+  border-color: #d4af37;
+  box-shadow: 0 8px 24px rgb(212 175 55 / 14%);
+}
+.site-footer { background: #f1f5f1; color: var(--muted); border-color: var(--line); }
+.map-frame { background: #ffffff; border: 1px solid var(--line); }
+.match-filter-input { background: #ffffff; border-color: #cbd5e1; color: var(--ink); }
+.home-photo-card { background: #ffffff; border: 1px solid var(--line); }
+.home-stat-card { background: #ffffff; border: 1px solid var(--line); color: var(--ink); }
+.home-booking-shell { background: #ffffff; border: 1px solid var(--line); }
+
+.dark .home-page,
+.dark .home-section { background: #051811; color: #F8FAFC; }
+.dark .home-section .home-kicker { color: #fbbf24; }
+.dark .home-title { color: #ffffff; }
+.dark .home-title span { color: #fbbf24; }
+.dark .home-muted { color: #cbd5e1; }
+.dark .home-card,
+.dark .home-card-accent,
+.dark .home-stat-card,
+.dark .home-booking-shell,
+.dark .home-photo-card {
+  background: #09261b;
+  border-color: rgb(6 95 70 / 40%);
+  color: #F8FAFC;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 35%);
+}
+.dark .home-input {
+  background: #0a2318;
+  border-color: rgb(212 175 55 / 35%);
+  color: #F8FAFC;
+}
+.dark .home-input::placeholder { color: rgb(255 255 255 / 30%); }
+.dark .home-chip {
+  background: #0a2318;
+  border-color: rgb(6 78 59 / 50%);
+  color: #F8FAFC;
+}
+.dark .home-chip-disabled { background: rgb(0 0 0 / 40%); color: rgb(255 255 255 / 20%); }
+.dark .home-ghost-button {
+  background: transparent;
+  border-color: rgb(251 191 36 / 30%);
+  color: #fcd34d;
+}
+.dark .pricing-card-featured { border-color: rgb(251 191 36 / 60%); background: #0c3123; }
+.dark .home-page .match-card,
+.dark .home-page .match-step { background: #09261b; border-color: rgb(6 78 59 / 40%); color: #F8FAFC; }
+
+/* ---------- Dark-mode-only surface lock (scoped, never paints homepage sections) ---------- */
+html.dark div[class*="bg-white"],
+html.dark div[class*="bg-stone"],
+html.dark div[class*="bg-slate-50"] {
+  background-color: #051811 !important;
 }

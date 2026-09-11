@@ -441,26 +441,26 @@ export default function Home() {
             }));
           setNotice("");
         }}
-        className={`schedule-slot ${isSubscriptionSlot ? "schedule-slot-vip" : ""} ${isLocked ? "schedule-slot-locked" : selectedSlot === slot ? "schedule-slot-selected !bg-amber-400 !text-black !border-amber-400 font-bold" : "!bg-[#0d2e22] !text-white !border-amber-500/30 hover:!border-amber-400"}`}
+        className={`schedule-slot ${isSubscriptionSlot ? "schedule-slot-vip" : ""} ${isLocked ? "schedule-slot-locked" : selectedSlot === slot ? "schedule-slot-selected" : ""}`}
       >
         {isSubscriptionSlot && <Crown className="schedule-slot-crown text-amber-400" size={15} />}
         {isSubscriptionLocked && !isOwnSubscription ? (
           <>
-            <span className="text-white/60">{slot}</span>
-            <i aria-hidden="true" className="text-amber-400">•</i>
-            <span className="text-white/60">{endSlot}</span>
-            <small className="text-amber-400/80">DOLU / ABONE</small>
+            <span>{slot}</span>
+            <i aria-hidden="true">•</i>
+            <span>{endSlot}</span>
+            <small>DOLU / ABONE</small>
           </>
         ) : isBooked && !isOwnSubscription ? (
           <>
-            <span className="text-white/40">{slot}</span>
-            <small className="text-red-300">DOLU</small>
+            <span>{slot}</span>
+            <small>DOLU</small>
           </>
         ) : (
           <>
-            <span className="font-semibold text-white">{slot}</span>
-            <i aria-hidden="true" className="text-amber-400">•</i>
-            <span className="font-semibold text-white">{endSlot}</span>
+            <span className="font-semibold">{slot}</span>
+            <i aria-hidden="true">•</i>
+            <span className="font-semibold">{endSlot}</span>
           </>
         )}
       </button>
@@ -468,23 +468,23 @@ export default function Home() {
   };
 
   return (
-    <main id="top" className="min-h-screen bg-[#051811] text-[#F8FAFC]">
+    <main id="top" className="home-page min-h-screen bg-[var(--cream)] text-[var(--ink)]">
       <SiteHeader />
       <SiteImageSync />
       <MatchArchive />
 
       {/* HERO SECTION */}
-      <section className="noise field-lines relative flex min-h-[700px] items-center overflow-hidden bg-[#051811] px-5 pb-16 pt-32 text-white lg:min-h-[780px] lg:px-8">
+      <section className="home-section noise field-lines relative flex min-h-[700px] items-center overflow-hidden px-5 pb-16 pt-32 lg:min-h-[780px] lg:px-8">
         <div className="mx-auto grid w-full max-w-[1240px] items-end gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
           <div className="relative z-10 max-w-[680px]">
-            <div className="mb-7 flex items-center gap-2 text-sm font-semibold text-amber-300">
+            <div className="home-kicker mb-7 flex items-center gap-2 text-sm font-semibold">
               <span className="h-2 w-2 animate-pulse rounded-full bg-amber-400" />{" "}
               Bağmancı Halı Saha · Şanlıurfa
             </div>
-            <h1 className="display max-w-[680px] text-[clamp(3.8rem,8vw,7.5rem)] font-extrabold leading-[.9]">
-              Maçın adresi <span className="text-amber-400">belli.</span>
+            <h1 className="home-title display max-w-[680px] text-[clamp(3.8rem,8vw,7.5rem)] font-extrabold leading-[.9]">
+              Maçın adresi <span>belli.</span>
             </h1>
-            <p className="mt-8 max-w-[470px] text-lg leading-8 text-white/70">
+            <p className="home-muted mt-8 max-w-[470px] text-lg leading-8">
               Takımını topla, paketi seç, sahanı ayırt. Gündüz tarifesi 1200 TL,
               gece tarifesi 1800 TL.
             </p>
@@ -496,28 +496,28 @@ export default function Home() {
             </a>
           </div>
           <div className="relative mx-auto w-full max-w-[500px] lg:mb-[-55px]">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-[180px_180px_18px_18px] border-[10px] border-emerald-800/40 shadow-2xl">
+            <div className="home-photo-card relative aspect-[4/5] overflow-hidden rounded-[180px_180px_18px_18px] border-[10px] shadow-2xl">
               <img
                 className="h-full w-full object-cover"
                 src="https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=900&q=85"
                 alt="Bağmancı Halı Saha"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#051811]/90 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent dark:from-[#051811]/90" />
             </div>
-            <div className="absolute -bottom-7 -left-5 flex items-center gap-3 rounded-2xl border border-amber-500/30 bg-[#09261b]/95 p-4 text-white shadow-2xl backdrop-blur-md sm:-left-10">
+            <div className="home-stat-card absolute -bottom-7 -left-5 flex items-center gap-3 rounded-2xl p-4 shadow-2xl backdrop-blur-md sm:-left-10">
               <div className="flex -space-x-2">
                 <span className="h-9 w-9 rounded-full border-2 border-amber-400/50 bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=12')" }} />
                 <span className="h-9 w-9 rounded-full border-2 border-amber-400/50 bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=32')" }} />
                 <span className="h-9 w-9 rounded-full border-2 border-amber-400/50 bg-cover" style={{ backgroundImage: "url('https://i.pravatar.cc/80?img=13')" }} />
               </div>
               <div>
-                <p className="text-xs text-emerald-200/60">Bu hafta sahada</p>
-                <p className="font-extrabold text-amber-300">120+ oyuncu</p>
+                <p className="home-muted text-xs">Bu hafta sahada</p>
+                <p className="font-extrabold text-amber-600 dark:text-amber-300">120+ oyuncu</p>
               </div>
             </div>
           </div>
         </div>
-        <div className="absolute bottom-7 left-5 hidden items-center gap-3 text-xs font-semibold text-white/50 lg:flex">
+        <div className="home-muted absolute bottom-7 left-5 hidden items-center gap-3 text-xs font-semibold lg:flex">
           <span className="h-px w-10 bg-amber-400/40" /> Şanlıurfa · Bağmancı
         </div>
       </section>
@@ -525,20 +525,20 @@ export default function Home() {
       {/* TARİFELER SECTION */}
       <section
         id="paketler"
-        className="bg-[#04130d] px-5 py-20 lg:px-8 lg:py-28"
+        className="home-section px-5 py-20 lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <p className="mb-4 text-sm font-bold uppercase tracking-[.18em] text-amber-400">
+              <p className="home-kicker mb-4 text-sm font-bold uppercase tracking-[.18em]">
                 Tarifeler
               </p>
-              <h2 className="display text-4xl font-extrabold leading-none text-white sm:text-5xl">
+              <h2 className="home-title display text-4xl font-extrabold leading-none sm:text-5xl">
                 İhtiyacına uygun{" "}
-                <span className="text-amber-400">paketi seç.</span>
+                <span>paketi seç.</span>
               </h2>
             </div>
-            <p className="max-w-[290px] text-sm leading-6 text-white/60">
+            <p className="home-muted max-w-[290px] text-sm leading-6">
               Gündüz 1200 TL, gece 1800 TL. Tamamlanmış ilk haftadan sonra aktif
               abonelere sabit 1.700 TL fiyat uygulanır.
             </p>
@@ -547,35 +547,35 @@ export default function Home() {
             {packages.map((pack, index) => (
               <article
                 key={pack.title}
-                className={`pricing-card relative rounded-3xl border p-7 backdrop-blur-md transition ${index === 1 ? "border-amber-400/60 bg-[#0c3123] text-white shadow-[0_0_30px_rgba(251,191,36,0.15)] md:-translate-y-3" : "border-emerald-800/30 bg-[#082218] text-white"}`}
+                className={`pricing-card relative rounded-3xl border p-7 transition ${index === 1 ? "pricing-card-featured md:-translate-y-3" : ""}`}
               >
                 <p
-                  className={`pricing-card-accent text-sm font-bold ${index === 1 ? "text-amber-300" : "text-emerald-300"}`}
+                  className={`pricing-card-accent text-sm font-bold ${index === 1 ? "text-amber-600 dark:text-amber-300" : ""}`}
                 >
                   {pack.title}
                 </p>
                 <div className="mt-5 flex items-end gap-1">
-                  <span className="display pricing-card-title text-5xl font-extrabold text-white">
+                  <span className="display pricing-card-title text-5xl font-extrabold">
                     {pack.price ? `₺${pack.price}` : "Ücretsiz"}
                   </span>
                   {pack.price ? (
-                    <span className="text-white/60">/saat</span>
+                    <span className="home-muted">/saat</span>
                   ) : null}
                 </div>
-                <p className="pricing-card-note mt-2 text-sm text-white/60">
+                <p className="pricing-card-note mt-2 text-sm">
                   {pack.note}
                 </p>
-                <div className="my-7 h-px bg-white/10" />
-                <p className="mb-5 flex items-center gap-3 text-sm text-white/80">
+                <div className="my-7 h-px bg-[var(--line)]" />
+                <p className="mb-5 flex items-center gap-3 text-sm">
                   <Check
                     size={17}
-                    className={index === 1 ? "text-amber-400" : "text-emerald-400"}
+                    className={index === 1 ? "text-amber-500" : "text-[var(--green)]"}
                   />{" "}
                   {pack.detail}
                 </p>
                 <button
                   onClick={() => choosePackage(pack)}
-                  className={`flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition ${index === 1 ? "bg-amber-400 text-black hover:bg-amber-300" : "bg-emerald-800/40 text-white hover:bg-emerald-700/50 border border-emerald-700/50"}`}
+                  className={`flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold transition ${index === 1 ? "bg-amber-400 text-black hover:bg-amber-300" : "home-ghost-button"}`}
                 >
                   Paketi seç <ArrowRight size={16} />
                 </button>
@@ -588,39 +588,39 @@ export default function Home() {
       {/* REZERVASYON SECTION */}
       <section
         id="rezervasyon"
-        className="scroll-mt-32 bg-[#051811] px-5 py-20 lg:px-8 lg:py-28"
+        className="home-section scroll-mt-32 px-5 py-20 lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10">
-            <div className="subscriber-summary-badge inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-amber-500/10 px-4 py-2 text-xs font-bold text-amber-300 backdrop-blur-md">
+            <div className="subscriber-summary-badge inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold">
               ★ Sabit Abone Olun, 2. Haftadan İtibaren Maç Başı 100 TL Tasarruf Edin
             </div>
-            <p className="mb-4 mt-4 text-sm font-bold uppercase tracking-[.18em] text-amber-300">
+            <p className="home-kicker mb-4 mt-4 text-sm font-bold uppercase tracking-[.18em]">
               Canlı takvim
             </p>
-            <h2 className="display text-4xl font-extrabold leading-none text-white sm:text-5xl">
+            <h2 className="home-title display text-4xl font-extrabold leading-none sm:text-5xl">
               Sahanı ayır,{" "}
-              <span className="text-amber-400">maça başla.</span>
+              <span>maça başla.</span>
             </h2>
           </div>
-          <div className="grid min-w-0 overflow-visible rounded-[28px] border border-emerald-800/40 bg-[#09261b]/90 shadow-2xl backdrop-blur-md lg:grid-cols-[1.4fr_.8fr]">
+          <div className="home-booking-shell grid min-w-0 overflow-visible rounded-[28px] lg:grid-cols-[1.4fr_.8fr]">
             <div className="min-w-0 p-5 sm:p-8">
               <div className="mb-7 flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-emerald-200/60">{weekTitle}</p>
-                  <p className="display text-xl font-extrabold text-white">Müsaitlikler</p>
+                  <p className="home-muted text-sm">{weekTitle}</p>
+                  <p className="home-title display text-xl font-extrabold">Müsaitlikler</p>
                 </div>
                 <div className="flex gap-2">
                   <button
                     aria-label="Önceki hafta"
-                    className="rounded-full border border-amber-400/30 p-2 text-amber-300 hover:border-amber-400"
+                    className="home-ghost-button rounded-full p-2"
                     onClick={() => setWeekOffset(Math.max(0, weekOffset - 1))}
                   >
                     <ChevronLeft size={17} />
                   </button>
                   <button
                     aria-label="Sonraki hafta"
-                    className="rounded-full border border-amber-400/30 p-2 text-amber-300 hover:border-amber-400"
+                    className="home-ghost-button rounded-full p-2"
                     onClick={() => setWeekOffset(weekOffset + 1)}
                   >
                     <ChevronRight size={17} />
@@ -640,7 +640,7 @@ export default function Home() {
                       setSelectedSlot(null);
                       setNotice("");
                     }}
-                    className={`min-w-[68px] flex-shrink-0 rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "cursor-not-allowed border-transparent bg-black/40 text-white/20" : selectedDay === item.date ? "border-amber-400 bg-amber-400 text-black font-extrabold shadow-[0_0_15px_rgba(251,191,36,0.3)]" : "border-emerald-800/50 bg-[#0a2318] text-white hover:border-amber-400/50"}`}
+                    className={`min-w-[68px] flex-shrink-0 rounded-2xl border p-3 text-center transition ${weekOffset === 0 && item.date < new Date().toISOString().slice(0, 10) ? "home-chip-disabled cursor-not-allowed" : selectedDay === item.date ? "border-amber-400 bg-amber-400 text-black font-extrabold shadow-[0_0_15px_rgba(251,191,36,0.3)]" : "home-chip hover:border-amber-400/50"}`}
                   >
                     <span className="mt-1 block text-xs font-semibold opacity-60">
                       {item.day}
@@ -652,60 +652,60 @@ export default function Home() {
                 ))}
               </div>
               <div className="schedule-row">
-                <div className="schedule-row-label text-emerald-300/70">GÜNDÜZ</div>
+                <div className="schedule-row-label">GÜNDÜZ</div>
                 <div className="schedule-row-scroll touch-pan-x scrollbar-none">
                   {daytimeSlots.map(renderSlot)}
                 </div>
               </div>
               <div className="schedule-row">
-                <div className="schedule-row-label text-amber-300/70">GECE</div>
+                <div className="schedule-row-label">GECE</div>
                 <div className="schedule-row-scroll touch-pan-x scrollbar-none">
                   {nighttimeSlots.map(renderSlot)}
                 </div>
               </div>
             </div>
-            <div className="booking-form-card mx-0 box-border w-full min-w-0 rounded-2xl border-t border-emerald-800/40 bg-[#061e15] p-4 text-white sm:rounded-none sm:border-l sm:border-t-0 sm:p-8">
+            <div className="booking-form-card mx-0 box-border w-full min-w-0 rounded-2xl border-t border-[var(--line)] p-4 sm:rounded-none sm:border-l sm:border-t-0 sm:p-8">
               <div className="mb-8 flex items-center gap-3">
-                <CalendarDays className="text-amber-400" />
+                <CalendarDays className="text-amber-500" />
                 <div>
-                  <p className="text-xs text-white/60">Seçimin</p>
-                  <p className="font-bold text-amber-300">
+                  <p className="home-muted text-xs">Seçimin</p>
+                  <p className="font-bold text-amber-700 dark:text-amber-300">
                     {selectedLabel} {selectedSlot ?? "· saat seç"}
                   </p>
                 </div>
               </div>
               <div className="mb-5">
-                <p className="mb-2 text-sm font-semibold text-white/80">Maç süresi</p>
+                <p className="mb-2 text-sm font-semibold">Maç süresi</p>
                 <div className="grid grid-cols-3 gap-2">
                   {[1, 1.5, 2].map((duration) => (
                     <button
                       key={duration}
                       type="button"
                       onClick={() => selectDuration(duration)}
-                      className={`rounded-xl border px-3 py-3 text-sm font-extrabold transition ${selectedDuration === duration ? "border-amber-400 bg-amber-400 text-black" : "border-emerald-800/40 bg-[#0a2318] text-white hover:border-amber-400/40"}`}
+                      className={`rounded-xl border px-3 py-3 text-sm font-extrabold transition ${selectedDuration === duration ? "border-amber-400 bg-amber-400 text-black" : "home-chip hover:border-amber-400/40"}`}
                     >
                       {duration === 1.5 ? "1,5 saat" : `${duration} saat`}
                     </button>
                   ))}
                 </div>
                 {durationNotice && (
-                  <p className="mt-2 text-xs font-semibold text-amber-300">
+                  <p className="mt-2 text-xs font-semibold text-amber-700 dark:text-amber-300">
                     {durationNotice}
                   </p>
                 )}
               </div>
-              <label className="mb-3 block text-sm font-semibold text-white/80">
+              <label className="mb-3 block text-sm font-semibold">
                 Ad soyad
                 <input
                   value={form.name}
                   onChange={(event) =>
                     setForm({ ...form, name: event.target.value })
                   }
-                  className="mt-2 w-full rounded-xl border border-emerald-800/50 bg-[#0a2318] px-4 py-3 text-white outline-none placeholder:text-white/30 focus:border-amber-400"
+                  className="home-input mt-2 w-full rounded-xl px-4 py-3 outline-none focus:border-amber-400"
                   placeholder="Takım kaptanı"
                 />
               </label>
-              <label className="mb-4 block text-sm font-semibold text-white/80">
+              <label className="mb-4 block text-sm font-semibold">
                 Telefon
                 <input
                   value={form.phone}
@@ -715,31 +715,31 @@ export default function Home() {
                       phone: event.target.value.replace(/\D/g, "").slice(0, 11),
                     })
                   }
-                  className="mt-2 w-full rounded-xl border border-emerald-800/50 bg-[#0a2318] px-4 py-3 text-white outline-none placeholder:text-white/30 focus:border-amber-400"
+                  className="home-input mt-2 w-full rounded-xl px-4 py-3 outline-none focus:border-amber-400"
                   placeholder="05xx xxx xx xx"
                 />
               </label>
               {ownSubscriptionSlot(selectedSlot || "") && (
-                <div className="mb-4 inline-flex rounded-full border border-amber-400 bg-amber-500/20 px-4 py-2 text-xs font-black text-amber-300">
+                <div className="mb-4 inline-flex rounded-full border border-amber-400 bg-amber-500/20 px-4 py-2 text-xs font-black text-amber-800 dark:text-amber-300">
                   ★ Sizin Sabit Abonelik Saatiniz
                 </div>
               )}
               {discountEligible && (
-                <div className="mb-6 rounded-xl border border-amber-400 bg-amber-500/20 px-4 py-3 text-amber-300">
+                <div className="mb-6 rounded-xl border border-amber-400 bg-amber-500/20 px-4 py-3 text-amber-800 dark:text-amber-300">
                   <div className="text-sm font-black">
                     <span className="mr-2 text-xl line-through opacity-60">
                       1.800 TL
                     </span>
-                    <span className="text-xl text-amber-400">1.700 TL</span>
+                    <span className="text-xl text-amber-600 dark:text-amber-400">1.700 TL</span>
                   </div>
                   <p className="mt-1 text-[11px] font-bold">
                     ★ Bağmancı Sadık Abone İndirimi Uygulandı
                   </p>
                 </div>
               )}
-              <div className="mb-5 flex items-center justify-between border-t border-emerald-800/40 pt-5">
-                <span className="text-sm text-white/60">Ödenecek tutar</span>
-                <strong className="text-2xl text-amber-400">
+              <div className="mb-5 flex items-center justify-between border-t border-[var(--line)] pt-5">
+                <span className="home-muted text-sm">Ödenecek tutar</span>
+                <strong className="text-2xl text-amber-600 dark:text-amber-400">
                   {price ? `${price.toFixed(0)} TL` : "Ücretsiz"}
                 </strong>
               </div>
@@ -750,7 +750,7 @@ export default function Home() {
                 Maç kaydı oluştur <ArrowRight size={17} />
               </button>
               {notice && (
-                <p className="mt-4 rounded-xl border border-emerald-800/40 bg-[#0a2318] p-3 text-sm text-white/80">
+                <p className="home-card mt-4 rounded-xl p-3 text-sm">
                   {notice}
                 </p>
               )}
@@ -761,26 +761,26 @@ export default function Home() {
 
       {/* MAÇ KAYITLARI SECTION */}
       <section
-        id="kayitlar"
-        className="bg-[#04130d] px-5 py-20 lg:px-8 lg:py-28"
+        id="kayitlar-banner"
+        className="home-section px-5 py-20 lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <p className="mb-4 text-sm font-bold uppercase tracking-[.18em] text-amber-400">
+              <p className="home-kicker mb-4 text-sm font-bold uppercase tracking-[.18em]">
                 Maç kayıtları
               </p>
-              <h2 className="display text-4xl font-extrabold leading-none text-white sm:text-5xl">
+              <h2 className="home-title display text-4xl font-extrabold leading-none sm:text-5xl">
                 Güzel maçın{" "}
-                <span className="text-amber-400">tekrarı olur.</span>
+                <span>tekrarı olur.</span>
               </h2>
             </div>
-            <p className="max-w-[270px] text-sm leading-6 text-white/60">
+            <p className="home-muted max-w-[270px] text-sm leading-6">
               Abonelerimizin maç kaydı ücretsizdir. Normal saat kiralayanlar
               için kayıt ayrıca ücretli olabilir.
             </p>
           </div>
-          <div className="group relative min-h-[390px] overflow-hidden rounded-3xl border border-emerald-800/40 bg-[#051811]">
+          <div className="home-photo-card group relative min-h-[390px] overflow-hidden rounded-3xl">
             <img
               className="absolute inset-0 h-full w-full object-cover opacity-75 transition duration-700 group-hover:scale-105"
               src="https://images.unsplash.com/photo-1553778263-73a83bab9b0c?auto=format&fit=crop&w=1200&q=85"
@@ -820,19 +820,19 @@ export default function Home() {
       {/* İLETİŞİM & TARİFELER SECTION */}
       <section
         id="iletisim"
-        className="bg-[#051811] px-5 py-20 text-white lg:px-8 lg:py-28"
+        className="home-section px-5 py-20 lg:px-8 lg:py-28"
       >
         <div className="mx-auto max-w-[1240px]">
           <div className="grid gap-12 lg:grid-cols-[1fr_1fr]">
             <div>
-              <p className="mb-4 text-sm font-bold uppercase tracking-[.18em] text-amber-400">
+              <p className="home-kicker mb-4 text-sm font-bold uppercase tracking-[.18em]">
                 Bize ulaş
               </p>
-              <h2 className="display max-w-[500px] text-5xl font-extrabold leading-none">
+              <h2 className="home-title display max-w-[500px] text-5xl font-extrabold leading-none">
                 Takımın hazırsa,{" "}
-                <span className="text-amber-400">biz de hazırız.</span>
+                <span>biz de hazırız.</span>
               </h2>
-              <p className="mt-6 max-w-[430px] text-white/65">
+              <p className="home-muted mt-6 max-w-[430px]">
                 Bağmancı Halı Saha, Şanlıurfa. Adresimizi haritada açabilir,
                 doğrudan bizi arayabilirsin.
               </p>
@@ -845,7 +845,7 @@ export default function Home() {
                 </a>
                 <a
                   href="tel:04142475151"
-                  className="flex items-center gap-2 rounded-full border border-amber-400/30 px-5 py-3 text-sm font-bold text-white hover:border-amber-400"
+                  className="home-ghost-button flex items-center gap-2 rounded-full px-5 py-3 text-sm font-bold"
                 >
                   <Phone size={16} /> 0414 247 51 51
                 </a>
@@ -856,7 +856,7 @@ export default function Home() {
                   href="https://www.instagram.com/"
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-full border border-emerald-800/40 bg-[#09261b] p-3 text-amber-300 hover:border-amber-400"
+                  className="home-ghost-button rounded-full p-3"
                 >
                   <Instagram size={18} />
                 </a>
@@ -865,13 +865,13 @@ export default function Home() {
                   href={mapUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-full border border-emerald-800/40 bg-[#09261b] p-3 text-amber-300 hover:border-amber-400"
+                  className="home-ghost-button rounded-full p-3"
                 >
                   <MapPin size={18} />
                 </a>
               </div>
             </div>
-            <div className="map-frame overflow-hidden rounded-3xl border border-emerald-800/40 bg-[#09261b] p-2">
+            <div className="map-frame overflow-hidden rounded-3xl p-2">
               <iframe
                 title="Bağmancı Halı Saha konumu"
                 src="https://www.google.com/maps?q=Bağmancı+Halı+Saha+Şanlıurfa&output=embed"
@@ -880,25 +880,25 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="mt-16 grid gap-5 border-t border-emerald-800/40 pt-8 sm:grid-cols-3">
-            <div className="rounded-2xl border border-emerald-800/30 bg-[#09261b]/60 p-5 backdrop-blur-md">
-              <Clock3 className="mb-3 text-amber-400" size={24} />
-              <p className="font-bold text-white text-lg">Gündüz tarifesi</p>
-              <p className="mt-1 text-sm text-emerald-200/70 font-medium">
+          <div className="mt-16 grid gap-5 border-t border-[var(--line)] pt-8 sm:grid-cols-3">
+            <div className="home-card rounded-2xl p-5">
+              <Clock3 className="mb-3 text-amber-500" size={24} />
+              <p className="text-lg font-bold">Gündüz tarifesi</p>
+              <p className="home-muted mt-1 text-sm font-medium">
                 12:00 - 18:00 · 1200 TL
               </p>
             </div>
-            <div className="rounded-2xl border border-emerald-800/30 bg-[#09261b]/60 p-5 backdrop-blur-md">
-              <Clock3 className="mb-3 text-amber-400" size={24} />
-              <p className="font-bold text-white text-lg">Gece tarifesi</p>
-              <p className="mt-1 text-sm text-emerald-200/70 font-medium">
+            <div className="home-card rounded-2xl p-5">
+              <Clock3 className="mb-3 text-amber-500" size={24} />
+              <p className="text-lg font-bold">Gece tarifesi</p>
+              <p className="home-muted mt-1 text-sm font-medium">
                 18:00 sonrası · 1800 TL
               </p>
             </div>
-            <div className="rounded-2xl border border-emerald-800/30 bg-[#09261b]/60 p-5 backdrop-blur-md">
-              <Users className="mb-3 text-amber-400" size={24} />
-              <p className="font-bold text-white text-lg">Abone avantajı</p>
-              <p className="mt-1 text-sm text-emerald-200/70 font-medium">
+            <div className="home-card rounded-2xl p-5">
+              <Users className="mb-3 text-amber-500" size={24} />
+              <p className="text-lg font-bold">Abone avantajı</p>
+              <p className="home-muted mt-1 text-sm font-medium">
                 İlk tamamlanmış haftadan sonra 1.700 TL abone fiyatı
               </p>
             </div>
@@ -907,17 +907,17 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer className="site-footer border-t border-emerald-900/60 bg-[#030e0a] px-5 py-8 text-sm text-white/60 lg:px-8">
+      <footer className="site-footer border-t px-5 py-8 text-sm lg:px-8">
         <div className="mx-auto flex max-w-[1240px] flex-col justify-between gap-4 sm:flex-row">
           <span>© 2026 Bağmancı Halı Saha</span>
           <div className="flex gap-5">
-            <a href="/musteri" className="hover:text-amber-400 transition">
+            <a href="/musteri" className="transition hover:text-amber-600 dark:hover:text-amber-400">
               Müşteri girişi
             </a>
-            <a href="/gizlilik" className="hover:text-amber-400 transition">
+            <a href="/gizlilik" className="transition hover:text-amber-600 dark:hover:text-amber-400">
               Gizlilik
             </a>
-            <a href="/guvenlik" className="hover:text-amber-400 transition">
+            <a href="/guvenlik" className="transition hover:text-amber-600 dark:hover:text-amber-400">
               Güvenlik
             </a>
           </div>
