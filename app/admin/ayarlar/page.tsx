@@ -72,7 +72,28 @@ export default function SiteSettingsPage() {
 
   const saveImages = async () => {
     setSaving("images");
-    const { error } = await getSupabaseClient().from("site_settings").upsert({ id: "main", hero_image: images.hero, match_image: images.match, background_image: images.background, favicon_image: images.favicon, updated_at: new Date().toISOString() });
+    const payload: Record<string, string> = {
+      id: "main",
+      hero_image: images.hero,
+      match_image: images.match,
+      background_image: images.background,
+      favicon_image: images.favicon,
+      updated_at: new Date().toISOString(),
+    };
+    let { error } = await getSupabaseClient().from("site_settings").upsert(payload);
+    if (error && /favicon_image/i.test(error.message) && /schema cache|column/i.test(error.message)) {
+      // favicon_image migration not yet applied on the database; save the rest so the admin isn't blocked.
+      const { favicon_image: _favicon, ...fallbackPayload } = payload;
+      const retry = await getSupabaseClient().from("site_settings").upsert(fallbackPayload);
+      error = retry.error;
+      setSaving(null);
+      setMessage(
+        error
+          ? `Görseller kaydedilemedi: ${error.message}`
+          : "Diğer görseller kaydedildi. Favicon için Supabase'de 'favicon_image' sütun migrasyonunu çalıştırman gerekiyor.",
+      );
+      return;
+    }
     setSaving(null);
     setMessage(error ? `Görseller kaydedilemedi: ${error.message}` : "Görsel ayarları kaydedildi.");
   };
