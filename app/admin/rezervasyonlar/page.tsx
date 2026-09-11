@@ -241,38 +241,7 @@ export default function AdminBookingsPage() {
   return (
     <main className="reservation-page min-h-screen bg-[#f5f7f3] px-3 py-6 text-[var(--ink)] sm:px-5 lg:px-8">
       <div className="mx-auto max-w-[1600px]">
-        <div className="mb-5 flex items-center justify-end">
-          <div className="flex items-center gap-2">
-            <strong className="reservation-clock">{clock}</strong>
-            <div className="flex gap-1.5">
-              <button
-                type="button"
-                onClick={() => setWeekOffset((value) => value - 1)}
-                className="rounded-full border bg-white p-2"
-                aria-label="Önceki hafta"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button
-                type="button"
-                onClick={() => setWeekOffset((value) => value + 1)}
-                className="rounded-full border bg-white p-2"
-                aria-label="Sonraki hafta"
-              >
-                <ChevronRight size={16} />
-              </button>
-              <button
-                type="button"
-                onClick={load}
-                className="rounded-full border bg-white p-2"
-                aria-label="Yenile"
-              >
-                <RefreshCw size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="mb-4 flex items-end justify-between">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--green)]">
               Haftalık rezervasyon defteri
@@ -281,10 +250,41 @@ export default function AdminBookingsPage() {
               Rezervasyonlar
             </h1>
           </div>
-          <p className="text-right text-xs text-[var(--muted)]">
-            {dateText(weekStart)} -{" "}
-            {dateText(new Date(weekStart.getTime() + 6 * 86400000))}
-          </p>
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <p className="text-right text-xs text-[var(--muted)]">
+              {dateText(weekStart)} -{" "}
+              {dateText(new Date(weekStart.getTime() + 6 * 86400000))}
+            </p>
+            <div className="flex items-center gap-2">
+              <strong className="reservation-clock">{clock}</strong>
+              <div className="flex gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setWeekOffset((value) => value - 1)}
+                  className="rounded-full border bg-white p-2"
+                  aria-label="Önceki hafta"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setWeekOffset((value) => value + 1)}
+                  className="rounded-full border bg-white p-2"
+                  aria-label="Sonraki hafta"
+                >
+                  <ChevronRight size={16} />
+                </button>
+                <button
+                  type="button"
+                  onClick={load}
+                  className="rounded-full border bg-white p-2"
+                  aria-label="Yenile"
+                >
+                  <RefreshCw size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
         <button type="button" className="manual-booking-button mb-4" onClick={() => openManual()}><Plus size={17} /> Manuel Maç Ekle</button>
         <div className="reservation-summary mb-4 grid w-full grid-cols-2 gap-3">
