@@ -468,7 +468,7 @@ export default function Home() {
       <SiteHeader />
       <SiteImageSync />
 
-      {/* 1. ADIM: EN TEPEDE KARŞILAMA EKRANI (HERO) */}
+      {/* 1. EN TEPEDE KARŞILAMA (HERO) */}
       <section className="home-section noise field-lines relative flex min-h-[720px] items-center overflow-hidden bg-[#051811] px-5 pb-16 pt-36 lg:min-h-[820px] lg:px-8">
         <div className="mx-auto grid w-full max-w-[1240px] items-end gap-12 lg:grid-cols-[1.05fr_.95fr] lg:gap-16">
           <div className="relative z-10 max-w-[680px]">
@@ -525,7 +525,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. ADIM: TARİFELER / PAKETLER */}
+      {/* 2. TARİFELER */}
       <section
         id="paketler"
         className="home-section scroll-mt-36 px-5 py-20 lg:px-8 lg:py-28"
@@ -588,7 +588,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. ADIM: REZERVASYON TAKVİMİ */}
+      {/* 3. REZERVASYON TAKVİMİ */}
       <section
         id="rezervasyon"
         className="home-section scroll-mt-36 px-5 py-20 lg:px-8 lg:py-28"
@@ -762,12 +762,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. ADIM: GERÇEK MAÇ KAYITLARI (GELİŞMİŞ ARŞİV) */}
+      {/* 4. GERÇEK MAÇ KAYITLARI & ARŞİV */}
       <section id="kayitlar" className="scroll-mt-36">
         <MatchArchive />
       </section>
 
-      {/* 5. ADIM: İLETİŞİM & HARİTA */}
+      {/* 5. İLETİŞİM & HARİTA */}
       <section
         id="iletisim"
         className="home-section scroll-mt-36 px-5 py-20 lg:px-8 lg:py-28"
