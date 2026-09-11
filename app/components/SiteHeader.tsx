@@ -47,22 +47,22 @@ export default function SiteHeader() {
   };
 
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 w-full border-b border-stone-200/90 bg-[#FCFDF9]/95 backdrop-blur-md transition-colors duration-200 dark:border-emerald-900/40 dark:bg-[#051811]/95">
-      {/* 1. KATMAN: KALIN VE MERKEZLİ ANA BAR (h-20: 80px) */}
-      <div className="relative mx-auto flex h-20 max-w-[1240px] items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="fixed left-0 right-0 top-0 z-50 w-full border-b border-stone-200/90 bg-[#FCFDF9]/95 backdrop-blur-md transition-colors duration-200 dark:border-emerald-900/50 dark:bg-[#051811]/95">
+      {/* 80px BOYUNA ET VE PRESTİJ KAZANDIRILMIŞ ANA BAR */}
+      <div className="relative mx-auto flex h-20 max-w-[1240px] items-center justify-between px-3 sm:px-6 lg:px-8">
         
-        {/* SOL TARAF: MOBİL MENÜ BUTONU & MASAÜSTÜ SOL LİNKLER */}
+        {/* SOL: MOBİL MENÜ BUTONU & MASAÜSTÜ MENÜLER */}
         <div className="flex items-center gap-3">
           <button
             type="button"
             aria-label={open ? "Menüyü kapat" : "Menüyü aç"}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-stone-300 bg-white p-2 text-stone-900 shadow-sm transition hover:bg-stone-100 dark:border-emerald-800/60 dark:bg-[#07241a] dark:text-white md:hidden"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-stone-300 bg-white p-2 text-stone-900 shadow-sm transition hover:bg-stone-100 dark:border-emerald-800/60 dark:bg-[#07241a] dark:text-white md:hidden"
             onClick={() => setOpen(!open)}
           >
-            {open ? <X size={22} /> : <Menu size={22} />}
+            {open ? <X size={20} /> : <Menu size={20} />}
           </button>
 
-          <div className="hidden items-center gap-6 text-xs font-black uppercase tracking-wider md:flex">
+          <nav className="hidden items-center gap-6 text-xs font-black uppercase tracking-wider md:flex">
             <a
               href="#paketler"
               className="text-stone-700 transition hover:text-amber-500 dark:text-stone-300 dark:hover:text-amber-400"
@@ -75,34 +75,36 @@ export default function SiteHeader() {
             >
               <CalendarDays size={15} className="text-amber-500" /> Rezervasyon
             </a>
-          </div>
+          </nav>
         </div>
 
-        {/* ORTA TARAF: BÜYÜK VE MERKEZLİ 'BAĞMANCI HALI SAHA' */}
-        <a
-          href="/"
-          aria-label="BAĞMANCI HALI SAHA ana sayfa"
-          className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2.5 sm:gap-3 whitespace-nowrap"
-        >
-          <span
-            className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-400/20 text-amber-500 ring-2 ring-amber-400/40 shadow-sm dark:bg-amber-400/10"
-            data-site-logo
+        {/* ORTA: ASLA TAŞMAYAN, İKİ KATLI LÜKS MARKA ARMASI */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
+          <a
+            href="/"
+            aria-label="BAĞMANCI HALI SAHA ana sayfa"
+            className="flex items-center gap-2 sm:gap-3"
           >
-            <SiteLogo size={24} />
-          </span>
-          <div className="flex items-baseline gap-1.5 sm:gap-2">
-            <span className="text-lg sm:text-2xl font-black tracking-tight text-[#081b13] dark:text-white">
-              BAĞMANCI
+            <span
+              className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-400/20 text-amber-500 ring-2 ring-amber-400/50 shadow-sm dark:bg-amber-400/10"
+              data-site-logo
+            >
+              <SiteLogo size={22} />
             </span>
-            <span className="text-xs sm:text-sm font-extrabold tracking-wider text-emerald-700 dark:text-emerald-400 uppercase">
-              HALI SAHA
-            </span>
-          </div>
-        </a>
+            <div className="flex flex-col text-left leading-none">
+              <span className="text-base sm:text-xl font-black tracking-tight text-[#081b13] dark:text-white">
+                BAĞMANCI
+              </span>
+              <span className="mt-1 text-[9px] sm:text-[11px] font-black tracking-[0.2em] text-emerald-700 dark:text-emerald-400 uppercase">
+                HALI SAHA
+              </span>
+            </div>
+          </a>
+        </div>
 
-        {/* SAĞ TARAF: TEMA & HESABIM */}
+        {/* SAĞ: TEMA BUTONU & HESAP KONTROLLERİ */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className="hidden items-center gap-6 text-xs font-black uppercase tracking-wider mr-2 md:flex">
+          <nav className="hidden items-center gap-6 text-xs font-black uppercase tracking-wider mr-2 md:flex">
             <a
               href="#kayitlar"
               className="flex items-center gap-1.5 text-stone-700 transition hover:text-amber-500 dark:text-stone-300 dark:hover:text-amber-400"
@@ -115,7 +117,7 @@ export default function SiteHeader() {
             >
               İletişim
             </a>
-          </div>
+          </nav>
 
           <ThemeToggle />
 
@@ -123,12 +125,12 @@ export default function SiteHeader() {
             <div className="relative">
               <button
                 type="button"
-                className="flex h-11 items-center gap-1.5 sm:gap-2 rounded-2xl border border-amber-400/70 bg-amber-400/10 px-3 sm:px-4 text-xs font-bold text-stone-900 shadow-sm transition hover:bg-amber-400 hover:text-black dark:border-amber-400/40 dark:bg-amber-400/10 dark:text-amber-300"
+                className="flex h-10 items-center gap-1.5 rounded-2xl border border-amber-400/70 bg-amber-400/10 px-2.5 sm:px-4 text-xs font-bold text-stone-900 shadow-sm transition hover:bg-amber-400 hover:text-black dark:border-amber-400/40 dark:bg-amber-400/10 dark:text-amber-300"
                 onClick={() => setAccountOpen((value) => !value)}
               >
-                <UserRound size={15} className="text-amber-600 dark:text-amber-400" />
+                <UserRound size={15} className="text-amber-600 dark:text-amber-400 shrink-0" />
                 <span className="hidden sm:inline">Hesabım</span>
-                <ChevronDown size={14} className="opacity-70" />
+                <ChevronDown size={14} className="opacity-70 shrink-0" />
               </button>
 
               {accountOpen && (
@@ -169,7 +171,7 @@ export default function SiteHeader() {
           ) : (
             <a
               href="/musteri"
-              className="flex h-11 items-center gap-1.5 rounded-2xl bg-amber-400 px-3.5 sm:px-5 text-xs font-black text-black shadow-md transition hover:bg-amber-300"
+              className="flex h-10 items-center gap-1.5 rounded-2xl bg-amber-400 px-3.5 sm:px-5 text-xs font-black text-black shadow-md transition hover:bg-amber-300"
             >
               <UserRound size={15} /> <span>GİRİŞ YAP</span>
             </a>
