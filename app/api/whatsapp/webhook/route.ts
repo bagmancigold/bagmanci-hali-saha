@@ -34,8 +34,11 @@ export async function GET(req: Request) {
   const mode = url.searchParams.get("hub.mode");
   const token = url.searchParams.get("hub.verify_token");
   const challenge = url.searchParams.get("hub.challenge");
+  const verifyToken =
+    process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN ||
+    process.env.WHATSAPP_VERIFY_TOKEN;
 
-  if (mode === "subscribe" && token === process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN) {
+  if (mode === "subscribe" && token && token === verifyToken) {
     return new Response(challenge || "", { status: 200 });
   }
 

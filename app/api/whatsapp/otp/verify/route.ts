@@ -17,10 +17,18 @@ function safeCompare(left: string, right: string) {
   return leftBuffer.length === rightBuffer.length && timingSafeEqual(leftBuffer, rightBuffer);
 }
 
+function normalizeLocalPhone(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+  if (/^5\d{9}$/.test(digits)) return `0${digits}`;
+  if (/^0\d{10}$/.test(digits)) return digits;
+  if (/^90(5\d{9})$/.test(digits)) return `0${digits.slice(2)}`;
+  return digits;
+}
+
 export async function POST(req: Request) {
   try {
     const { phone, code } = await req.json();
-    const localPhone = String(phone || "").replace(/\D/g, "");
+    const localPhone = normalizeLocalPhone(String(phone || ""));
     const token = String(code || "").replace(/\D/g, "");
 
     if (!/^0\d{10}$/.test(localPhone) || !/^\d{6}$/.test(token)) {
