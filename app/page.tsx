@@ -264,7 +264,7 @@ export default function Home() {
   const sendTestWhatsApp = async () => {
     let targetPhone = form.phone.replace(/\D/g, "");
     if (!targetPhone) {
-      targetPhone = "905431005063"; // Boşsa varsayılan test numaran
+      targetPhone = "905431005063";
     } else if (targetPhone.startsWith("0")) {
       targetPhone = "9" + targetPhone;
     } else if (!targetPhone.startsWith("90")) {
@@ -276,7 +276,7 @@ export default function Home() {
 
     try {
       const phoneNumberId = "1913963925193128";
-      const token = "EAATZCsPNZCIDEBSQUmXX41JaOGbRF5miZCHbEi9aooyCULFUvhJkEK8a09ZBPPtoZALys0ldQeeSNt3WkEBxL5182W0pN2HqLFGE5xbqf820zc9Uhul9rtHGsJv0RWSEN7Fs5tY4QrSgVfrbAMY8PSYfqPBPYkxbx";
+      const token = "EAATZCsPNZCiDEBSTL4LH9smQcq6FvaFpsxZA50DaIP6EWY7lJPWzt2R8ZAl5yZAtEwTkEIDlSaSyxqIDRYHpIJ4q5hN3FxeE1aPcdcZA3HzTXXHydjeKtn40kVPZAWZBZCZCNajIiZAa1gl11ZAt6xQ0Mwd7aFRlqNeHE5P44PdaggDCetlnoOt2vOOnMZCi4ZCG6GEHVj4QZDZD";
 
       const res = await fetch(`https://graph.facebook.com/v20.0/${phoneNumberId}/messages`, {
         method: "POST",
