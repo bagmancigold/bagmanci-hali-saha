@@ -275,10 +275,10 @@ export default function Home() {
     setNotice(`0414 247 51 51 hattından ${targetPhone} numarasına test mesajı gönderiliyor...`);
 
     try {
-      const phoneNumberId = "1913963925193128";
-      const token = "EAATZCsPNZCiDEBSTL4LH9smQcq6FvaFpsxZA50DaIP6EWY7lJPWzt2R8ZAl5yZAtEwTkEIDlSaSyxqIDRYHpIJ4q5hN3FxeE1aPcdcZA3HzTXXHydjeKtn40kVPZAWZBZCZCNajIiZAa1gl11ZAt6xQ0Mwd7aFRlqNeHE5P44PdaggDCetlnoOt2vOOnMZCi4ZCG6GEHVj4QZDZD";
+      const phoneNumberId = "1313963325139128";
+      const token = "EAATZCsPNZCIDEBSTL4LH9smQcq6FvaFpsxZA50DAlP6EWY71JPwzt2R8ZAl5yZaTEwTkEIDlSaSyxqIDRYHpIJ4q5hN3FxeE1aPcdcZA3HzTXXHydjeKtn40KVPZAWZBZCZCNajIIZAa1gl11ZAt6xQ0Mwd7aFRlqNeHE5P4PDaggDcet1noot2vOONMzcI4ZCGGEHVj4QZDZD";
 
-      const res = await fetch(`https://graph.facebook.com/v20.0/${phoneNumberId}/messages`, {
+      const res = await fetch(`https://graph.facebook.com/v25.0/${phoneNumberId}/messages`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -289,7 +289,7 @@ export default function Home() {
           to: targetPhone,
           type: "template",
           template: {
-            name: "hello_world",
+            name: "3p_direct_integration_test_template",
             language: {
               code: "en_US",
             },
@@ -297,13 +297,36 @@ export default function Home() {
         }),
       });
 
-      const responseData = await res.json();
+      let responseData = await res.json();
 
-      if (!res.ok) {
+      // Eğer 3p_direct_integration_test_template yerine hello_world gerekirse
+      if (!res.ok && responseData.error?.message?.includes("template")) {
+        const retryRes = await fetch(`https://graph.facebook.com/v25.0/${phoneNumberId}/messages`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            messaging_product: "whatsapp",
+            to: targetPhone,
+            type: "template",
+            template: {
+              name: "hello_world",
+              language: {
+                code: "en_US",
+              },
+            },
+          }),
+        });
+        responseData = await retryRes.json();
+      }
+
+      if (responseData.messages?.[0]?.id) {
+        setNotice(`✅ Tebrikler! WhatsApp test mesajı ${targetPhone} numarasına başarıyla gönderildi! (ID: ${responseData.messages[0].id})`);
+      } else {
         console.error("Meta WhatsApp Hatası:", responseData);
         setNotice(`WhatsApp Gönderim Hatası: ${responseData.error?.message || "Bilinmeyen hata"}`);
-      } else {
-        setNotice(`✅ Tebrikler! WhatsApp test mesajı ${targetPhone} numarasına başarıyla gönderildi!`);
       }
     } catch (err: any) {
       setNotice(`Bağlantı hatası: ${err.message}`);
