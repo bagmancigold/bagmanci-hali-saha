@@ -7,6 +7,7 @@ import {
   ChevronRight,
   RefreshCw,
   ShieldCheck,
+  MessageCircle,
 } from "lucide-react";
 import { getSupabaseClient } from "../../../lib/supabase";
 
@@ -147,6 +148,27 @@ export default function AdminBookingsPage() {
     return () => window.clearInterval(timer);
   }, []);
 
+  const sendWhatsAppConfirmation = (booking: Booking) => {
+    const cleanPhone = booking.phone.replace(/\D/g, "");
+    const formattedPhone = cleanPhone.startsWith("0")
+      ? `9${cleanPhone}`
+      : cleanPhone.startsWith("90")
+        ? cleanPhone
+        : `90${cleanPhone}`;
+
+    const text = encodeURIComponent(
+      `Merhaba Sayın ${booking.customer_name},\n\n` +
+      `🏟️ *Bağmancı Halı Saha* rezervasyon bilgileriniz:\n\n` +
+      `📅 *Tarih:* ${booking.booking_date}\n` +
+      `⏰ *Saat:* ${booking.booking_time}\n` +
+      `💰 *Tutar:* ₺${booking.total_amount}\n` +
+      `📌 *Durum:* ${statusLabels[booking.payment_status] || booking.payment_status}\n\n` +
+      `Keyifli maçlar dileriz! ⚽`
+    );
+
+    window.open(`https://wa.me/${formattedPhone}?text=${text}`, "_blank");
+  };
+
   const bookingAt = (date: string, hour: string) =>
     bookings.find((item) => {
       if (item.booking_date !== date) return false;
@@ -239,29 +261,29 @@ export default function AdminBookingsPage() {
     );
 
   return (
-    <main className="reservation-page min-h-screen bg-[#f5f7f3] px-3 py-6 text-[var(--ink)] sm:px-5 lg:px-8">
+    <main className="reservation-page min-h-screen bg-[#f5f7f3] px-2 pt-1 pb-6 text-[var(--ink)] sm:px-5 lg:px-8">
       <div className="mx-auto max-w-[1600px]">
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        {/* Üst Kısım: Başlık, Saat ve Ok Kontrolleri Hizalandı */}
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[var(--green)]">
               Haftalık rezervasyon defteri
             </p>
-            <h1 className="display mt-1 text-2xl font-extrabold sm:text-3xl">
+            <h1 className="display mt-0.5 text-2xl font-extrabold sm:text-3xl">
               Rezervasyonlar
             </h1>
           </div>
-          <div className="flex w-full items-center justify-between gap-3 sm:w-auto sm:justify-end">
-            <p className="text-left text-xs text-[var(--muted)] sm:text-right">
-              {dateText(weekStart)} -{" "}
-              {dateText(new Date(weekStart.getTime() + 6 * 86400000))}
-            </p>
+          <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-end">
+            <span className="rounded-lg bg-white/80 px-2.5 py-1 text-xs font-semibold text-[var(--muted)] shadow-sm">
+              {dateText(weekStart)} - {dateText(new Date(weekStart.getTime() + 6 * 86400000))}
+            </span>
             <div className="flex items-center gap-2">
               <strong className="reservation-clock">{clock}</strong>
               <div className="flex gap-1.5">
                 <button
                   type="button"
                   onClick={() => setWeekOffset((value) => value - 1)}
-                  className="rounded-full border bg-white p-2"
+                  className="rounded-full border bg-white p-2 shadow-sm transition hover:bg-stone-50"
                   aria-label="Önceki hafta"
                 >
                   <ChevronLeft size={16} />
@@ -269,7 +291,7 @@ export default function AdminBookingsPage() {
                 <button
                   type="button"
                   onClick={() => setWeekOffset((value) => value + 1)}
-                  className="rounded-full border bg-white p-2"
+                  className="rounded-full border bg-white p-2 shadow-sm transition hover:bg-stone-50"
                   aria-label="Sonraki hafta"
                 >
                   <ChevronRight size={16} />
@@ -277,7 +299,7 @@ export default function AdminBookingsPage() {
                 <button
                   type="button"
                   onClick={load}
-                  className="rounded-full border bg-white p-2"
+                  className="rounded-full border bg-white p-2 shadow-sm transition hover:bg-stone-50"
                   aria-label="Yenile"
                 >
                   <RefreshCw size={16} />
@@ -286,8 +308,10 @@ export default function AdminBookingsPage() {
             </div>
           </div>
         </div>
+
         <button type="button" className="manual-booking-button mb-4" onClick={() => openManual()}><Plus size={17} /> Manuel Maç Ekle</button>
-        <div className="reservation-summary mb-4 grid w-full grid-cols-2 gap-3">
+        
+        <div className="reservation-summary mb-4 grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           <div className="reservation-summary-card">
             <span>GÜNÜN HASILATI</span>
             <strong>₺{dailyRevenue.toLocaleString("tr-TR")}</strong>
@@ -328,11 +352,13 @@ export default function AdminBookingsPage() {
             <small>Seçilen haftadaki toplam</small>
           </div>
         </div>
+
         {message && (
           <p className="mb-3 rounded-lg bg-white p-3 text-xs font-semibold text-[var(--green)]">
             {message}
           </p>
         )}
+
         <div className="reservation-scroll overflow-x-auto rounded-xl border border-[var(--line)] bg-white shadow-sm">
           <div className="reservation-grid min-w-[1280px]">
             <div className="reservation-corner">Gün / Saat</div>
@@ -384,7 +410,7 @@ export default function AdminBookingsPage() {
                         if (locked) setSelectedSubscription(locked);
                         else if (!booking) openManual(date, hour.slice(0, 5).replace(".", ":"));
                       }}
-                      className={`reservation-cell ${current ? "reservation-cell-current" : ""} ${booking ? "reservation-cell-booked" : ""} ${booking?.subscriber ? "reservation-cell-subscriber" : ""} ${subscription && !booking ? "reservation-cell-subscription-locked" : ""}`}
+                      className={`reservation-cell relative group ${current ? "reservation-cell-current" : ""} ${booking ? "reservation-cell-booked" : ""} ${booking?.subscriber ? "reservation-cell-subscriber" : ""} ${subscription && !booking ? "reservation-cell-subscription-locked" : ""}`}
                     >
                       {booking && (
                         <>
@@ -397,6 +423,18 @@ export default function AdminBookingsPage() {
                             {statusLabels[booking.payment_status] ||
                               booking.payment_status}
                           </em>
+                          {/* Tek Tık WhatsApp Butonu */}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              sendWhatsAppConfirmation(booking);
+                            }}
+                            className="mt-1 flex items-center justify-center gap-1 rounded bg-emerald-600 px-2 py-0.5 text-[10px] font-bold text-white hover:bg-emerald-700 transition"
+                            title="WhatsApp ile Bilgi Gönder"
+                          >
+                            <MessageCircle size={11} /> WP Gönder
+                          </button>
                         </>
                       )}
                       {subscription && !booking && (
@@ -417,10 +455,12 @@ export default function AdminBookingsPage() {
             ))}
           </div>
         </div>
+
         <p className="mt-3 text-[11px] text-[var(--muted)]">
           Canlı saat sarı renkle işaretlenir. Dolu saatlerde takım kaptanı,
           telefon, ücret ve ödeme durumu görünür.
         </p>
+
         {expandedDate && (
           <section className="admin-day-records">
             <div>
@@ -428,14 +468,24 @@ export default function AdminBookingsPage() {
               <strong>{new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date(`${expandedDate}T12:00:00`))}</strong>
             </div>
             {bookings.filter((booking) => booking.booking_date === expandedDate).length ? bookings.filter((booking) => booking.booking_date === expandedDate).map((booking) => (
-              <div className="admin-day-record" key={booking.id}>
-                <b>{booking.booking_time}</b>
-                <span>{booking.customer_name}</span>
-                <small>{booking.phone} · ₺{booking.total_amount} · {statusLabels[booking.payment_status] || booking.payment_status}</small>
+              <div className="admin-day-record flex items-center justify-between" key={booking.id}>
+                <div>
+                  <b>{booking.booking_time}</b>
+                  <span>{booking.customer_name}</span>
+                  <small>{booking.phone} · ₺{booking.total_amount} · {statusLabels[booking.payment_status] || booking.payment_status}</small>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => sendWhatsAppConfirmation(booking)}
+                  className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white transition hover:bg-emerald-700"
+                >
+                  <MessageCircle size={14} /> WhatsApp
+                </button>
               </div>
             )) : <p className="admin-day-record-empty">Bu gün için kayıt bulunmuyor.</p>}
           </section>
         )}
+
         <section className="weekly-field-summary">
           <div className="weekly-field-summary-heading">
             <span>HAFTALIK SAHA ÖZETİ</span>
@@ -447,6 +497,7 @@ export default function AdminBookingsPage() {
           <div><small>Toplam hasılat</small><b>₺{weeklyRevenue.toLocaleString("tr-TR")}</b></div>
           <div><small>Aktif abone</small><b>{activeSubscribers}</b></div>
         </section>
+
         <section className="weekly-field-summary monthly-field-summary">
           <div className="weekly-field-summary-heading">
             <span>AYLIK SAHA ÖZETİ</span>
@@ -457,7 +508,9 @@ export default function AdminBookingsPage() {
           <div><small>Aktif abone</small><b>{activeSubscribers}</b></div>
           <div><small>İptal edilen abone</small><b>{cancelledSubscribers}</b></div>
         </section>
+
         {manualOpen && <div className="admin-modal-backdrop" onClick={() => setManualOpen(false)}><div className="admin-modal" onClick={(event) => event.stopPropagation()}><div className="admin-modal-heading"><div><p>YENİ KAYIT</p><h2>Manuel Rezervasyon Ekle</h2></div><button type="button" onClick={() => setManualOpen(false)}>×</button></div><div className="admin-modal-grid"><label>Gün<input type="date" value={manualBooking.booking_date} onChange={(event) => setManualBooking({ ...manualBooking, booking_date: event.target.value })} /></label><label>Saat<input type="time" value={manualBooking.booking_time} onChange={(event) => setManualBooking({ ...manualBooking, booking_time: event.target.value })} /></label><label className="admin-modal-wide">Takım Kaptanı / Müşteri<input value={manualBooking.customer_name} onChange={(event) => setManualBooking({ ...manualBooking, customer_name: event.target.value })} /></label><label>Telefon<input value={manualBooking.phone} onChange={(event) => setManualBooking({ ...manualBooking, phone: event.target.value.replace(/\D/g, "").slice(0, 11) })} placeholder="05xxxxxxxxx" /></label><label>Ücret<input type="number" value={manualBooking.total_amount} onChange={(event) => setManualBooking({ ...manualBooking, total_amount: event.target.value })} /></label><label>Ödeme Durumu<select value={manualBooking.payment_status} onChange={(event) => setManualBooking({ ...manualBooking, payment_status: event.target.value })}><option value="paid">Ödendi</option><option value="deposit">Kapora Alındı</option><option value="unpaid">Ödenmedi / Maç Sonu</option></select></label><label className="admin-modal-wide">Not / Açıklama<textarea value={manualBooking.notes} onChange={(event) => setManualBooking({ ...manualBooking, notes: event.target.value })} /></label></div><button type="button" className="admin-modal-save" onClick={saveManual} disabled={savingManual}>{savingManual ? "Kaydediliyor..." : "Kaydet"}</button></div></div>}
+        
         {selectedSubscription && <div className="admin-modal-backdrop" onClick={() => setSelectedSubscription(null)}><div className="admin-modal subscription-detail-modal" onClick={(event) => event.stopPropagation()}><div className="admin-modal-heading"><div><p>GOLD ABONE</p><h2>{selectedSubscription.profile?.full_name || "Abone profili"}</h2></div><button type="button" onClick={() => setSelectedSubscription(null)}>×</button></div><div className="subscription-detail-list"><p><span>E-posta</span><strong>{selectedSubscription.profile?.email || "Kayıtlı e-posta yok"}</strong></p><p><span>Telefon</span><strong>{selectedSubscription.profile?.phone || "Telefon yok"}</strong></p><p><span>Kayıt tarihi</span><strong>{selectedSubscription.profile?.created_at ? new Intl.DateTimeFormat("tr-TR").format(new Date(selectedSubscription.profile.created_at)) : "-"}</strong></p><p><span>Toplam oynadığı hafta</span><strong>{selectedSubscription.completedWeeks || 0} hafta</strong></p></div></div></div>}
       </div>
     </main>
