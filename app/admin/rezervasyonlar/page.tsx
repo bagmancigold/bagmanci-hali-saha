@@ -239,6 +239,19 @@ export default function AdminBookingsPage() {
     if (error) { setMessage(error.message); return; }
     setBookings((current) => [...current, data]);
     setManualOpen(false);
+    if (["paid", "approved", "deposit"].includes(data.payment_status)) {
+      try {
+        const res = await fetch("/api/whatsapp/booking-confirmation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bookingId: data.id }),
+        });
+        const result = await res.json();
+        setMessage(res.ok ? "Manuel rezervasyon kaydedildi ve WhatsApp onay mesajı gönderildi." : `Manuel rezervasyon kaydedildi. WhatsApp gönderilemedi: ${result.error || "Bilinmeyen hata"}`);
+      } catch (error) {
+        setMessage(`Manuel rezervasyon kaydedildi. WhatsApp gönderilemedi: ${error instanceof Error ? error.message : "Bağlantı hatası"}`);
+      }
+    }
   };
 
   if (!authorized)

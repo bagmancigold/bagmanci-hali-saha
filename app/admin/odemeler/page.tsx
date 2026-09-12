@@ -113,6 +113,28 @@ export default function AdminPaymentsPage() {
             : row,
         ),
       );
+      if (["paid", "approved", "deposit"].includes(status)) {
+        try {
+          const res = await fetch("/api/whatsapp/booking-confirmation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ bookingId: item.id }),
+          });
+          const data = await res.json();
+          setMessage(
+            res.ok
+              ? `Durum güncellendi: ${labels[status]}. WhatsApp onay mesajı gönderildi.`
+              : `Durum güncellendi: ${labels[status]}. WhatsApp gönderilemedi: ${data.error || "Bilinmeyen hata"}`,
+          );
+        } catch (error) {
+          setMessage(
+            `Durum güncellendi: ${labels[status]}. WhatsApp gönderilemedi: ${
+              error instanceof Error ? error.message : "Bağlantı hatası"
+            }`,
+          );
+        }
+        return;
+      }
       setMessage(`Durum güncellendi: ${labels[status]}.`);
     }
   };

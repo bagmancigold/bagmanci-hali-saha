@@ -383,7 +383,14 @@ button { appearance: none; }
 .admin-pricing-heading p { margin-top: 4px; color: rgb(255 255 255 / 65%); font-size: 12px; }
 .admin-pricing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
 .admin-pricing-grid label { color: #f8eec4; font-size: 11px; font-weight: 800; }
-.admin-pricing-grid input { display: block; width: 100%; margin-top: 7px; border: 1px solid rgb(212 175 55 / 30%); border-radius: 11px; background: rgb(255 255 255 / 9%); padding: 12px; color: white; outline: none; }
+.admin-pricing-grid input, .admin-pricing-grid select { display: block; width: 100%; margin-top: 7px; border: 1px solid rgb(212 175 55 / 30%); border-radius: 11px; background: rgb(255 255 255 / 9%); padding: 12px; color: white; outline: none; }
+.admin-pricing-grid option { color: var(--ink); }
+.whatsapp-reply-list { display: grid; gap: 14px; margin-top: 20px; }
+.whatsapp-reply-card { border: 1px solid rgb(212 175 55 / 24%); border-radius: 16px; background: rgb(255 255 255 / 7%); padding: 16px; }
+.whatsapp-reply-text { display: block; margin-top: 12px; color: #f8eec4; font-size: 11px; font-weight: 800; }
+.whatsapp-reply-text textarea { display: block; min-height: 92px; width: 100%; margin-top: 7px; border: 1px solid rgb(212 175 55 / 30%); border-radius: 11px; background: rgb(255 255 255 / 9%); padding: 12px; color: white; outline: none; resize: vertical; }
+.whatsapp-reply-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.whatsapp-delete-button { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; margin-top: 18px; border: 1px solid rgb(255 150 150 / 45%); border-radius: 999px; background: rgb(127 29 29 / 35%); padding: 0 18px; color: #fecaca; font-size: 12px; font-weight: 900; }
 .admin-settings-message { margin-top: 12px; color: var(--green); font-size: 12px; font-weight: 800; }
 .admin-settings-message.success { color: #16a34a; }
 .admin-settings-message.error { color: #dc2626; }

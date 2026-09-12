@@ -16,6 +16,8 @@ alter table public.profiles add column if not exists email text not null default
 alter table public.profiles add column if not exists subscription_package text not null default '';
 alter table public.profiles add column if not exists preferred_subscription_day text not null default '';
 alter table public.profiles add column if not exists preferred_subscription_time text not null default '';
+alter table public.profiles add column if not exists phone_verified boolean not null default false;
+alter table public.profiles add column if not exists phone_verified_at timestamptz;
 create unique index if not exists profiles_username_unique on public.profiles (lower(username)) where username <> '';
 
 create table if not exists public.site_settings (
@@ -88,8 +90,40 @@ create table if not exists public.operating_expenses (
   amount numeric(10,2) not null default 0,
   created_at timestamptz not null default now()
 );
+
+create table if not exists public.whatsapp_phone_verifications (
+  id uuid primary key default gen_random_uuid(),
+  phone text not null,
+  formatted_phone text not null,
+  code_hash text not null,
+  expires_at timestamptz not null,
+  attempts integer not null default 0,
+  used_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists whatsapp_phone_verifications_phone_idx on public.whatsapp_phone_verifications (formatted_phone, created_at desc);
+
+create table if not exists public.whatsapp_ready_replies (
+  id uuid primary key default gen_random_uuid(),
+  keyword text not null,
+  response_text text not null,
+  active boolean not null default true,
+  priority integer not null default 100,
+  created_at timestamptz not null default now()
+);
+
+insert into public.whatsapp_ready_replies (keyword, response_text, active, priority)
+values
+  ('fiyat', 'Gunduz tarifesi 1200 TL, gece tarifesi 1800 TL. Rezervasyon icin web sitemizden gun ve saat secebilirsiniz.', true, 10),
+  ('rezervasyon', 'Rezervasyon icin web sitesindeki takvimden musait gun ve saati secmeniz yeterli. Odeme/dekont sonrasi kaydiniz kesinlesir.', true, 20),
+  ('adres', 'Bagmanci Hali Saha Sanliurfa. Konum icin web sitemizdeki iletisim bolumunu acabilirsiniz.', true, 30)
+on conflict do nothing;
+
 alter table public.operating_expenses enable row level security;
 alter table public.subscription_requests enable row level security;
+alter table public.whatsapp_phone_verifications enable row level security;
+alter table public.whatsapp_ready_replies enable row level security;
 
 create or replace function public.is_admin()
 returns boolean
@@ -108,6 +142,12 @@ $$;
 
 drop policy if exists "admins manage operating expenses" on public.operating_expenses;
 create policy "admins manage operating expenses" on public.operating_expenses for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists "admins manage whatsapp phone verifications" on public.whatsapp_phone_verifications;
+create policy "admins manage whatsapp phone verifications" on public.whatsapp_phone_verifications for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists "admins manage whatsapp ready replies" on public.whatsapp_ready_replies;
+create policy "admins manage whatsapp ready replies" on public.whatsapp_ready_replies for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 drop policy if exists "public can create subscription requests" on public.subscription_requests;
 drop policy if exists "admins manage subscription requests" on public.subscription_requests;
