@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   description: "Bağmancı Halı Saha için paket seçin, saatinizi ayırtın ve takımınızı maça hazırlayın.",
   verification: {
     google: "_inhOjOnnu_teMUeWlzPxQQw_AjqBZSj_0k3lrJ6z-Y"
+  },
+  other: {
+    "facebook-domain-verification": "8y32n4qy3h7kfdnbdc3j23ojbpb70e"
   }
 };
 

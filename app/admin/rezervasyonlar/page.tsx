@@ -148,25 +148,26 @@ export default function AdminBookingsPage() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const sendWhatsAppConfirmation = (booking: Booking) => {
-    const cleanPhone = booking.phone.replace(/\D/g, "");
-    const formattedPhone = cleanPhone.startsWith("0")
-      ? `9${cleanPhone}`
-      : cleanPhone.startsWith("90")
-        ? cleanPhone
-        : `90${cleanPhone}`;
-
-    const text = encodeURIComponent(
-      `Merhaba Sayın ${booking.customer_name},\n\n` +
-      `🏟️ *Bağmancı Halı Saha* rezervasyon bilgileriniz:\n\n` +
-      `📅 *Tarih:* ${booking.booking_date}\n` +
-      `⏰ *Saat:* ${booking.booking_time}\n` +
-      `💰 *Tutar:* ₺${booking.total_amount}\n` +
-      `📌 *Durum:* ${statusLabels[booking.payment_status] || booking.payment_status}\n\n` +
-      `Keyifli maçlar dileriz! ⚽`
-    );
-
-    window.open(`https://wa.me/${formattedPhone}?text=${text}`, "_blank");
+  const sendWhatsAppConfirmation = async (booking: Booking) => {
+    try {
+      const res = await fetch("/api/whatsapp/booking-confirmation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId: booking.id }),
+      });
+      const result = await res.json();
+      setMessage(
+        res.ok
+          ? `${booking.customer_name} için WhatsApp rezervasyon mesajı gönderildi.`
+          : `WhatsApp gönderilemedi: ${result.error || "Bilinmeyen hata"}`,
+      );
+    } catch (error) {
+      setMessage(
+        `WhatsApp gönderilemedi: ${
+          error instanceof Error ? error.message : "Bağlantı hatası"
+        }`,
+      );
+    }
   };
 
   const bookingAt = (date: string, hour: string) =>

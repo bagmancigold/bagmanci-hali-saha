@@ -1,3 +1,4 @@
+import { createHash, randomInt } from "crypto";
 import { NextResponse } from "next/server";
 import { getSupabaseServerClient } from "@/lib/supabaseAdmin";
 import { sendWhatsAppTextMessage } from "@/lib/whatsapp";
@@ -28,6 +29,55 @@ const defaultReplies: ReadyReply[] = [
     active: true,
   },
 ];
+
+const OTP_TTL_MINUTES = 10;
+
+function normalizeLocalPhone(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+  if (/^5\d{9}$/.test(digits)) return `0${digits}`;
+  if (/^0\d{10}$/.test(digits)) return digits;
+  if (/^90(5\d{9})$/.test(digits)) return `0${digits.slice(2)}`;
+  return digits;
+}
+
+function hashCode(phone: string, code: string) {
+  const secret =
+    process.env.WHATSAPP_OTP_SECRET ||
+    process.env.WHATSAPP_ACCESS_TOKEN ||
+    "local-dev-secret";
+  return createHash("sha256").update(`${phone}:${code}:${secret}`).digest("hex");
+}
+
+async function sendOtpReply(from: string) {
+  const localPhone = normalizeLocalPhone(from);
+  const formattedPhone = from.replace(/\D/g, "");
+  const code = String(randomInt(100000, 999999));
+  const expiresAt = new Date(Date.now() + OTP_TTL_MINUTES * 60_000).toISOString();
+  const client = getSupabaseServerClient();
+
+  const { error } = await client.from("whatsapp_phone_verifications").insert({
+    phone: localPhone,
+    formatted_phone: formattedPhone,
+    code_hash: hashCode(formattedPhone, code),
+    expires_at: expiresAt,
+  });
+
+  if (error) throw error;
+
+  const result = await sendWhatsAppTextMessage({
+    to: formattedPhone,
+    text: `Bagmanci Hali Saha dogrulama kodunuz: ${code}. Kod 10 dakika gecerlidir.`,
+  });
+
+  if (!result.ok) {
+    console.error("WhatsApp OTP gönderimi başarısız:", {
+      to: formattedPhone,
+      status: result.status,
+      error: result.data?.error,
+    });
+    throw new Error(result.data?.error?.message || "WhatsApp doğrulama kodu gönderilemedi.");
+  }
+}
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -71,6 +121,12 @@ export async function POST(req: Request) {
         const from = message.from;
         const incomingText = String(message.text?.body || "").toLocaleLowerCase("tr-TR");
         if (!from || !incomingText) return;
+
+        if (incomingText.trim() === "kod" || incomingText.trim().startsWith("kod ")) {
+          console.log("WhatsApp OTP isteği alındı:", { from });
+          await sendOtpReply(from);
+          return;
+        }
 
         const matched = replies.find((reply) =>
           incomingText.includes(reply.keyword.toLocaleLowerCase("tr-TR")),

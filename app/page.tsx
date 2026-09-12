@@ -10,6 +10,7 @@ import {
   Clock3,
   Crown,
   Instagram,
+  Mail,
   MapPin,
   MessageCircle,
   Phone,
@@ -340,6 +341,22 @@ export default function Home() {
         .single();
 
       if (error) throw error;
+
+      const whatsappResponse = await fetch("/api/whatsapp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: form.phone.replace(/\s/g, ""),
+          type: "template",
+          templateName: "direct_integration_test_template",
+          languageCode: "en_US",
+        }),
+      });
+      const whatsappResult = await whatsappResponse.json();
+      if (!whatsappResponse.ok || !whatsappResult.success) {
+        console.error("Rezervasyon WhatsApp onayı gönderilemedi:", whatsappResult);
+      }
+
       setBooked((current) => [
         ...current,
         { date: selectedDay, time: selectedSlot, duration: selectedDuration },
@@ -861,6 +878,12 @@ export default function Home() {
                 >
                   <Phone size={16} /> 0414 247 51 51
                 </a>
+                <a
+                  href="mailto:info@bagmancihalisaha.com.tr"
+                  className="home-ghost-button flex items-center gap-2 rounded-full px-5 py-3 text-sm font-bold"
+                >
+                  <Mail size={16} /> info@bagmancihalisaha.com.tr
+                </a>
               </div>
               <div className="mt-5 flex gap-3">
                 <a
@@ -931,6 +954,9 @@ export default function Home() {
             </a>
             <a href="/guvenlik" className="transition hover:text-amber-600 dark:hover:text-amber-400">
               Güvenlik
+            </a>
+            <a href="mailto:info@bagmancihalisaha.com.tr" className="transition hover:text-amber-600 dark:hover:text-amber-400">
+              info@bagmancihalisaha.com.tr
             </a>
           </div>
         </div>
