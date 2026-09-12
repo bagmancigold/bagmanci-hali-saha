@@ -88,13 +88,25 @@ export default function CustomerPage() {
     finally { setLoading(false); }
   };
 
-  const sendWhatsAppCode = () => {
+  const sendWhatsAppCode = async () => {
     const cleanPhone = normalizeLocalPhone(form.phone);
     if (!/^0\d{10}$/.test(cleanPhone)) { setMessage("Önce 543xxxxxxx veya 0543xxxxxxx formatında telefon numaranı yaz."); return; }
-    const businessNumber = process.env.NEXT_PUBLIC_WHATSAPP_BUSINESS_NUMBER || "904142475151";
-    window.open(`https://api.whatsapp.com/send?phone=${businessNumber}&text=${encodeURIComponent("KOD")}`, "_blank");
-    setPhoneCodeSent(true);
-    setMessage("WhatsApp açılınca KOD mesajı hazır gelecek. Sadece gönder okuna bas, gelen 6 haneli kodu buraya yazıp Onayla'ya bas.");
+    setLoading(true); setMessage("");
+    try {
+      const response = await fetch("/api/whatsapp/otp/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: cleanPhone }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "WhatsApp doğrulama kodu gönderilemedi.");
+      setPhoneCodeSent(true);
+      setMessage("6 haneli doğrulama kodu WhatsApp üzerinden gönderildi. Gelen kodu aşağıya yaz.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "WhatsApp doğrulama kodu gönderilemedi.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const verifyWhatsAppCode = async () => {
