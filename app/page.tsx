@@ -11,6 +11,7 @@ import {
   Crown,
   Instagram,
   MapPin,
+  MessageCircle,
   Phone,
   Users,
 } from "lucide-react";
@@ -134,6 +135,7 @@ export default function Home() {
     phone: "",
   });
   const [notice, setNotice] = useState("");
+  const [waLoading, setWaLoading] = useState(false);
 
   const selectedLabel =
     days.find((day) => day.date === selectedDay)?.full ?? selectedDay;
@@ -258,6 +260,58 @@ export default function Home() {
       ?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // DOĞRUDAN METADAN TEST MESAJI TETİKLEYEN FONKSİYON
+  const sendTestWhatsApp = async () => {
+    let targetPhone = form.phone.replace(/\D/g, "");
+    if (!targetPhone) {
+      targetPhone = "905431005063"; // Boşsa varsayılan test numaran
+    } else if (targetPhone.startsWith("0")) {
+      targetPhone = "9" + targetPhone;
+    } else if (!targetPhone.startsWith("90")) {
+      targetPhone = "90" + targetPhone;
+    }
+
+    setWaLoading(true);
+    setNotice(`0414 247 51 51 hattından ${targetPhone} numarasına test mesajı gönderiliyor...`);
+
+    try {
+      const phoneNumberId = "1913963925193128";
+      const token = "EAATZCsPNZCIDEBSQUmXX41JaOGbRF5miZCHbEi9aooyCULFUvhJkEK8a09ZBPPtoZALys0ldQeeSNt3WkEBxL5182W0pN2HqLFGE5xbqf820zc9Uhul9rtHGsJv0RWSEN7Fs5tY4QrSgVfrbAMY8PSYfqPBPYkxbx";
+
+      const res = await fetch(`https://graph.facebook.com/v20.0/${phoneNumberId}/messages`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messaging_product: "whatsapp",
+          to: targetPhone,
+          type: "template",
+          template: {
+            name: "hello_world",
+            language: {
+              code: "en_US",
+            },
+          },
+        }),
+      });
+
+      const responseData = await res.json();
+
+      if (!res.ok) {
+        console.error("Meta WhatsApp Hatası:", responseData);
+        setNotice(`WhatsApp Gönderim Hatası: ${responseData.error?.message || "Bilinmeyen hata"}`);
+      } else {
+        setNotice(`✅ Tebrikler! WhatsApp test mesajı ${targetPhone} numarasına başarıyla gönderildi!`);
+      }
+    } catch (err: any) {
+      setNotice(`Bağlantı hatası: ${err.message}`);
+    } finally {
+      setWaLoading(false);
+    }
+  };
+
   const submitBooking = async () => {
     if (
       !selectedSlot ||
@@ -356,7 +410,6 @@ export default function Home() {
   const refreshSlotAvailability = async () => {
     if (!selectedSlot) return false;
     
-    // Kendi sabit abonelik saatinse çakışma kontrolünü pas geç (Ödeme engeli kalktı)
     if (ownSubscriptionSlot(selectedSlot)) {
       return false;
     }
@@ -758,6 +811,18 @@ export default function Home() {
               >
                 Maç kaydı oluştur <ArrowRight size={17} />
               </button>
+
+              {/* SABİT HATTAN DOĞRUDAN TEST BUTONU */}
+              <button
+                type="button"
+                disabled={waLoading}
+                onClick={sendTestWhatsApp}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-full border border-emerald-600 bg-emerald-950/80 px-4 py-3 text-xs font-bold text-emerald-400 transition hover:bg-emerald-900 disabled:opacity-50"
+              >
+                <MessageCircle size={16} />
+                {waLoading ? "Mesaj Gönderiliyor..." : "Sabit Hattan WhatsApp Testi Gönder (0414 247 51 51)"}
+              </button>
+
               {notice && (
                 <p className="home-card mt-4 rounded-xl p-3 text-sm">
                   {notice}
